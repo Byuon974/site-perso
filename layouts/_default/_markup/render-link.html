@@ -4,8 +4,12 @@
 
 {{- $isExternal := or (hasPrefix $dest "http://") (hasPrefix $dest "https://") -}}
 
+{{- if and (not $isExternal) (hasPrefix $dest "/") -}}
+  {{- $dest = strings.TrimPrefix "/" $dest | relURL -}}
+{{- end -}}
+
 <a href="{{ $dest }}"
    {{ with $title }}title="{{ . }}"{{ end }}
-   {{ if $isExternal }}rel="noopener" target="_blank"{{ end }}>
+   {{ if $isExternal }}rel="noopener noreferrer" target="_blank"{{ end }}>
   {{ $text }}
 </a>

@@ -59,7 +59,7 @@ fi
 echo ""
 echo "📥 Récupération des changements depuis GitHub..."
 git fetch origin
-git reset --hard origin/$GIT_BRANCH
+git reset --hard "origin/$GIT_BRANCH"
 
 # Vérifie que Hugo est installé
 if ! command -v hugo &> /dev/null; then
@@ -74,14 +74,14 @@ echo "🔨 Compilation du site avec Hugo..."
 hugo --minify --gc
 
 # Compte les fichiers générés
-FILE_COUNT=$(find $BUILD_DIR -type f | wc -l)
+FILE_COUNT=$(find "$BUILD_DIR" -type f | wc -l)
 echo "✅ $FILE_COUNT fichiers générés dans /$BUILD_DIR"
 
 # Copie vers le dossier web si configuré
 if [ -n "$WEB_DIR" ] && [ -d "$WEB_DIR" ]; then
     echo ""
     echo "📂 Copie vers $WEB_DIR..."
-    rsync -av --delete $BUILD_DIR/ $WEB_DIR/
+    rsync -av --delete "$BUILD_DIR/" "$WEB_DIR/"
     echo "✅ Fichiers copiés"
 fi
 

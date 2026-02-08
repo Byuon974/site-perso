@@ -2,25 +2,14 @@
   const STORAGE_KEY = "theme";
   const docEl = document.documentElement;
 
-  const getPreferredTheme = () => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored === "light" || stored === "dark") {
-      return stored;
-    }
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  };
-
   const setTheme = (theme) => {
     docEl.setAttribute("data-theme", theme);
     localStorage.setItem(STORAGE_KEY, theme);
   };
 
-  // Appliquer dès le chargement
-  setTheme(getPreferredTheme());
+  // Le thème initial est déjà appliqué par le script inline dans <head>.
+  // Ce fichier ne gère que le bouton toggle.
 
-  // Une fois le DOM prêt, câbler le bouton
   document.addEventListener("DOMContentLoaded", () => {
     const toggleBtn = document.querySelector("[data-theme-toggle]");
     if (!toggleBtn) return;

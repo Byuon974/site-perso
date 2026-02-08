@@ -14,7 +14,7 @@
   <ul>
     {{- range $related }}
     <li>
-      <a href="{{ .Permalink }}">{{ .Title }}</a>
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
       <span class="related-section">{{ .Section | title }}</span>
     </li>
     {{- end }}

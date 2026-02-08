@@ -1,8 +1,8 @@
 <nav class="breadcrumbs" aria-label="Fil d'Ariane">
   <ol>
-    <li><a href="{{ "/" | relURL }}">Accueil</a></li>
+    <li><a href="{{ "" | relURL }}">Accueil</a></li>
     {{- if .Section }}
-    <li><a href="{{ printf "/%s/" .Section | relURL }}">{{ .Section | title }}</a></li>
+    <li><a href="{{ printf "%s/" .Section | relURL }}">{{ .Section | title }}</a></li>
     {{- end }}
     {{- if not .IsSection }}
     <li aria-current="page">{{ .Title | truncate 30 }}</li>

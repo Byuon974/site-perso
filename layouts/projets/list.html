@@ -10,6 +10,7 @@
   
   {{ if gt $total 0 }}
   <div class="projets-carousel" data-carousel>
+    <div class="carousel-viewport">
     <div class="carousel-track">
       {{ range $index, $page := $pages }}
       <article class="projet-card carousel-slide" data-index="{{ $index }}">
@@ -17,17 +18,17 @@
           {{ with $page.Params.video }}
           {{ $poster := $page.Params.videoPoster }}
           {{ if $poster }}
-          <div class="projet-video-lite" data-video-lite data-src="{{ . }}" data-title="{{ $page.Title }}">
+          <div class="projet-video-lite" data-video-lite data-src="{{ strings.TrimPrefix "/" . | relURL }}" data-title="{{ $page.Title }}">
             <button class="projet-video-lite-btn" type="button" aria-label="Lire la vidéo {{ $page.Title }}">
-              <img src="{{ $poster }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
+              <img src="{{ strings.TrimPrefix "/" $poster | relURL }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
               <div class="video-overlay">
                 <div class="play-icon"></div>
               </div>
             </button>
           </div>
           {{ else }}
-          <video 
-            src="{{ . }}" 
+          <video
+            src="{{ strings.TrimPrefix "/" . | relURL }}"
             muted 
             loop 
             playsinline 
@@ -41,7 +42,7 @@
           {{ end }}
           {{ else }}
           {{ with $page.Params.image }}
-          <img src="{{ . }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
+          <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
           {{ else }}
           <div class="placeholder-media">{{ substr $page.Title 0 1 | upper }}</div>
           {{ end }}
@@ -70,7 +71,7 @@
               Démo
             </a>
             {{ end }}
-            {{ with $page.Params.github }}
+            {{ with $page.Params.repo }}
             <a href="{{ . }}" class="projet-link" target="_blank" rel="noopener">
               <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
               Code
@@ -84,20 +85,19 @@
       </article>
       {{ end }}
     </div>
-    
+    </div>
+
     {{ if gt $total 1 }}
-    <div class="carousel-nav">
-      <button class="carousel-btn carousel-prev" data-carousel-prev aria-label="Projet précédent">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-      </button>
-      <div class="carousel-dots">
-        {{ range $index, $page := $pages }}
-        <button class="carousel-dot{{ if eq $index 0 }} active{{ end }}" data-carousel-dot="{{ $index }}" aria-label="Aller au projet {{ add $index 1 }}"></button>
-        {{ end }}
-      </div>
-      <button class="carousel-btn carousel-next" data-carousel-next aria-label="Projet suivant">
-        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-      </button>
+    <button class="carousel-btn carousel-prev" data-carousel-prev aria-label="Projet précédent">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="carousel-btn carousel-next" data-carousel-next aria-label="Projet suivant">
+      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+    <div class="carousel-dots">
+      {{ range $index, $page := $pages }}
+      <button class="carousel-dot{{ if eq $index 0 }} active{{ end }}" data-carousel-dot="{{ $index }}" aria-label="Aller au projet {{ add $index 1 }}"></button>
+      {{ end }}
     </div>
     {{ end }}
   </div>
@@ -150,16 +150,19 @@ document.addEventListener('DOMContentLoaded', function() {
     btn.addEventListener('click', () => {
       const src = el.dataset.src;
       const title = el.dataset.title || 'Vidéo';
-      el.innerHTML = `
-        <video controls playsinline preload="metadata" aria-label="${title}">
-          <source src="${src}" type="video/mp4">
-        </video>
-      `;
-      const v = el.querySelector('video');
-      if (v) {
-        const p = v.play();
-        if (p && p.catch) p.catch(()=>{});
-      }
+      const video = document.createElement('video');
+      video.controls = true;
+      video.playsInline = true;
+      video.preload = 'metadata';
+      video.setAttribute('aria-label', title);
+      const source = document.createElement('source');
+      source.src = src;
+      source.type = 'video/mp4';
+      video.appendChild(source);
+      el.innerHTML = '';
+      el.appendChild(video);
+      var p = video.play();
+      if (p && p.catch) p.catch(function(){});
     }, { once: true });
   });
 

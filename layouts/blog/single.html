@@ -1,30 +1,17 @@
 {{ define "main" }}
 <article class="blog-single prose">
-  {{ partial "breadcrumbs.html" . }}
-  
-  <header class="blog-single-header">
-    <div class="blog-single-meta">
-      {{ with .Date }}
-      <time datetime="{{ .Format "2006-01-02" }}">{{ .Format "02 janvier 2006" }}</time>
-      {{ end }}
-      <span class="meta-sep">·</span>
-      {{ partial "reading-time.html" . }}
-    </div>
-    
-    <h1>{{ .Title }}</h1>
-    
-    {{ with .Params.description }}
-    <p class="blog-single-description">{{ . }}</p>
-    {{ end }}
-    
-    {{ with .Params.tags }}
-    <div class="blog-single-tags">
-      {{ range . }}
-      <span class="blog-tag">#{{ . }}</span>
-      {{ end }}
-    </div>
-    {{ end }}
-  </header>
+  {{ partial "page-header.html" (dict
+      "ctx" .
+      "wrapperClass" "blog-single-header"
+      "metaClass" "blog-single-meta"
+      "descClass" "blog-single-description"
+      "tagsWrapperClass" "blog-single-tags"
+      "tagClass" "blog-tag"
+      "showBreadcrumbs" true
+      "dateFormat" "02 janvier 2006"
+      "dateSource" "date"
+      "showReadingTime" true
+  ) }}
 
   <section class="blog-single-body prose-content" id="post-body">
     {{ .Content }}
@@ -49,7 +36,7 @@
       {{ end }}
     </nav>
     
-    <a href="{{ "/blog/" | relURL }}" class="blog-back">
+    <a href="{{ "blog/" | relURL }}" class="blog-back">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="19" y1="12" x2="5" y2="12"></line>
         <polyline points="12 19 5 12 12 5"></polyline>

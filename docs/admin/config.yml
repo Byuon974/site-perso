@@ -201,7 +201,7 @@ collections:
         hint: "URL de la démo en ligne"
 
       - label: "Lien GitHub"
-        name: "github"
+        name: "repo"
         widget: "string"
         required: false
         hint: "URL du repository"

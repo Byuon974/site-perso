@@ -1,14 +1,14 @@
 baseURL: "https://byuon974.github.io/site-perso/"
 languageCode: "fr-fr"
 title: "Thomas | Développeur Backend"
-publishDir: "docs"
+# publishDir: "docs"
 
-# Désactiver les pages par défaut
+# Désactiver les pages de listes de tags (/tags/, /tags/python/, etc.)
+# Les tags restent utilisables dans les templates (affichage, articles liés)
 disableKinds:
   - taxonomy
   - term
 
-# Activer les taxonomies pour les tags
 taxonomies:
   tag: tags
 

@@ -6,8 +6,8 @@ Usage:
 - Poster image: loading="lazy"
 */}}
 
-{{ $src := .Get "src" }}
-{{ $poster := .Get "poster" }}
+{{ $src := strings.TrimPrefix "/" (.Get "src") | relURL }}
+{{ $poster := strings.TrimPrefix "/" (.Get "poster") | relURL }}
 {{ $title := default "Lire la vidéo" (.Get "title") }}
 
 {{/* ID unique par instance */}}

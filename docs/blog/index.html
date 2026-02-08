@@ -32,11 +32,22 @@
 
 
 <link rel="canonical" href="http://localhost:1313/site-perso/blog/" />
-<link rel="sitemap" href="/sitemap.xml" />
+<link rel="sitemap" href="/site-perso/sitemap.xml" />
 <link rel="icon" type="image/png" href="/site-perso/favicon.png" sizes="32x32" />
 <link rel="icon" type="image/png" href="/site-perso/favicon-192.png" sizes="192x192" />
 <link rel="apple-touch-icon" href="/site-perso/apple-touch-icon.png" />
 <link rel="alternate" type="application/rss+xml" title="Thomas | Développeur Backend" href="/site-perso/index.xml" />
+
+
+<script>
+(function(){
+  var t = localStorage.getItem("theme");
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
 
 
 <link rel="stylesheet" href="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.css" />
@@ -65,11 +76,11 @@
           <nav class="sidebar-nav">
             <span class="sidebar-label">explore</span>
             <ul>
-              <li><a href="/">Accueil</a></li>
-              <li><a href="/projets/">Projets</a></li>
-              <li><a href="/blog/" class="active" aria-current="page">Blog</a></li>
-              <li><a href="/notes/">Notes</a></li>
-              <li><a href="/about/">À propos</a></li>
+              <li><a href="/site-perso/">Accueil</a></li>
+              <li><a href="/site-perso/projets/">Projets</a></li>
+              <li><a href="/site-perso/blog/" class="active" aria-current="page">Blog</a></li>
+              <li><a href="/site-perso/notes/">Notes</a></li>
+              <li><a href="/site-perso/about/">À propos</a></li>
             </ul>
           </nav>
 
@@ -98,7 +109,7 @@
       <main class="main-content" id="content">
         
         <header class="main-header">
-          <a href="/" class="main-header-logo">
+          <a href="/site-perso/" class="main-header-logo">
             <img src="/site-perso/favicon-192.png" alt="Logo" width="32" height="32" decoding="async" />
             <span>nexus<span class="sep">-</span>tvs</span>
           </a>
@@ -135,7 +146,7 @@
       © 2026 Thomas
     </span>
     <nav class="site-footer-links">
-      <a href="/about/">À propos</a>
+      <a href="/site-perso/about/">À propos</a>
       
       <a href="mailto:contact@nexus-tvs.dev">Contact</a>
       
@@ -152,94 +163,6 @@
     <script>window.addEventListener("DOMContentLoaded", () => { if (window.littlefoot) { window.littlefoot.littlefoot(); } });</script>
     <script defer src="/site-perso/js/image-viewer.js"></script>
     <script defer src="/site-perso/js/theme-toggle.js"></script>
-    <script>
-      
-      (function() {
-        const toggle = document.getElementById('sidebar-toggle');
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebar-overlay');
-        
-        if (!toggle || !sidebar || !overlay) return;
-
-        function openSidebar() {
-          sidebar.classList.add('open');
-          overlay.classList.add('visible');
-          overlay.setAttribute('aria-hidden', 'false');
-          toggle.setAttribute('aria-expanded', 'true');
-          toggle.setAttribute('aria-label', 'Fermer le menu');
-          document.body.style.overflow = 'hidden';
-        }
-
-        function closeSidebar() {
-          sidebar.classList.remove('open');
-          overlay.classList.remove('visible');
-          overlay.setAttribute('aria-hidden', 'true');
-          toggle.setAttribute('aria-expanded', 'false');
-          toggle.setAttribute('aria-label', 'Ouvrir le menu');
-          document.body.style.overflow = '';
-        }
-
-        function toggleSidebar() {
-          if (sidebar.classList.contains('open')) {
-            closeSidebar();
-          } else {
-            openSidebar();
-          }
-        }
-
-        
-        toggle.addEventListener('click', toggleSidebar);
-
-        
-        overlay.addEventListener('click', closeSidebar);
-
-        
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && sidebar.classList.contains('open')) {
-            closeSidebar();
-            toggle.focus();
-          }
-        });
-        
-        document.addEventListener('keydown', (e) => {
-          if (e.key !== 'Tab' || !sidebar.classList.contains('open')) return;
-
-          const focusables = sidebar.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
-          if (!focusables.length) return;
-
-          const first = focusables[0];
-          const last = focusables[focusables.length - 1];
-
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        });
-
-
-        
-        sidebar.querySelectorAll('a').forEach(link => {
-          link.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-              closeSidebar();
-            }
-          });
-        });
-
-        
-        window.addEventListener('resize', () => {
-          if (window.innerWidth > 768) {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('visible');
-          overlay.setAttribute('aria-hidden', 'true');
-            document.body.style.overflow = '';
-            toggle.setAttribute('aria-expanded', 'false');
-          }
-        });
-      })();
-    </script>
+    <script defer src="/site-perso/js/sidebar.js"></script>
   </body>
 </html>
