@@ -17,22 +17,22 @@ params:
   author: "Thomas"
   description: "Développeur backend - La Réunion"
   email: "contact@nexus-tvs.dev"
-  cv: "/cv/cv-thomas.pdf"
+  cv: "cv/cv-thomas.pdf"
 
-# Menus
+# Menus (URLs RELATIVES – IMPORTANT pour GitHub Pages /site-perso/)
 menu:
   main:
     - name: "Projets"
-      url: "/projets/"
+      url: "projets/"
       weight: 1
     - name: "Blog"
-      url: "/blog/"
+      url: "blog/"
       weight: 2
     - name: "Notes"
-      url: "/notes/"
+      url: "notes/"
       weight: 3
     - name: "À propos"
-      url: "/about/"
+      url: "about/"
       weight: 4
 
 # Markdown
