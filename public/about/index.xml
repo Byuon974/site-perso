@@ -1,0 +1,2 @@
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml-stylesheet type="text/xsl" href="https://nexus-tvs.dev/rss.xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>À propos — Thomas | Développeur Backend</title><link>https://nexus-tvs.dev/about/</link><description>Développeur backend - La Réunion</description><generator>Hugo -- gohugo.io</generator><language>fr-fr</language><atom:link href="https://nexus-tvs.dev/about/index.xml" rel="self" type="application/rss+xml"/></channel></rss>

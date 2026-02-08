@@ -1,0 +1,11 @@
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml-stylesheet type="text/xsl" href="https://nexus-tvs.dev/rss.xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Blog — Thomas | Développeur Backend</title><link>https://nexus-tvs.dev/blog/</link><description>Développeur backend - La Réunion</description><generator>Hugo -- gohugo.io</generator><language>fr-fr</language><lastBuildDate>Sat, 03 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="https://nexus-tvs.dev/blog/index.xml" rel="self" type="application/rss+xml"/><item><title>La philosophie Unix : boussole intemporelle dans un monde de complexité logicielle</title><link>https://nexus-tvs.dev/blog/tech-analyse-philosophie-unix/</link><pubDate>Sat, 03 Jan 2026 00:00:00 +0000</pubDate><guid>https://nexus-tvs.dev/blog/tech-analyse-philosophie-unix/</guid><description>&lt;h2 id="un-héritage-codifié--au-delà-de-la-légende-urbaine"&gt;Un héritage codifié : au-delà de la légende urbaine&lt;/h2&gt;
+&lt;p&gt;On parle souvent de la « philosophie Unix » comme d&amp;rsquo;un label commode, un argument
+d&amp;rsquo;autorité vague pour défendre ou attaquer un programme. J&amp;rsquo;ai longtemps cru qu&amp;rsquo;il
+s&amp;rsquo;agissait d&amp;rsquo;une légende urbaine, un concept nébuleux sans substance réelle. Mais
+c&amp;rsquo;est une erreur. Il existe bel et bien une &lt;strong&gt;philosophie Unix codifiée&lt;/strong&gt;, née dans
+les laboratoires Bell des années 1970. Ce n&amp;rsquo;est pas une simple convention technique ;
+c&amp;rsquo;est une vision radicale du monde computationnel, une &lt;strong&gt;éthique du logiciel&lt;/strong&gt; qui
+a influencé des générations. Elle ne se réduit pas à des commandes obscures dans
+un terminal, mais propose une grille de lecture pour distinguer le design honnête du
+bricolage complexe.&lt;/p&gt;</description></item></channel></rss>
