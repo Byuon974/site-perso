@@ -2,7 +2,7 @@
 title: "GameFAQs Scraper"
 description: "Outil d’archivage hors-ligne de guides GameFAQs avec conversion via Pandoc."
 date: 2025-11-15
-video: "/videos/gamefaqs-scraper.mp4"
+video: "/videos/gamefaqs-scraper.webm"
 videoPoster: "/videos/gamefaqs-scraper.jpg"
 tags: ["Python", "Web Scraping", "Pandoc", "Automatisation"]
 draft: false
@@ -44,6 +44,7 @@ allant de **guides ASCII historiques** à des pages **HTML modernes**.
 
 Utilisant régulièrement **Pandoc** pour formater des notes techniques (ODT, PDF), j’ai souhaité
 mettre cet outil à l’épreuve dans un contexte automatisé afin de :
+
 - Éviter toute manipulation manuelle de documents très volumineux (jusqu’à ~90 pages)
 - Préserver la structure et la lisibilité du contenu
 - Respecter le travail des auteurs via l’intégration de métadonnées
@@ -63,6 +64,7 @@ mettre cet outil à l’épreuve dans un contexte automatisé afin de :
 ### Diffusion du projet
 
 Une attention particulière a été portée au :
+
 - Respect du fichier **robots.txt**
 - Contrôle du volume de requêtes
 - Comportement non intrusif
