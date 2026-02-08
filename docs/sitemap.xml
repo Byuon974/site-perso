@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>http://localhost:1313/</loc>
+    <lastmod>2026-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blog/</loc>
+    <lastmod>2026-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/blog/tech-analyse-philosophie-unix/</loc>
+    <lastmod>2026-01-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projets/gamefaqs-scraper/</loc>
+    <lastmod>2025-11-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projets/</loc>
+    <lastmod>2025-11-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/projets/auto-downloader/</loc>
+    <lastmod>2025-09-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>http://localhost:1313/about/</loc>
+  </url><url>
+    <loc>http://localhost:1313/notes/cat/</loc>
+  </url><url>
+    <loc>http://localhost:1313/notes/chgrp/</loc>
+  </url><url>
+    <loc>http://localhost:1313/notes/chmod/</loc>
+  </url><url>
+    <loc>http://localhost:1313/notes/</loc>
+  </url>
+</urlset>

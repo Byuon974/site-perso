@@ -1,0 +1,11 @@
+&lt;?xml version="1.0" encoding="utf-8" standalone="yes"?>
+&lt;?xml-stylesheet type="text/xsl" href="http://localhost:1313/rss.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>À propos — Thomas | Développeur Backend</title>
+    <link>http://localhost:1313/about/</link>
+    <description>Développeur backend - La Réunion</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr-fr</language><atom:link href="http://localhost:1313/about/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

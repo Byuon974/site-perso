@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+    <title>Chgrp | Thomas | Développeur Backend</title>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+<meta name="theme-color" content="#f8f4e3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1f2738" media="(prefers-color-scheme: dark)" />
+<meta name="author" content="Thomas" />
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+
+
+<meta name="description" content="Commandes pour gérer les perms." />
+
+
+
+<meta property="og:title" content="Chgrp" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/notes/chgrp/" />
+<meta property="og:description" content="Commandes pour gérer les perms." />
+
+
+
+<meta property="article:author" content="Thomas" />
+
+<meta property="article:modified_time" content="2025-10-20" />
+
+
+
+<link rel="canonical" href="http://localhost:1313/notes/chgrp/" />
+<link rel="sitemap" href="/sitemap.xml" />
+<link rel="icon" type="image/png" href="/favicon.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/favicon-192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<link rel="alternate" type="application/rss+xml" title="Thomas | Développeur Backend" href="/index.xml" />
+
+
+<link rel="stylesheet" href="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.css" />
+<link rel="stylesheet" href="/css/style.css" />
+<link rel="stylesheet" href="/css/portfolio.css" />
+
+  </head>
+  <body>
+    <div class="layout">
+      
+      <aside class="sidebar" id="sidebar" aria-label="Navigation">
+        <div class="sidebar-inner">
+          
+          
+          <div class="sidebar-current">
+            <span class="sidebar-label">current</span>
+            <span class="sidebar-current-title">Chgrp</span>
+          </div>
+          
+
+          
+          
+          
+          
+          <nav class="sidebar-toc">
+            <span class="sidebar-label">contents</span>
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#finalité-et-périmètre-dapplication">Finalité et Périmètre d&rsquo;Application</a></li>
+    <li><a href="#principes-fondamentaux">Principes Fondamentaux</a></li>
+    <li><a href="#opérations-standard-et-procédures-courantes">Opérations Standard et Procédures Courantes</a></li>
+    <li><a href="#arbre-de-diagnostic-rapide">Arbre de Diagnostic Rapide</a></li>
+    <li><a href="#problèmes-connus-et-contournements">Problèmes Connus et Contournements</a></li>
+    <li><a href="#protocole-durgence">Protocole d&rsquo;Urgence</a></li>
+    <li><a href="#processus-de-rétablissement">Processus de Rétablissement</a></li>
+    <li><a href="#points-clés-à-retenir">Points Clés à Retenir</a></li>
+  </ul>
+</nav>
+          </nav>
+          
+          
+
+          
+          <nav class="sidebar-nav">
+            <span class="sidebar-label">explore</span>
+            <ul>
+              <li><a href="/">Accueil</a></li>
+              <li><a href="/projets/">Projets</a></li>
+              <li><a href="/blog/">Blog</a></li>
+              <li><a href="/notes/" class="active">Notes</a></li>
+              <li><a href="/about/">À propos</a></li>
+            </ul>
+          </nav>
+
+          
+          <div class="sidebar-footer">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Basculer le mode">
+              🌙
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      
+      <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+      
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="sidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      
+      <main class="main-content" id="content">
+        
+        <header class="main-header">
+          <a href="/" class="main-header-logo">
+            <img src="/favicon-192.png" alt="Logo" />
+            <span>nexus<span class="sep">-</span>tvs</span>
+          </a>
+        </header>
+
+        
+<article class="note-single prose">
+  <nav class="breadcrumbs" aria-label="Fil d'Ariane">
+  <ol>
+    <li><a href="/">Accueil</a></li>
+    <li><a href="/notes/">Notes</a></li>
+    <li aria-current="page">Chgrp</li>
+  </ol>
+</nav>
+
+
+  <header class="note-single-header">
+    
+    <div class="note-single-tags">
+      
+      <span class="note-tag">#tty</span>
+      
+      <span class="note-tag">#devops</span>
+      
+      <span class="note-tag">#cli</span>
+      
+    </div>
+    
+
+    <h1>Chgrp</h1>
+    
+    
+    <p class="note-single-description">Commandes pour gérer les perms.</p>
+    
+    
+    <div class="note-single-meta">
+      
+      <span>Mis à jour : 20 janvier 2025</span>
+      
+      <span class="meta-sep">·</span>
+      <span class="reading-time">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  5 min de lecture
+</span>
+
+    </div>
+  </header>
+
+  <section class="note-single-body prose-content" id="post-body">
+    <h2 id="finalité-et-périmètre-dapplication">Finalité et Périmètre d&rsquo;Application</h2>
+<p><em>Commande système fondamentale pour modifier le groupe propriétaire de fichiers et répertoires sous Linux/Unix.</em>
+<em>Couvre : syntaxe de base, options de récursivité et de gestion des liens symboliques, intégration dans des scripts, et dépannage des erreurs de permissions.</em></p>
+<hr>
+<h2 id="principes-fondamentaux">Principes Fondamentaux</h2>
+<h3 id="modèle-mental--contrôle-daccès-par-groupe">Modèle Mental : Contrôle d&rsquo;Accès par Groupe</h3>
+<p><code>chgrp</code> est l&rsquo;outil spécialisé pour ajuster la composante &ldquo;groupe&rdquo; des permissions Unix. Il permet de gérer les droits d&rsquo;accès collectifs, essentiels pour la collaboration et la sécurité dans un environnement multi-utilisateurs.</p>
+<h3 id="état-et-localisation-des-métadonnées">État et Localisation des Métadonnées</h3>
+<ul>
+<li><strong>Métadonnées de groupe</strong> : Stockées dans l&rsquo;inœud (<em>inode</em>) du fichier, visible via <code>ls -l</code>.</li>
+<li><strong>Base de données des groupes</strong> : Les groupes systèmes sont définis dans <code>/etc/group</code>. Un groupe doit y exister pour être assigné.</li>
+<li><strong>Permissions d&rsquo;exécution</strong> : Pour modifier le groupe, vous devez être le propriétaire du fichier <strong>ET</strong> membre du groupe cible, ou agir en tant que <code>root</code>/<code>sudo</code>.</li>
+</ul>
+<h3 id="contraintes-et-invariants">Contraintes et Invariants</h3>
+<ul>
+<li><code>chgrp</code> ne modifie <strong>que</strong> le groupe, jamais le propriétaire utilisateur (contrairement à <code>chown</code>).</li>
+<li>L&rsquo;opération est soumise aux mêmes vérifications de permissions que toute modification du système de fichiers.</li>
+<li>Les changements sont immédiats et ne nécessitent pas de redémarrage de service.</li>
+</ul>
+<blockquote>
+<p><strong>Règle d&rsquo;or de sécurité :</strong> Utilisez toujours le principe du moindre privilège. Avant d&rsquo;assigner un groupe, demandez-vous si tous ses membres ont besoin de l&rsquo;accès que les permissions actuelles (ou planifiées) accordent.</p>
+</blockquote>
+<hr>
+<h2 id="opérations-standard-et-procédures-courantes">Opérations Standard et Procédures Courantes</h2>
+<h3 id="1-modification-basique-et-vérification">1. Modification Basique et Vérification</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Changer le groupe d&#39;un seul fichier</span>
+</span></span><span style="display:flex;"><span>sudo chgrp developers projet/script.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Vérification immédiate avec ls</span>
+</span></span><span style="display:flex;"><span>ls -l projet/script.py
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># -rw-r--r-- 1 alice developers 1234 Jan 15 10:00 script.py</span>
+</span></span></code></pre></div><p><strong>Résultat attendu :</strong> La colonne du groupe affichée par <code>ls -l</code> montre le nouveau groupe (<code>developers</code>).</p>
+<h3 id="2-application-récurrente-sur-une-arborescence">2. Application Récurrente sur une Arborescence</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Appliquer un groupe à un répertoire et tout son contenu</span>
+</span></span><span style="display:flex;"><span>sudo chgrp -R www-data /var/www/mon_site/
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Combiner avec le mode verbeux pour un suivi</span>
+</span></span><span style="display:flex;"><span>sudo chgrp -Rv backup /srv/archive/
+</span></span></code></pre></div><p><strong>Résultat attendu :</strong> Tous les fichiers et sous-répertoires héritent du groupe <code>www-data</code>. L&rsquo;option <code>-v</code> liste chaque changement.</p>
+<h3 id="3-gestion-des-liens-symboliques">3. Gestion des Liens Symboliques</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Par défaut : modifie le groupe de la CIBLE du lien</span>
+</span></span><span style="display:flex;"><span>sudo chgrp operators /opt/lien_vers_log -&gt; <span style="color:#f92672">(</span>modifie la cible<span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Pour modifier le groupe du LIEN SYMBOLIQUE lui-même</span>
+</span></span><span style="display:flex;"><span>sudo chgrp -h operators /opt/lien_vers_log
+</span></span></code></pre></div><p><strong>Résultat attendu :</strong> Utiliser <code>ls -l</code> montre le groupe du lien symbolique modifié, tandis que <code>ls -lL</code> (pour suivre le lien) montre le groupe de la cible.</p>
+<h3 id="4-utilisation-dans-un-script-avec-validation">4. Utilisation dans un Script avec Validation</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e">#!/usr/bin/env bash
+</span></span></span><span style="display:flex;"><span>TARGET_DIR<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;/data/project_alpha&#34;</span>
+</span></span><span style="display:flex;"><span>TARGET_GROUP<span style="color:#f92672">=</span><span style="color:#e6db74">&#34;analysts&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Validation critique : le groupe existe-t-il ?</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> ! getent group <span style="color:#e6db74">&#34;</span>$TARGET_GROUP<span style="color:#e6db74">&#34;</span> &gt; /dev/null; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;ERREUR: Le groupe &#39;</span>$TARGET_GROUP<span style="color:#e6db74">&#39; n&#39;existe pas.&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span>    exit <span style="color:#ae81ff">1</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Exécution sécurisée et verbose</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">if</span> sudo chgrp -Rcv <span style="color:#e6db74">&#34;</span>$TARGET_GROUP<span style="color:#e6db74">&#34;</span> <span style="color:#e6db74">&#34;</span>$TARGET_DIR<span style="color:#e6db74">&#34;</span>; <span style="color:#66d9ef">then</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Succès : Groupe modifié pour </span>$TARGET_DIR<span style="color:#e6db74">&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">else</span>
+</span></span><span style="display:flex;"><span>    echo <span style="color:#e6db74">&#34;Échec : Vérifiez les permissions et les chemins.&#34;</span> &gt;&amp;<span style="color:#ae81ff">2</span>
+</span></span><span style="display:flex;"><span><span style="color:#66d9ef">fi</span>
+</span></span></code></pre></div><hr>
+<h2 id="arbre-de-diagnostic-rapide">Arbre de Diagnostic Rapide</h2>
+<h3 id="operation-not-permitted"><code>Operation not permitted</code></h3>
+<p><strong>Causes</strong></p>
+<ul>
+<li>Pas de droits <code>sudo</code></li>
+<li>Vous n’êtes pas propriétaire du fichier</li>
+<li>Groupe incorrect</li>
+</ul>
+<p><strong>Actions</strong></p>
+<ul>
+<li>Utiliser <code>sudo</code></li>
+<li>Vérifier avec <code>ls -l</code></li>
+<li>Vérifier avec <code>groups</code></li>
+</ul>
+<hr>
+<h3 id="invalid-group-nom"><code>invalid group: 'nom'</code></h3>
+<p><strong>Cause</strong></p>
+<ul>
+<li>Groupe absent de <code>/etc/group</code></li>
+</ul>
+<p><strong>Action</strong></p>
+<ul>
+<li><code>sudo groupadd nom</code></li>
+<li><code>getent group</code></li>
+</ul>
+<hr>
+<h3 id="cannot-dereference-lien"><code>cannot dereference 'lien'</code></h3>
+<p><strong>Cause</strong></p>
+<ul>
+<li>Lien symbolique protégé (<code>protected_symlinks</code>)</li>
+</ul>
+<p><strong>Action</strong></p>
+<ul>
+<li>Utiliser <code>-h</code></li>
+<li>Vérifier les droits de la cible</li>
+</ul>
+<hr>
+<h3 id="changements-non-persistants">Changements non persistants</h3>
+<p><strong>Cause</strong></p>
+<ul>
+<li>NFS / AFS ou régénération automatique</li>
+</ul>
+<p><strong>Action</strong></p>
+<ul>
+<li>Vérifier les montages</li>
+<li>Inspecter le processus gestionnaire</li>
+</ul>
+<hr>
+<h2 id="problèmes-connus-et-contournements">Problèmes Connus et Contournements</h2>
+<ul>
+<li>
+<p><strong>Problème : Attribution involontaire via des liens symboliques en mode récursif.</strong></p>
+<ul>
+<li><strong>Contournement :</strong> Utilisez <code>-P</code> (par défaut) ou <code>-H</code> au lieu de <code>-L</code> avec <code>-R</code>. Testez d&rsquo;abord avec <code>-v</code> pour voir quels fichiers seraient touchés.</li>
+<li><strong>Cause Racine :</strong> L&rsquo;option <code>-RL</code> fait suivre tous les liens symboliques, pouvant conduire à modifier des fichiers en dehors de l&rsquo;arborescence prévue.</li>
+</ul>
+</li>
+<li>
+<p><strong>Problème : Héritage de groupe indésirable après <code>cp -p</code>.</strong></p>
+<ul>
+<li><strong>Contournement :</strong> La copie avec <code>-p</code> préserve le groupe. Soit utilisez <code>cp</code> sans <code>-p</code>, soit exécutez <code>chgrp</code> après la copie pour corriger le groupe.</li>
+<li><strong>Cause Racine :</strong> Le comportement de préservation (<code>-p</code>) de <code>cp</code> est conçu pour la fidélité, pas pour l&rsquo;adaptation au contexte cible.</li>
+</ul>
+</li>
+<li>
+<p><strong>Problème : L&rsquo;utilisateur est propriétaire mais ne peut pas assigner à un groupe.</strong></p>
+<ul>
+<li><strong>Contournement :</strong> L&rsquo;utilisateur doit d&rsquo;abord être ajouté au groupe cible avec <code>sudo usermod -aG groupe_cible $USER</code>. Une nouvelle session est nécessaire.</li>
+<li><strong>Cause Racine :</strong> Politique de sécurité standard : un utilisateur ne peut assigner un fichier qu&rsquo;à un groupe dont il est membre.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="protocole-durgence">Protocole d&rsquo;Urgence</h2>
+<ol>
+<li>
+<p><strong>Action Immédiate : Arrêter la Modification.</strong></p>
+<ul>
+<li>Si vous avez lancé un <code>chgrp -R</code> sur un mauvais chemin, interrompez-le immédiatement avec <strong><code>Ctrl + C</code></strong>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Préservation : Évaluer l&rsquo;Étendue des Dégâts.</strong></p>
+<ul>
+<li>Identifiez le point de départ de la commande erronée et le groupe assigné.</li>
+<li>Utilisez <code>find</code> pour lister récursivement tous les fichiers appartenant désormais à ce groupe depuis ce point :
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>find /chemin/errone -group mauvais_groupe -ls
+</span></span></code></pre></div></li>
+</ul>
+</li>
+<li>
+<p><strong>Investigation : Identifier la Cause et le Périmètre Exact.</strong></p>
+<ul>
+<li>Consultez l&rsquo;historique des commandes (<code>history</code>) pour obtenir la commande <code>chgrp</code> exacte utilisée.</li>
+<li>Vérifiez si des services critiques (web, base de données) utilisant des groupes spécifiques (<code>www-data</code>, <code>postgres</code>) ont été affectés et présentent des erreurs d&rsquo;accès.</li>
+</ul>
+</li>
+</ol>
+<hr>
+<h2 id="processus-de-rétablissement">Processus de Rétablissement</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Prérequis :</strong> Avoir une liste fiable des permissions d&rsquo;origine ou un point de référence (backup, snapshot, autre serveur).</li>
+<li><input disabled="" type="checkbox"> <strong>Étape 1 : Restauration Partielle des Services.</strong>
+<ul>
+<li>Remettez les groupes critiques pour les services système (ex: <code>/var/www/</code>, <code>/var/lib/postgresql</code>).</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span>sudo chgrp -R www-data /var/www/
+</span></span><span style="display:flex;"><span>sudo systemctl restart apache2
+</span></span></code></pre></div></li>
+<li><input disabled="" type="checkbox"> <strong>Étape 2 : Restauration Complète des Arborescences Utilisateurs.</strong>
+<ul>
+<li>Utilisez un script basé sur la liste générée par <code>find</code> et votre référence pour restaurer groupe par groupe.</li>
+</ul>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Exemple de correction ciblée</span>
+</span></span><span style="display:flex;"><span>sudo find /home/projets -group mauvais_groupe -exec chgrp bon_groupe <span style="color:#f92672">{}</span> <span style="color:#ae81ff">\;</span>
+</span></span></code></pre></div></li>
+<li><input disabled="" type="checkbox"> <strong>Validation :</strong> Vérifiez l&rsquo;intégrité.
+<ul>
+<li>Confirmez que les services redémarrés fonctionnent.</li>
+<li>Faites un échantillonnage avec <code>ls -lR</code> sur des répertoires clés pour vérifier que les groupes sont corrects.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="points-clés-à-retenir">Points Clés à Retenir</h2>
+<h3 id="sous-pression">Sous Pression</h3>
+<ul>
+<li><strong><code>Ctrl+C</code></strong> est votre premier réflexe pour arrêter un <code>chgrp -R</code> lancé par erreur.</li>
+<li>Pour diagnostiquer, <strong><code>find /path -group groupe_name</code></strong> est plus rapide que de parcourir manuellement l&rsquo;arborescence.</li>
+<li>La commande <strong><code>getent group</code></strong> confirme instantanément l&rsquo;existence d&rsquo;un groupe avant de l&rsquo;utiliser.</li>
+</ul>
+<h3 id="considérations-long-terme">Considérations Long Terme</h3>
+<ul>
+<li><strong>Portabilité des scripts :</strong> Préférez les <strong>GID numériques</strong> (<code>chgrp 1002 fichier</code>) dans les scripts pour les environnements où les noms de groupes pourraient différer (conteneurs, différents serveurs).</li>
+<li><strong>Audit et conformité :</strong> Documentez les changements de groupe sur les répertoires systèmes critiques. Un changement de groupe peut être une action de persistance pour un attaquant.</li>
+<li><strong>Alternative à <code>chgrp</code> :</strong> La commande <strong><code>chown :groupe fichier</code></strong> est fonctionnellement équivalente. Choisissez <code>chgrp</code> pour la clarté de l&rsquo;intention dans les scripts et l&rsquo;historique.</li>
+</ul>
+<h3 id="idées-fausses-à-éviter">Idées Fausses à Éviter</h3>
+<ul>
+<li><strong>&quot;<code>sudo</code> résout tous les problèmes de permission avec <code>chgrp</code>.&quot;</strong> Vrai pour les droits, mais <code>sudo</code> ne contourne pas la nécessité que le groupe cible existe.</li>
+<li><strong>&ldquo;Modifier le groupe d&rsquo;un lien avec <code>-h</code> change les droits d&rsquo;accès.&rdquo;</strong> Faux. Les droits d&rsquo;accès sont gouvernés par la <strong>cible</strong> du lien. Modifier le groupe du lien est une opération métadonnée rarement utile.</li>
+<li><strong>&quot;<code>chgrp -R</code> est sans danger sur des répertoires connus.&quot;</strong> Risqué. Des liens symboliques (<code>/tmp</code>, <code>/proc</code>) peuvent être présents et rediriger l&rsquo;opération vers des chemins sensibles.</li>
+</ul>
+
+  </section>
+
+  
+<aside class="related-posts">
+  <h3>Articles similaires</h3>
+  <ul>
+    <li>
+      <a href="http://localhost:1313/notes/chmod/">Chmod</a>
+      <span class="related-section">Notes</span>
+    </li>
+    <li>
+      <a href="http://localhost:1313/notes/cat/">Cat</a>
+      <span class="related-section">Notes</span>
+    </li>
+  </ul>
+</aside>
+
+  <footer class="note-single-footer">
+    <nav class="note-back">
+      <a href="/notes/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Toutes les notes
+      </a>
+    </nav>
+  </footer>
+</article>
+
+        <footer class="site-footer">
+  <div class="site-footer-inner">
+    <span class="site-footer-copy">
+      © 2026 Thomas
+    </span>
+    <nav class="site-footer-links">
+      <a href="/about/">À propos</a>
+      
+      <a href="mailto:contact@nexus-tvs.dev">Contact</a>
+      
+    </nav>
+  </div>
+</footer>
+
+      </main>
+    </div>
+    
+    <div id="fullscreen"></div>
+
+    <script src="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js"></script>
+    <script>littlefoot.littlefoot();</script>
+    <script src="/js/image-viewer.js"></script>
+    <script src="/js/theme-toggle.js"></script>
+    <script>
+      
+      (function() {
+        const toggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (!toggle || !sidebar || !overlay) return;
+
+        function openSidebar() {
+          sidebar.classList.add('open');
+          overlay.classList.add('visible');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', 'Fermer le menu');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('visible');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Ouvrir le menu');
+          document.body.style.overflow = '';
+        }
+
+        function toggleSidebar() {
+          if (sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        }
+
+        
+        toggle.addEventListener('click', toggleSidebar);
+
+        
+        overlay.addEventListener('click', closeSidebar);
+
+        
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+            closeSidebar();
+            toggle.focus();
+          }
+        });
+
+        
+        sidebar.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+              closeSidebar();
+            }
+          });
+        });
+
+        
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 768) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,6 +1,7 @@
 baseURL: "https://nexus-tvs.dev/"
 languageCode: "fr-fr"
 title: "Thomas | Développeur Backend"
+publishDir: "docs"
 
 # Désactiver les pages par défaut
 disableKinds:
