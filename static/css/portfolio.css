@@ -2084,3 +2084,22 @@ html[data-theme="dark"] .related-section {
   border-radius: 8px;
 }
 
+
+
+/* A11y: tags en <ul> */
+.blog-single-tags,
+.note-single-tags,
+.projet-single-tags,
+.default-single-tags{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.blog-single-tags li,
+.note-single-tags li,
+.projet-single-tags li,
+.default-single-tags li{
+  margin: 0;
+  padding: 0;
+}

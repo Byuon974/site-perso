@@ -1,50 +1,490 @@
-<!doctype html><html lang=fr><head><title>Cat | Thomas | Développeur Backend</title><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=theme-color content="#f8f4e3" media="(prefers-color-scheme: light)"><meta name=theme-color content="#1f2738" media="(prefers-color-scheme: dark)"><meta name=author content="Thomas"><link rel=preconnect href=https://fonts.googleapis.com><link rel=preconnect href=https://fonts.gstatic.com crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel=stylesheet><meta name=description content="Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte."><meta property="og:title" content="Cat"><meta property="og:type" content="article"><meta property="og:url" content="https://byuon974.github.io/site-perso/notes/cat/"><meta property="og:description" content="Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte."><meta property="article:author" content="Thomas"><meta property="article:modified_time" content="2025-01-31"><link rel=canonical href=https://byuon974.github.io/site-perso/notes/cat/><link rel=sitemap href=/sitemap.xml><link rel=icon type=image/png href=/site-perso/favicon.png sizes=32x32><link rel=icon type=image/png href=/site-perso/favicon-192.png sizes=192x192><link rel=apple-touch-icon href=/site-perso/apple-touch-icon.png><link rel=alternate type=application/rss+xml title="Thomas | Développeur Backend" href=/site-perso/index.xml><link rel=stylesheet href=https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.css><link rel=stylesheet href=/site-perso/css/style.css><link rel=stylesheet href=/site-perso/css/portfolio.css></head><body><div class=layout><aside class=sidebar id=sidebar aria-label=Navigation><div class=sidebar-inner><div class=sidebar-current><span class=sidebar-label>current</span>
-<span class=sidebar-current-title>Cat</span></div><nav class=sidebar-toc><span class=sidebar-label>contents</span><nav id=TableOfContents><ul><li><a href=#finalité-et-périmètre-dapplication>Finalité et Périmètre d&rsquo;Application</a></li><li><a href=#principes-fondamentaux>Principes Fondamentaux</a></li><li><a href=#opérations-standard>Opérations Standard</a></li><li><a href=#arbre-de-diagnostic-rapide>Arbre de Diagnostic Rapide</a></li><li><a href=#problèmes-connus-et-solutions>Problèmes Connus et Solutions</a></li><li><a href=#protocole-durgence>Protocole d&rsquo;Urgence</a></li><li><a href=#processus-de-rétablissement>Processus de Rétablissement</a></li><li><a href=#points-clés-à-retenir>Points Clés à Retenir</a></li></ul></nav></nav><nav class=sidebar-nav><span class=sidebar-label>explore</span><ul><li><a href=/>Accueil</a></li><li><a href=/projets/>Projets</a></li><li><a href=/blog/>Blog</a></li><li><a href=/notes/ class=active>Notes</a></li><li><a href=/about/>À propos</a></li></ul></nav><div class=sidebar-footer><button class=theme-toggle type=button data-theme-toggle aria-label="Basculer le mode">
-🌙</button></div></div></aside><div class=sidebar-overlay id=sidebar-overlay aria-hidden=true></div><button class=sidebar-toggle id=sidebar-toggle aria-label="Ouvrir le menu" aria-expanded=false aria-controls=sidebar>
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><main class=main-content id=content><header class=main-header><a href=/ class=main-header-logo><img src=/site-perso/favicon-192.png alt=Logo>
-<span>nexus<span class=sep>-</span>tvs</span></a></header><article class="note-single prose"><nav class=breadcrumbs aria-label="Fil d'Ariane"><ol><li><a href=/>Accueil</a></li><li><a href=/notes/>Notes</a></li><li aria-current=page>Cat</li></ol></nav><header class=note-single-header><div class=note-single-tags><span class=note-tag>#linux</span>
-<span class=note-tag>#cli</span>
-<span class=note-tag>#unix</span></div><h1>Cat</h1><p class=note-single-description>Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte.</p><div class=note-single-meta><span>Mis à jour : 31 janvier 2025</span>
-<span class=meta-sep>·</span>
-<span class=reading-time><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-5 min de lecture</span></div></header><section class="note-single-body prose-content" id=post-body><h2 id=finalité-et-périmètre-dapplication>Finalité et Périmètre d&rsquo;Application</h2><p><em>Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte en environnement Unix/Linux.</em>
-<em>Couvre les opérations de base, l&rsquo;intégration dans les pipelines shell, et clarifie quand l&rsquo;utiliser versus des alternatives modernes comme <code>bat</code>.</em></p><hr><h2 id=principes-fondamentaux>Principes Fondamentaux</h2><h3 id=modèle-mental--outil-de-base-et-de-composition>Modèle Mental : Outil de Base et de Composition</h3><p><code>cat</code> incarne la philosophie Unix de création d&rsquo;outils simples et spécialisés qui se combinent. Il n&rsquo;affiche pas, ne pagine pas, ne colore pas — il lit et écrit des octets.
-Sa puissance réside dans sa capacité à être le point de départ ou de liaison dans une chaîne de commandes.</p><h3 id=état-et-flux-de-données>État et Flux de Données</h3><ul><li><strong>Lecture seule</strong> : <code>cat</code> ne modifie jamais les fichiers sources.</li><li><strong>Flux d&rsquo;entrée/sortie</strong> : Il lit depuis des fichiers ou l&rsquo;entrée standard (stdin) et écrit sur la sortie standard (stdout), permettant les redirections (<code>></code>, <code>>></code>, <code>|</code>).</li><li><strong>Simplicité comme invariant</strong> : Son comportement est strictement prédictible, ce qui en fait un outil fiable pour les scripts automatisés.</li></ul><h3 id=contraintes-clés>Contraintes Clés</h3><ul><li>Conçu pour le texte. L&rsquo;affichage de fichiers binaires peut corrompre l&rsquo;affichage du terminal.</li><li>Affiche la totalité du contenu sans contrôle interactif (pas de défilement, retour en arrière).</li></ul><blockquote><p><strong>Règle fondamentale :</strong> Dans un script ou un pipeline automatisé, privilégiez toujours <code>cat</code> pour sa portabilité et son comportement prévisible. Pour une lecture interactive humaine, envisagez <code>bat</code> ou <code>less</code>.</p></blockquote><hr><h2 id=opérations-standard>Opérations Standard</h2><h3 id=1-affichage-basique-et-formatage>1. Affichage Basique et Formatage</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Afficher un fichier</span>
-</span></span><span style=display:flex><span>cat /etc/os-release
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Numéroter toutes les lignes (utile pour le débogage)</span>
-</span></span><span style=display:flex><span>cat -n script.py
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Numéroter uniquement les lignes non vides</span>
-</span></span><span style=display:flex><span>cat -b journal.log
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Rendre les caractères non imprimables visibles (tabulations, fins de ligne)</span>
-</span></span><span style=display:flex><span>cat -A fichier_etrange.txt
-</span></span></code></pre></div><h3 id=2-concaténation-et-création-de-fichiers>2. Concaténation et Création de Fichiers</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Fusionner deux fichiers en un nouveau</span>
-</span></span><span style=display:flex><span>cat en-tête.txt contenu.txt &gt; rapport_complet.txt
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Ajouter un fichier à la fin d&#39;un autre</span>
-</span></span><span style=display:flex><span>cat addendum.txt &gt;&gt; rapport_complet.txt
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Créer un fichier rapidement avec un &#34;here-document&#34;</span>
-</span></span><span style=display:flex><span>cat &gt; nouvelle_config.conf <span style=color:#e6db74>&lt;&lt;EOF
-</span></span></span><span style=display:flex><span><span style=color:#e6db74># Configuration générée le $(date)
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>paramètre=valeur
-</span></span></span><span style=display:flex><span><span style=color:#e6db74>EOF</span>
-</span></span></code></pre></div><h3 id=3-intégration-dans-les-pipelines>3. Intégration dans les Pipelines</h3><div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Alimenter un filtre comme grep</span>
-</span></span><span style=display:flex><span>cat journal_serveur.log | grep -i <span style=color:#e6db74>&#34;erreur&#34;</span>
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Transmettre du contenu à un outil de traitement (sed, awk, sort)</span>
-</span></span><span style=display:flex><span>cat liste.txt | sort | uniq
-</span></span><span style=display:flex><span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Lire depuis stdin puis concaténer avec un fichier</span>
-</span></span><span style=display:flex><span>curl -s http://example.com/data.txt | cat - local_template.txt &gt; sortie.txt
-</span></span></code></pre></div><p><strong>Résultat attendu :</strong> Flux de données propre et contrôlable, prêt pour un traitement ultérieur ou une redirection finale.</p><hr><h2 id=arbre-de-diagnostic-rapide>Arbre de Diagnostic Rapide</h2><table><thead><tr><th style=text-align:left>Symptôme</th><th style=text-align:left>Cause Probable</th><th style=text-align:left>Action Corrective</th></tr></thead><tbody><tr><td style=text-align:left><code>No such file or directory</code></td><td style=text-align:left>Chemin de fichier incorrect ou permissions de lecture manquantes.</td><td style=text-align:left>Vérifier le chemin avec <code>ls</code> et les permissions avec <code>ls -l</code>.</td></tr><tr><td style=text-align:left>Terminal affiche des caractères bizarres/<code>corrompu</code></td><td style=text-align:left>Affichage d&rsquo;un fichier binaire.</td><td style=text-align:left>Arrêter avec <code>Ctrl+C</code>, restaurer le terminal avec la commande <code>reset</code>.</td></tr><tr><td style=text-align:left>Commande <code>cat > fichier</code> ne se termine pas</td><td style=text-align:left>Attente de saisie sur l&rsquo;entrée standard.</td><td style=text-align:left>Saisir le contenu, puis terminer avec <strong><code>Ctrl+D</code></strong> (signal EOF).</td></tr><tr><td style=text-align:left>Fichier de sortie vide après <code>cat fichier > fichier</code></td><td style=text-align:left>La redirection <code>></code> écrase le fichier avant que <code>cat</code> ne le lise.</td><td style=text-align:left>Utiliser un fichier temporaire ou l&rsquo;outil <code>sponge</code>.</td></tr><tr><td style=text-align:left>Sortie trop longue et défile trop vite</td><td style=text-align:left>Fichier volumineux sans contrôle de pagination.</td><td style=text-align:left>Chaîner avec un paginateur : <code>cat long.log | less</code>.</td></tr></tbody></table><hr><h2 id=problèmes-connus-et-solutions>Problèmes Connus et Solutions</h2><ul><li><p><strong>Problème : Écrasement accidentel du fichier source.</strong></p><ul><li><strong>Solution :</strong> Ne jamais faire <code>cat fichier > fichier</code>. Utiliser <code>sponge</code> (du paquet <code>moreutils</code>) : <code>cat fichier \| sponge fichier</code>.</li><li><strong>Cause Racine :</strong> Le shell ouvre le fichier de destination en écriture (en le vidant) avant d&rsquo;exécuter la commande <code>cat</code>.</li></ul></li><li><p><strong>Problème : &ldquo;Useless Use of Cat&rdquo; (UUoC) — Utilisation redondante.</strong></p><ul><li><strong>Solution :</strong> Passer le fichier directement en argument à la commande suivante.<div class=highlight><pre tabindex=0 style=color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none><code class=language-bash data-lang=bash><span style=display:flex><span><span style=color:#75715e># Redondant : cat fichier.txt | grep &#34;motif&#34;</span>
-</span></span><span style=display:flex><span><span style=color:#75715e># Optimal : grep &#34;motif&#34; fichier.txt</span>
-</span></span></code></pre></div></li><li><strong>Cause Racine :</strong> Inefficacité inutile (création d&rsquo;un processus supplémentaire).</li></ul></li><li><p><strong>Problème : <code>cat</code> est basique pour une lecture interactive.</strong></p><ul><li><strong>Solution :</strong> Pour une lecture confortable, utiliser <code>bat</code> (coloration syntaxique, numéros de ligne, Git intégré) ou <code>less</code> (pagination).</li><li><strong>Cause Racine :</strong> <code>cat</code> est conçu pour la composition, pas pour l&rsquo;interaction.</li></ul></li></ul><hr><h2 id=protocole-durgence>Protocole d&rsquo;Urgence</h2><ol><li><strong>Action Immédiate :</strong> Si l&rsquo;affichage du terminal est corrompu par un fichier binaire, tapez immédiatement <strong><code>reset</code></strong> et appuyez sur Entrée. Cela restaure les paramètres normaux du terminal.</li><li><strong>Préservation :</strong> Si une mauvaise redirection a écrasé un fichier important, arrêtez toute écriture sur le disque concerné. Ne tentez pas de réécrire le fichier.</li><li><strong>Investigation :</strong> Vérifiez l&rsquo;historique des commandes (<code>history</code>) pour identifier la commande <code>cat</code> fautive et son contexte.
-Utilisez <code>ls -l</code> pour vérifier la taille et la date de modification du fichier endommagé.</li></ol><hr><h2 id=processus-de-rétablissement>Processus de Rétablissement</h2><ul><li><input disabled type=checkbox> <strong>Prérequis :</strong> Identifier le fichier source perdu et la dernière bonne sauvegarde ou version disponible (ex: via Git, snapshot, backup).</li><li><input disabled type=checkbox> <strong>Étape 1 :</strong> Restaurer le fichier depuis la source la plus récente (p. ex., <code>cp backup/fichier.cfg .</code>).</li><li><input disabled type=checkbox> <strong>Étape 2 :</strong> Remplacer la commande <code>cat</code> problématique par une commande sûre (utilisant <code>sponge</code> ou évitant la redirection sur le même fichier).</li><li><input disabled type=checkbox> <strong>Validation :</strong> Vérifier l&rsquo;intégrité du fichier restauré (par exemple, avec <code>cat -n fichier</code> pour voir son contenu) et s&rsquo;assurer que le script ou le processus fonctionne à nouveau.</li></ul><hr><h2 id=points-clés-à-retenir>Points Clés à Retenir</h2><h3 id=sous-pression>Sous Pression</h3><ul><li><strong><code>Ctrl+D</code></strong> envoie <code>EOF</code> (End-Of-File) et termine une saisie standard.</li><li><strong><code>reset</code></strong> est la bouée de sauvetage pour un terminal corrompu.</li><li>Dans un pipeline, <strong><code>cat</code></strong> est souvent superflu : passez le fichier directement en argument à <code>grep</code>, <code>sed</code>, etc.</li></ul><h3 id=considérations-long-terme>Considérations Long Terme</h3><ul><li><strong>Pour les scripts et l&rsquo;automatisation,</strong> la simplicité et la portabilité de <code>cat</code> sont inégalées. Ne le remplacez pas par <code>bat</code> dans ce contexte.</li><li><strong>Pour la lecture humaine interactive,</strong> adoptez des outils modernes comme <code>bat</code>,
-qui offre une expérience nettement supérieure sans sacrifier la compatibilité des pipelines (il se comporte comme <code>cat</code> quand sa sortie est redirigée).</li></ul><h3 id=idées-fausses-à-éviter>Idées Fausses à Éviter</h3><ul><li><strong>"<code>cat</code> est inutile."</strong> Faux. C&rsquo;est la brique de base idéale pour les flux de données dans les scripts.</li><li><strong>"<code>cat fichier</code> est la bonne façon de lire un fichier."</strong> C&rsquo;est la façon <em>basique</em>. Pour lire, préférez <code>less</code> (navigation) ou <code>bat</code> (enrichissement visuel).</li><li><strong>&ldquo;Il faut toujours utiliser <code>cat</code> avant un pipe.&rdquo;</strong> C&rsquo;est l&rsquo;erreur classique UUoC. Évaluez si la commande suivante peut lire le fichier directement.</li></ul><h3 id=tableau-de-décision--cat-vs-bat>Tableau de Décision : <code>cat</code> vs. <code>bat</code></h3><table><thead><tr><th style=text-align:left>Critère de Choix</th><th style=text-align:left>Outil Recommandé</th><th style=text-align:left>Raison</th></tr></thead><tbody><tr><td style=text-align:left><strong>Écrire un script shell portable</strong></td><td style=text-align:left><code>cat</code></td><td style=text-align:left>Présent partout, comportement universel.</td></tr><tr><td style=text-align:left><strong>Lire rapidement un fichier de configuration</strong></td><td style=text-align:left><code>bat</code></td><td style=text-align:left>Coloration syntaxique, en-têtes, plus lisible.</td></tr><tr><td style=text-align:left><strong>Concaténer des fichiers dans un pipeline</strong></td><td style=text-align:left><code>cat</code> ou <code>bat</code></td><td style=text-align:left>Les deux fonctionnent ; <code>bat</code> agit comme <code>cat</code> en mode non-interactif.</td></tr><tr><td style=text-align:left><strong>Suivre les ajouts à un fichier log (<code>tail -f</code>)</strong></td><td style=text-align:left><code>cat</code> ou <code>bat --paging=never</code></td><td style=text-align:left>Simplicité et fiabilité.</td></tr><tr><td style=text-align:left><strong>Explorer un code source inconnu</strong></td><td style=text-align:left><code>bat</code></td><td style=text-align:left>Numéros de ligne, intégration Git, navigation facilitée.</td></tr></tbody></table></section><aside class=related-posts><h3>Articles similaires</h3><ul><li><a href=https://byuon974.github.io/site-perso/notes/chgrp/>Chgrp</a>
-<span class=related-section>Notes</span></li><li><a href=https://byuon974.github.io/site-perso/notes/chmod/>Chmod</a>
-<span class=related-section>Notes</span></li></ul></aside><footer class=note-single-footer><nav class=note-back><a href=/notes/><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
-Toutes les notes</a></nav></footer></article><footer class=site-footer><div class=site-footer-inner><span class=site-footer-copy>© 2026 Thomas</span><nav class=site-footer-links><a href=/about/>À propos</a>
-<a href=mailto:contact@nexus-tvs.dev>Contact</a></nav></div></footer></main></div><div id=fullscreen></div><script src=https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js></script><script>littlefoot.littlefoot()</script><script src=/site-perso/js/image-viewer.js></script><script src=/site-perso/js/theme-toggle.js></script><script>(function(){const e=document.getElementById("sidebar-toggle"),t=document.getElementById("sidebar"),n=document.getElementById("sidebar-overlay");if(!e||!t||!n)return;function o(){t.classList.add("open"),n.classList.add("visible"),e.setAttribute("aria-expanded","true"),e.setAttribute("aria-label","Fermer le menu"),document.body.style.overflow="hidden"}function s(){t.classList.remove("open"),n.classList.remove("visible"),e.setAttribute("aria-expanded","false"),e.setAttribute("aria-label","Ouvrir le menu"),document.body.style.overflow=""}function i(){t.classList.contains("open")?s():o()}e.addEventListener("click",i),n.addEventListener("click",s),document.addEventListener("keydown",n=>{n.key==="Escape"&&t.classList.contains("open")&&(s(),e.focus())}),t.querySelectorAll("a").forEach(e=>{e.addEventListener("click",()=>{window.innerWidth<=768&&s()})}),window.addEventListener("resize",()=>{window.innerWidth>768&&(t.classList.remove("open"),n.classList.remove("visible"),document.body.style.overflow="",e.setAttribute("aria-expanded","false"))})})()</script></body></html>
+<!DOCTYPE html>
+<html lang="fr">
+  <head><script src="/site-perso/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=site-perso/livereload" data-no-instant defer></script>
+    <title>Cat | Thomas | Développeur Backend</title>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+<meta name="theme-color" content="#f8f4e3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1f2738" media="(prefers-color-scheme: dark)" />
+<meta name="author" content="Thomas" />
+
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+
+
+<meta name="description" content="Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte." />
+
+
+
+<meta property="og:title" content="Cat" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/site-perso/notes/cat/" />
+<meta property="og:description" content="Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte." />
+
+
+
+<meta property="article:author" content="Thomas" />
+
+<meta property="article:modified_time" content="2025-01-31" />
+
+
+
+<link rel="canonical" href="http://localhost:1313/site-perso/notes/cat/" />
+<link rel="sitemap" href="/sitemap.xml" />
+<link rel="icon" type="image/png" href="/site-perso/favicon.png" sizes="32x32" />
+<link rel="icon" type="image/png" href="/site-perso/favicon-192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="/site-perso/apple-touch-icon.png" />
+<link rel="alternate" type="application/rss+xml" title="Thomas | Développeur Backend" href="/site-perso/index.xml" />
+
+
+<link rel="stylesheet" href="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.css" />
+<link rel="stylesheet" href="/site-perso/css/style.css" />
+<link rel="stylesheet" href="/site-perso/css/portfolio.css" />
+
+  </head>
+  <body>
+    <div class="layout">
+      
+      <aside class="sidebar" id="sidebar" aria-label="Navigation">
+        <div class="sidebar-inner">
+          
+          
+          <div class="sidebar-current">
+            <span class="sidebar-label">current</span>
+            <span class="sidebar-current-title">Cat</span>
+          </div>
+          
+
+          
+          
+          
+          
+          <nav class="sidebar-toc">
+            <span class="sidebar-label">contents</span>
+            <nav id="TableOfContents">
+  <ul>
+    <li><a href="#finalité-et-périmètre-dapplication">Finalité et Périmètre d&rsquo;Application</a></li>
+    <li><a href="#principes-fondamentaux">Principes Fondamentaux</a></li>
+    <li><a href="#opérations-standard">Opérations Standard</a></li>
+    <li><a href="#arbre-de-diagnostic-rapide">Arbre de Diagnostic Rapide</a></li>
+    <li><a href="#problèmes-connus-et-solutions">Problèmes Connus et Solutions</a></li>
+    <li><a href="#protocole-durgence">Protocole d&rsquo;Urgence</a></li>
+    <li><a href="#processus-de-rétablissement">Processus de Rétablissement</a></li>
+    <li><a href="#points-clés-à-retenir">Points Clés à Retenir</a></li>
+  </ul>
+</nav>
+          </nav>
+          
+          
+
+          
+          <nav class="sidebar-nav">
+            <span class="sidebar-label">explore</span>
+            <ul>
+              <li><a href="/">Accueil</a></li>
+              <li><a href="/projets/">Projets</a></li>
+              <li><a href="/blog/">Blog</a></li>
+              <li><a href="/notes/" class="active">Notes</a></li>
+              <li><a href="/about/">À propos</a></li>
+            </ul>
+          </nav>
+
+          
+          <div class="sidebar-footer">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Basculer le mode">
+              🌙
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      
+      <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+      
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="sidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      
+      <main class="main-content" id="content">
+        
+        <header class="main-header">
+          <a href="/" class="main-header-logo">
+            <img src="/site-perso/favicon-192.png" alt="Logo" />
+            <span>nexus<span class="sep">-</span>tvs</span>
+          </a>
+        </header>
+
+        
+<article class="note-single prose">
+  <nav class="breadcrumbs" aria-label="Fil d'Ariane">
+  <ol>
+    <li><a href="/">Accueil</a></li>
+    <li><a href="/notes/">Notes</a></li>
+    <li aria-current="page">Cat</li>
+  </ol>
+</nav>
+
+
+  <header class="note-single-header">
+    
+    <div class="note-single-tags">
+      
+      <span class="note-tag">#linux</span>
+      
+      <span class="note-tag">#cli</span>
+      
+      <span class="note-tag">#unix</span>
+      
+    </div>
+    
+
+    <h1>Cat</h1>
+    
+    
+    <p class="note-single-description">Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte.</p>
+    
+    
+    <div class="note-single-meta">
+      
+      <span>Mis à jour : 31 janvier 2025</span>
+      
+      <span class="meta-sep">·</span>
+      <span class="reading-time">
+  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+  5 min de lecture
+</span>
+
+    </div>
+  </header>
+
+  <section class="note-single-body prose-content" id="post-body">
+    <h2 id="finalité-et-périmètre-dapplication">Finalité et Périmètre d&rsquo;Application</h2>
+<p><em>Commande fondamentale pour la lecture, la concaténation et la redirection de fichiers texte en environnement Unix/Linux.</em>
+<em>Couvre les opérations de base, l&rsquo;intégration dans les pipelines shell, et clarifie quand l&rsquo;utiliser versus des alternatives modernes comme <code>bat</code>.</em></p>
+<hr>
+<h2 id="principes-fondamentaux">Principes Fondamentaux</h2>
+<h3 id="modèle-mental--outil-de-base-et-de-composition">Modèle Mental : Outil de Base et de Composition</h3>
+<p><code>cat</code> incarne la philosophie Unix de création d&rsquo;outils simples et spécialisés qui se combinent. Il n&rsquo;affiche pas, ne pagine pas, ne colore pas — il lit et écrit des octets.
+Sa puissance réside dans sa capacité à être le point de départ ou de liaison dans une chaîne de commandes.</p>
+<h3 id="état-et-flux-de-données">État et Flux de Données</h3>
+<ul>
+<li><strong>Lecture seule</strong> : <code>cat</code> ne modifie jamais les fichiers sources.</li>
+<li><strong>Flux d&rsquo;entrée/sortie</strong> : Il lit depuis des fichiers ou l&rsquo;entrée standard (stdin) et écrit sur la sortie standard (stdout), permettant les redirections (<code>&gt;</code>, <code>&gt;&gt;</code>, <code>|</code>).</li>
+<li><strong>Simplicité comme invariant</strong> : Son comportement est strictement prédictible, ce qui en fait un outil fiable pour les scripts automatisés.</li>
+</ul>
+<h3 id="contraintes-clés">Contraintes Clés</h3>
+<ul>
+<li>Conçu pour le texte. L&rsquo;affichage de fichiers binaires peut corrompre l&rsquo;affichage du terminal.</li>
+<li>Affiche la totalité du contenu sans contrôle interactif (pas de défilement, retour en arrière).</li>
+</ul>
+<blockquote>
+<p><strong>Règle fondamentale :</strong> Dans un script ou un pipeline automatisé, privilégiez toujours <code>cat</code> pour sa portabilité et son comportement prévisible. Pour une lecture interactive humaine, envisagez <code>bat</code> ou <code>less</code>.</p>
+</blockquote>
+<hr>
+<h2 id="opérations-standard">Opérations Standard</h2>
+<h3 id="1-affichage-basique-et-formatage">1. Affichage Basique et Formatage</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Afficher un fichier</span>
+</span></span><span style="display:flex;"><span>cat /etc/os-release
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Numéroter toutes les lignes (utile pour le débogage)</span>
+</span></span><span style="display:flex;"><span>cat -n script.py
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Numéroter uniquement les lignes non vides</span>
+</span></span><span style="display:flex;"><span>cat -b journal.log
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Rendre les caractères non imprimables visibles (tabulations, fins de ligne)</span>
+</span></span><span style="display:flex;"><span>cat -A fichier_etrange.txt
+</span></span></code></pre></div><h3 id="2-concaténation-et-création-de-fichiers">2. Concaténation et Création de Fichiers</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Fusionner deux fichiers en un nouveau</span>
+</span></span><span style="display:flex;"><span>cat en-tête.txt contenu.txt &gt; rapport_complet.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Ajouter un fichier à la fin d&#39;un autre</span>
+</span></span><span style="display:flex;"><span>cat addendum.txt &gt;&gt; rapport_complet.txt
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Créer un fichier rapidement avec un &#34;here-document&#34;</span>
+</span></span><span style="display:flex;"><span>cat &gt; nouvelle_config.conf <span style="color:#e6db74">&lt;&lt;EOF
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74"># Configuration générée le $(date)
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">paramètre=valeur
+</span></span></span><span style="display:flex;"><span><span style="color:#e6db74">EOF</span>
+</span></span></code></pre></div><h3 id="3-intégration-dans-les-pipelines">3. Intégration dans les Pipelines</h3>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Alimenter un filtre comme grep</span>
+</span></span><span style="display:flex;"><span>cat journal_serveur.log | grep -i <span style="color:#e6db74">&#34;erreur&#34;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Transmettre du contenu à un outil de traitement (sed, awk, sort)</span>
+</span></span><span style="display:flex;"><span>cat liste.txt | sort | uniq
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Lire depuis stdin puis concaténer avec un fichier</span>
+</span></span><span style="display:flex;"><span>curl -s http://example.com/data.txt | cat - local_template.txt &gt; sortie.txt
+</span></span></code></pre></div><p><strong>Résultat attendu :</strong> Flux de données propre et contrôlable, prêt pour un traitement ultérieur ou une redirection finale.</p>
+<hr>
+<h2 id="arbre-de-diagnostic-rapide">Arbre de Diagnostic Rapide</h2>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Symptôme</th>
+          <th style="text-align: left">Cause Probable</th>
+          <th style="text-align: left">Action Corrective</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><code>No such file or directory</code></td>
+          <td style="text-align: left">Chemin de fichier incorrect ou permissions de lecture manquantes.</td>
+          <td style="text-align: left">Vérifier le chemin avec <code>ls</code> et les permissions avec <code>ls -l</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">Terminal affiche des caractères bizarres/<code>corrompu</code></td>
+          <td style="text-align: left">Affichage d&rsquo;un fichier binaire.</td>
+          <td style="text-align: left">Arrêter avec <code>Ctrl+C</code>, restaurer le terminal avec la commande <code>reset</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">Commande <code>cat &gt; fichier</code> ne se termine pas</td>
+          <td style="text-align: left">Attente de saisie sur l&rsquo;entrée standard.</td>
+          <td style="text-align: left">Saisir le contenu, puis terminer avec <strong><code>Ctrl+D</code></strong> (signal EOF).</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">Fichier de sortie vide après <code>cat fichier &gt; fichier</code></td>
+          <td style="text-align: left">La redirection <code>&gt;</code> écrase le fichier avant que <code>cat</code> ne le lise.</td>
+          <td style="text-align: left">Utiliser un fichier temporaire ou l&rsquo;outil <code>sponge</code>.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">Sortie trop longue et défile trop vite</td>
+          <td style="text-align: left">Fichier volumineux sans contrôle de pagination.</td>
+          <td style="text-align: left">Chaîner avec un paginateur : <code>cat long.log | less</code>.</td>
+      </tr>
+  </tbody>
+</table>
+<hr>
+<h2 id="problèmes-connus-et-solutions">Problèmes Connus et Solutions</h2>
+<ul>
+<li>
+<p><strong>Problème : Écrasement accidentel du fichier source.</strong></p>
+<ul>
+<li><strong>Solution :</strong> Ne jamais faire <code>cat fichier &gt; fichier</code>. Utiliser <code>sponge</code> (du paquet <code>moreutils</code>) : <code>cat fichier \| sponge fichier</code>.</li>
+<li><strong>Cause Racine :</strong> Le shell ouvre le fichier de destination en écriture (en le vidant) avant d&rsquo;exécuter la commande <code>cat</code>.</li>
+</ul>
+</li>
+<li>
+<p><strong>Problème : &ldquo;Useless Use of Cat&rdquo; (UUoC) — Utilisation redondante.</strong></p>
+<ul>
+<li><strong>Solution :</strong> Passer le fichier directement en argument à la commande suivante.
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;-webkit-text-size-adjust:none;"><code class="language-bash" data-lang="bash"><span style="display:flex;"><span><span style="color:#75715e"># Redondant : cat fichier.txt | grep &#34;motif&#34;</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Optimal : grep &#34;motif&#34; fichier.txt</span>
+</span></span></code></pre></div></li>
+<li><strong>Cause Racine :</strong> Inefficacité inutile (création d&rsquo;un processus supplémentaire).</li>
+</ul>
+</li>
+<li>
+<p><strong>Problème : <code>cat</code> est basique pour une lecture interactive.</strong></p>
+<ul>
+<li><strong>Solution :</strong> Pour une lecture confortable, utiliser <code>bat</code> (coloration syntaxique, numéros de ligne, Git intégré) ou <code>less</code> (pagination).</li>
+<li><strong>Cause Racine :</strong> <code>cat</code> est conçu pour la composition, pas pour l&rsquo;interaction.</li>
+</ul>
+</li>
+</ul>
+<hr>
+<h2 id="protocole-durgence">Protocole d&rsquo;Urgence</h2>
+<ol>
+<li><strong>Action Immédiate :</strong> Si l&rsquo;affichage du terminal est corrompu par un fichier binaire, tapez immédiatement <strong><code>reset</code></strong> et appuyez sur Entrée. Cela restaure les paramètres normaux du terminal.</li>
+<li><strong>Préservation :</strong> Si une mauvaise redirection a écrasé un fichier important, arrêtez toute écriture sur le disque concerné. Ne tentez pas de réécrire le fichier.</li>
+<li><strong>Investigation :</strong> Vérifiez l&rsquo;historique des commandes (<code>history</code>) pour identifier la commande <code>cat</code> fautive et son contexte.
+Utilisez <code>ls -l</code> pour vérifier la taille et la date de modification du fichier endommagé.</li>
+</ol>
+<hr>
+<h2 id="processus-de-rétablissement">Processus de Rétablissement</h2>
+<ul>
+<li><input disabled="" type="checkbox"> <strong>Prérequis :</strong> Identifier le fichier source perdu et la dernière bonne sauvegarde ou version disponible (ex: via Git, snapshot, backup).</li>
+<li><input disabled="" type="checkbox"> <strong>Étape 1 :</strong> Restaurer le fichier depuis la source la plus récente (p. ex., <code>cp backup/fichier.cfg .</code>).</li>
+<li><input disabled="" type="checkbox"> <strong>Étape 2 :</strong> Remplacer la commande <code>cat</code> problématique par une commande sûre (utilisant <code>sponge</code> ou évitant la redirection sur le même fichier).</li>
+<li><input disabled="" type="checkbox"> <strong>Validation :</strong> Vérifier l&rsquo;intégrité du fichier restauré (par exemple, avec <code>cat -n fichier</code> pour voir son contenu) et s&rsquo;assurer que le script ou le processus fonctionne à nouveau.</li>
+</ul>
+<hr>
+<h2 id="points-clés-à-retenir">Points Clés à Retenir</h2>
+<h3 id="sous-pression">Sous Pression</h3>
+<ul>
+<li><strong><code>Ctrl+D</code></strong> envoie <code>EOF</code> (End-Of-File) et termine une saisie standard.</li>
+<li><strong><code>reset</code></strong> est la bouée de sauvetage pour un terminal corrompu.</li>
+<li>Dans un pipeline, <strong><code>cat</code></strong> est souvent superflu : passez le fichier directement en argument à <code>grep</code>, <code>sed</code>, etc.</li>
+</ul>
+<h3 id="considérations-long-terme">Considérations Long Terme</h3>
+<ul>
+<li><strong>Pour les scripts et l&rsquo;automatisation,</strong> la simplicité et la portabilité de <code>cat</code> sont inégalées. Ne le remplacez pas par <code>bat</code> dans ce contexte.</li>
+<li><strong>Pour la lecture humaine interactive,</strong> adoptez des outils modernes comme <code>bat</code>,
+qui offre une expérience nettement supérieure sans sacrifier la compatibilité des pipelines (il se comporte comme <code>cat</code> quand sa sortie est redirigée).</li>
+</ul>
+<h3 id="idées-fausses-à-éviter">Idées Fausses à Éviter</h3>
+<ul>
+<li><strong>&quot;<code>cat</code> est inutile.&quot;</strong> Faux. C&rsquo;est la brique de base idéale pour les flux de données dans les scripts.</li>
+<li><strong>&quot;<code>cat fichier</code> est la bonne façon de lire un fichier.&quot;</strong> C&rsquo;est la façon <em>basique</em>. Pour lire, préférez <code>less</code> (navigation) ou <code>bat</code> (enrichissement visuel).</li>
+<li><strong>&ldquo;Il faut toujours utiliser <code>cat</code> avant un pipe.&rdquo;</strong> C&rsquo;est l&rsquo;erreur classique UUoC. Évaluez si la commande suivante peut lire le fichier directement.</li>
+</ul>
+<h3 id="tableau-de-décision--cat-vs-bat">Tableau de Décision : <code>cat</code> vs. <code>bat</code></h3>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">Critère de Choix</th>
+          <th style="text-align: left">Outil Recommandé</th>
+          <th style="text-align: left">Raison</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left"><strong>Écrire un script shell portable</strong></td>
+          <td style="text-align: left"><code>cat</code></td>
+          <td style="text-align: left">Présent partout, comportement universel.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Lire rapidement un fichier de configuration</strong></td>
+          <td style="text-align: left"><code>bat</code></td>
+          <td style="text-align: left">Coloration syntaxique, en-têtes, plus lisible.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Concaténer des fichiers dans un pipeline</strong></td>
+          <td style="text-align: left"><code>cat</code> ou <code>bat</code></td>
+          <td style="text-align: left">Les deux fonctionnent ; <code>bat</code> agit comme <code>cat</code> en mode non-interactif.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Suivre les ajouts à un fichier log (<code>tail -f</code>)</strong></td>
+          <td style="text-align: left"><code>cat</code> ou <code>bat --paging=never</code></td>
+          <td style="text-align: left">Simplicité et fiabilité.</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"><strong>Explorer un code source inconnu</strong></td>
+          <td style="text-align: left"><code>bat</code></td>
+          <td style="text-align: left">Numéros de ligne, intégration Git, navigation facilitée.</td>
+      </tr>
+  </tbody>
+</table>
+
+  </section>
+
+  
+<aside class="related-posts">
+  <h3>Articles similaires</h3>
+  <ul>
+    <li>
+      <a href="http://localhost:1313/site-perso/notes/chgrp/">Chgrp</a>
+      <span class="related-section">Notes</span>
+    </li>
+    <li>
+      <a href="http://localhost:1313/site-perso/notes/chmod/">Chmod</a>
+      <span class="related-section">Notes</span>
+    </li>
+  </ul>
+</aside>
+
+  <footer class="note-single-footer">
+    <nav class="note-back">
+      <a href="/notes/">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Toutes les notes
+      </a>
+    </nav>
+  </footer>
+</article>
+
+        <footer class="site-footer">
+  <div class="site-footer-inner">
+    <span class="site-footer-copy">
+      © 2026 Thomas
+    </span>
+    <nav class="site-footer-links">
+      <a href="/about/">À propos</a>
+      
+      <a href="mailto:contact@nexus-tvs.dev">Contact</a>
+      
+    </nav>
+  </div>
+</footer>
+
+      </main>
+    </div>
+    
+    <div id="fullscreen"></div>
+
+    <script src="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js"></script>
+    <script>littlefoot.littlefoot();</script>
+    <script src="/site-perso/js/image-viewer.js"></script>
+    <script src="/site-perso/js/theme-toggle.js"></script>
+    <script>
+      
+      (function() {
+        const toggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (!toggle || !sidebar || !overlay) return;
+
+        function openSidebar() {
+          sidebar.classList.add('open');
+          overlay.classList.add('visible');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', 'Fermer le menu');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('visible');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Ouvrir le menu');
+          document.body.style.overflow = '';
+        }
+
+        function toggleSidebar() {
+          if (sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        }
+
+        
+        toggle.addEventListener('click', toggleSidebar);
+
+        
+        overlay.addEventListener('click', closeSidebar);
+
+        
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+            closeSidebar();
+            toggle.focus();
+          }
+        });
+
+        
+        sidebar.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+              closeSidebar();
+            }
+          });
+        });
+
+        
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 768) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

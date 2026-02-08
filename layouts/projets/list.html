@@ -41,7 +41,7 @@
           {{ end }}
           {{ else }}
           {{ with $page.Params.image }}
-          <img src="{{ . }}" alt="{{ $page.Title }}" loading="lazy" />
+          <img src="{{ . }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
           {{ else }}
           <div class="placeholder-media">{{ substr $page.Title 0 1 | upper }}</div>
           {{ end }}

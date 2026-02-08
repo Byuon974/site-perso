@@ -4,6 +4,7 @@
     {{ partial "head.html" . }}
   </head>
   <body>
+    <a class="skip-link" href="#content">Aller au contenu</a>
     <div class="layout">
       {{/* Sidebar fixe */}}
       <aside class="sidebar" id="sidebar" aria-label="Navigation">
@@ -31,11 +32,11 @@
           <nav class="sidebar-nav">
             <span class="sidebar-label">explore</span>
             <ul>
-              <li><a href="{{ "/" | relURL }}"{{ if .IsHome }} class="active"{{ end }}>Accueil</a></li>
-              <li><a href="{{ "/projets/" | relURL }}"{{ if eq .Section "projets" }} class="active"{{ end }}>Projets</a></li>
-              <li><a href="{{ "/blog/" | relURL }}"{{ if eq .Section "blog" }} class="active"{{ end }}>Blog</a></li>
-              <li><a href="{{ "/notes/" | relURL }}"{{ if eq .Section "notes" }} class="active"{{ end }}>Notes</a></li>
-              <li><a href="{{ "/about/" | relURL }}"{{ if eq .Section "about" }} class="active"{{ end }}>À propos</a></li>
+              <li><a href="{{ "/" | relURL }}"{{ if .IsHome }} class="active" aria-current="page"{{ end }}>Accueil</a></li>
+              <li><a href="{{ "/projets/" | relURL }}"{{ if eq .Section "projets" }} class="active" aria-current="page"{{ end }}>Projets</a></li>
+              <li><a href="{{ "/blog/" | relURL }}"{{ if eq .Section "blog" }} class="active" aria-current="page"{{ end }}>Blog</a></li>
+              <li><a href="{{ "/notes/" | relURL }}"{{ if eq .Section "notes" }} class="active" aria-current="page"{{ end }}>Notes</a></li>
+              <li><a href="{{ "/about/" | relURL }}"{{ if eq .Section "about" }} class="active" aria-current="page"{{ end }}>À propos</a></li>
             </ul>
           </nav>
 
@@ -65,7 +66,7 @@
         {{/* Header avec logo */}}
         <header class="main-header">
           <a href="{{ "/" | relURL }}" class="main-header-logo">
-            <img src="{{ "favicon-192.png" | relURL }}" alt="Logo" />
+            <img src="{{ "favicon-192.png" | relURL }}" alt="Logo" width="32" height="32" decoding="async" />
             <span>nexus<span class="sep">-</span>tvs</span>
           </a>
         </header>
@@ -77,10 +78,10 @@
     
     <div id="fullscreen"></div>
 
-    <script src="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js"></script>
-    <script>littlefoot.littlefoot();</script>
-    <script src="{{ "js/image-viewer.js" | relURL }}"></script>
-    <script src="{{ "js/theme-toggle.js" | relURL }}"></script>
+    <script defer src="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js"></script>
+    <script>window.addEventListener("DOMContentLoaded", () => { if (window.littlefoot) { window.littlefoot.littlefoot(); } });</script>
+    <script defer src="{{ "js/image-viewer.js" | relURL }}"></script>
+    <script defer src="{{ "js/theme-toggle.js" | relURL }}"></script>
     <script>
       // Sidebar mobile avec overlay
       (function() {
@@ -93,6 +94,7 @@
         function openSidebar() {
           sidebar.classList.add('open');
           overlay.classList.add('visible');
+          overlay.setAttribute('aria-hidden', 'false');
           toggle.setAttribute('aria-expanded', 'true');
           toggle.setAttribute('aria-label', 'Fermer le menu');
           document.body.style.overflow = 'hidden';
@@ -101,6 +103,7 @@
         function closeSidebar() {
           sidebar.classList.remove('open');
           overlay.classList.remove('visible');
+          overlay.setAttribute('aria-hidden', 'true');
           toggle.setAttribute('aria-expanded', 'false');
           toggle.setAttribute('aria-label', 'Ouvrir le menu');
           document.body.style.overflow = '';
@@ -127,6 +130,25 @@
             toggle.focus();
           }
         });
+        // Piégeage du focus (accessibilité) quand le menu est ouvert
+        document.addEventListener('keydown', (e) => {
+          if (e.key !== 'Tab' || !sidebar.classList.contains('open')) return;
+
+          const focusables = sidebar.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])');
+          if (!focusables.length) return;
+
+          const first = focusables[0];
+          const last = focusables[focusables.length - 1];
+
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        });
+
 
         // Fermer si on clique sur un lien (navigation)
         sidebar.querySelectorAll('a').forEach(link => {
@@ -142,6 +164,7 @@
           if (window.innerWidth > 768) {
             sidebar.classList.remove('open');
             overlay.classList.remove('visible');
+          overlay.setAttribute('aria-hidden', 'true');
             document.body.style.overflow = '';
             toggle.setAttribute('aria-expanded', 'false');
           }

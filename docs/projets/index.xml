@@ -1,2 +1,26 @@
 &lt;?xml version="1.0" encoding="utf-8" standalone="yes"?>
-&lt;?xml-stylesheet type="text/xsl" href="https://byuon974.github.io/site-perso/rss.xsl"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Projets — Thomas | Développeur Backend</title><link>https://byuon974.github.io/site-perso/projets/</link><description>Développeur backend - La Réunion</description><generator>Hugo -- gohugo.io</generator><language>fr-fr</language><lastBuildDate>Sat, 15 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="https://byuon974.github.io/site-perso/projets/index.xml" rel="self" type="application/rss+xml"/><item><title>GameFAQs Scraper</title><link>https://byuon974.github.io/site-perso/projets/gamefaqs-scraper/</link><pubDate>Sat, 15 Nov 2025 00:00:00 +0000</pubDate><guid>https://byuon974.github.io/site-perso/projets/gamefaqs-scraper/</guid><description>Outil d’archivage hors-ligne de guides GameFAQs avec conversion via Pandoc.</description></item><item><title>Auto-Downloader</title><link>https://byuon974.github.io/site-perso/projets/auto-downloader/</link><pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate><guid>https://byuon974.github.io/site-perso/projets/auto-downloader/</guid><description>Script Python pour automatiser la récupération de fichiers depuis des sites de téléchargement.</description></item></channel></rss>
+&lt;?xml-stylesheet type="text/xsl" href="http://localhost:1313/site-perso/rss.xsl"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Projets — Thomas | Développeur Backend</title>
+    <link>http://localhost:1313/site-perso/projets/</link>
+    <description>Développeur backend - La Réunion</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>fr-fr</language>
+    <lastBuildDate>Sat, 15 Nov 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/site-perso/projets/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GameFAQs Scraper</title>
+      <link>http://localhost:1313/site-perso/projets/gamefaqs-scraper/</link>
+      <pubDate>Sat, 15 Nov 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/site-perso/projets/gamefaqs-scraper/</guid>
+      <description>Outil d’archivage hors-ligne de guides GameFAQs avec conversion via Pandoc.</description>
+    </item>
+    <item>
+      <title>Auto-Downloader</title>
+      <link>http://localhost:1313/site-perso/projets/auto-downloader/</link>
+      <pubDate>Thu, 11 Sep 2025 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/site-perso/projets/auto-downloader/</guid>
+      <description>Script Python pour automatiser la récupération de fichiers depuis des sites de téléchargement.</description>
+    </item>
+  </channel>
+</rss>

@@ -1005,3 +1005,27 @@ html[data-theme="dark"] .main-header {
     margin-bottom: 2rem;
   }
 }
+
+
+/* Accessibilité: lien d’évitement */
+.skip-link{
+  position: absolute;
+  left: 0.75rem;
+  top: 0.75rem;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  background: var(--card, rgba(0,0,0,.85));
+  color: var(--text, #fff);
+  transform: translateY(-200%);
+  transition: transform .2s ease;
+  z-index: 9999;
+}
+
+.skip-link:focus{
+  transform: translateY(0);
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .skip-link{ transition:none; }
+}

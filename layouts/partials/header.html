@@ -7,7 +7,8 @@
     <nav class="site-nav" aria-label="Navigation principale">
       {{- with .Site.Menus.main -}}
         {{- range . -}}
-          <a class="nav-link" href="{{ .URL | relURL }}">
+          {{- $current := or ($.IsMenuCurrent "main" .) ($.HasMenuCurrent "main" .) -}}
+          <a class="nav-link{{ if $current }} active{{ end }}" href="{{ .URL | relURL }}"{{ if $current }} aria-current="page"{{ end }}>
             {{ .Name }}
           </a>
         {{- end -}}
