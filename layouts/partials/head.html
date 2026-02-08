@@ -1,0 +1,49 @@
+<title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+<meta name="theme-color" content="#f8f4e3" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#1f2738" media="(prefers-color-scheme: dark)" />
+<meta name="author" content="{{ .Site.Params.author | default "Thomas VINH-SAN" }}" />
+
+{{/* Google Fonts */}}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+{{/* Description pour SEO et mode lecture */}}
+{{ with .Params.description }}
+<meta name="description" content="{{ . }}" />
+{{ else }}
+{{ with .Summary }}
+<meta name="description" content="{{ . | plainify | truncate 160 }}" />
+{{ else }}
+<meta name="description" content="{{ .Site.Params.description }}" />
+{{ end }}
+{{ end }}
+
+{{/* Open Graph */}}
+<meta property="og:title" content="{{ .Title | default .Site.Title }}" />
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
+<meta property="og:url" content="{{ .Permalink }}" />
+{{ with .Params.description }}<meta property="og:description" content="{{ . }}" />{{ end }}
+
+{{/* Article meta pour mode lecture */}}
+{{ if .IsPage }}
+<meta property="article:author" content="{{ .Site.Params.author }}" />
+{{ with .Date }}<meta property="article:published_time" content="{{ .Format "2006-01-02T15:04:05Z07:00" }}" />{{ end }}
+{{ with .Params.updated }}<meta property="article:modified_time" content="{{ . }}" />{{ end }}
+{{ end }}
+
+{{/* Liens */}}
+{{ with .Permalink }}<link rel="canonical" href="{{ . }}" />{{ end }}
+<link rel="sitemap" href="{{ "/sitemap.xml" | relURL }}" />
+<link rel="icon" type="image/png" href="{{ "favicon.png" | relURL }}" sizes="32x32" />
+<link rel="icon" type="image/png" href="{{ "favicon-192.png" | relURL }}" sizes="192x192" />
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}" />
+<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "index.xml" | relURL }}" />
+
+{{/* CSS */}}
+<link rel="stylesheet" href="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.css" />
+<link rel="stylesheet" href="{{ "css/style.css" | relURL }}" />
+<link rel="stylesheet" href="{{ "css/portfolio.css" | relURL }}" />

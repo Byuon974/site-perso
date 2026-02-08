@@ -1,0 +1,14 @@
+{{ define "main" }}
+<article class="default-single prose">
+  <header>
+    <h1>{{ .Title }}</h1>
+    {{ with .Date }}
+    <time datetime="{{ .Format "2006-01-02" }}">{{ .Format "02 janvier 2006" }}</time>
+    {{ end }}
+  </header>
+  
+  <section class="prose-content">
+    {{ .Content }}
+  </section>
+</article>
+{{ end }}

@@ -1,0 +1,27 @@
+<header class="site-header">
+  <div class="site-header-inner">
+    <div id="logo">
+      <a href="{{ "/" | relURL }}">
+        <img src="{{ "favicon-192.png" | relURL }}" alt="Logo" class="logo-icon" />
+        <span class="logo-text">nexus<span class="logo-separator">-</span>tvs</span>
+      </a>
+    </div>
+
+    <nav aria-label="Navigation principale">
+      <ul class="nav-list">
+        <li><a href="{{ "/projets/" | relURL }}"{{ if eq .Section "projets" }} class="active"{{ end }}>Projets</a></li>
+        <li><a href="{{ "/blog/" | relURL }}"{{ if eq .Section "blog" }} class="active"{{ end }}>Blog</a></li>
+        <li><a href="{{ "/notes/" | relURL }}"{{ if eq .Section "notes" }} class="active"{{ end }}>Notes</a></li>
+        <li><a href="{{ "/about/" | relURL }}"{{ if eq .Section "about" }} class="active"{{ end }}>À propos</a></li>
+      </ul>
+    </nav>
+
+    <button
+      class="theme-toggle"
+      type="button"
+      data-theme-toggle
+      aria-label="Basculer le mode clair/sombre">
+      🌙
+    </button>
+  </div>
+</header>

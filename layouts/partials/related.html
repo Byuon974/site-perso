@@ -1,0 +1,24 @@
+{{- $currentPage := . -}}
+{{- $tags := .Params.tags -}}
+{{- if $tags -}}
+  {{- $related := slice -}}
+  {{- range $tag := $tags -}}
+    {{- range where (where $.Site.RegularPages "Params.tags" "intersect" (slice $tag)) "Permalink" "!=" $currentPage.Permalink -}}
+      {{- $related = $related | append . -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $related = $related | uniq | first 3 -}}
+  {{- if $related }}
+<aside class="related-posts">
+  <h3>Articles similaires</h3>
+  <ul>
+    {{- range $related }}
+    <li>
+      <a href="{{ .Permalink }}">{{ .Title }}</a>
+      <span class="related-section">{{ .Section | title }}</span>
+    </li>
+    {{- end }}
+  </ul>
+</aside>
+  {{- end -}}
+{{- end -}}

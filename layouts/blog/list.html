@@ -1,0 +1,27 @@
+{{ define "main" }}
+<div class="archive-container">
+  <header class="archive-header">
+    <h1>Blog</h1>
+  </header>
+
+  {{/* Grouper par année */}}
+  {{ range .Pages.GroupByDate "2006" }}
+  <section class="archive-year">
+    <h2 class="archive-year-title">{{ .Key }}</h2>
+    <ul class="archive-list">
+      {{ range .Pages.ByDate.Reverse }}
+      <li class="archive-item">
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "Jan 02" }}</time>
+        <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        <span class="archive-arrow">»</span>
+      </li>
+      {{ end }}
+    </ul>
+  </section>
+  {{ end }}
+
+  {{ if not .Pages }}
+  <p class="archive-empty">Aucun article pour le moment.</p>
+  {{ end }}
+</div>
+{{ end }}

@@ -1,0 +1,234 @@
+{{/*
+Usage:
+{{< video-lite src="/videos/gamefaqs-scraper.mp4" poster="/videos/gamefaqs-scraper.jpg" title="GameFAQs Scraper" >}}
+
+- Lazy-loading: la vidéo n'est injectée/chargée qu'au clic.
+- Poster image: loading="lazy"
+*/}}
+
+{{ $src := .Get "src" }}
+{{ $poster := .Get "poster" }}
+{{ $title := default "Lire la vidéo" (.Get "title") }}
+
+{{/* ID unique par instance */}}
+{{ $id := printf "vl-%d" now.UnixNano }}
+
+{{/* Injecter CSS/JS une seule fois par page */}}
+{{ if not (.Page.Scratch.Get "videoLiteInjected") }}
+  {{ .Page.Scratch.Set "videoLiteInjected" true }}
+
+<style>
+  .video-lite{
+    position:relative;
+    width:100%;
+    border-radius:18px;
+    overflow:hidden;
+    background:#0b0b0c;
+    box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    border: 1px solid rgba(255,255,255,.08);
+  }
+  .video-lite__button{
+    position:relative;
+    display:block;
+    width:100%;
+    padding:0;
+    border:0;
+    background:transparent;
+    cursor:pointer;
+    text-align:inherit;
+  }
+  .video-lite__poster{
+    display:block;
+    width:100%;
+    height:auto;
+    aspect-ratio:16/9;
+    object-fit:cover;
+    transform: scale(1.01);
+    transition: transform .35s ease, filter .35s ease;
+    filter:saturate(1.02) contrast(1.02);
+  }
+  .video-lite:hover .video-lite__poster{
+    transform: scale(1.03);
+    filter:saturate(1.06) contrast(1.06);
+  }
+
+  /* Overlay dégradé “moderne” */
+  .video-lite__overlay{
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(80% 80% at 50% 55%, rgba(0,0,0,0) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.6) 100%),
+      linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0) 55%);
+    opacity:.95;
+    transition: opacity .25s ease;
+  }
+  .video-lite:hover .video-lite__overlay{ opacity:1; }
+
+  /* Bouton play */
+  .video-lite__play{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform: translate(-50%,-50%);
+    width:72px;
+    height:72px;
+    border-radius:999 PROF;;
+    border: 1px solid rgba(255,255,255,.18);
+    background: rgba(0,0,0,.35);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    display:grid;
+    place-items:center;
+    box-shadow: 0 12px 30px rgba(0,0,0,.35);
+    transition: transform .25s ease, background .25s ease, border-color .25s ease;
+    pointer-events:none; /* le clic reste sur le bouton parent */
+  }
+  .video-lite:hover .video-lite__play{
+    transform: translate(-50%,-50%) scale(1.03);
+    background: rgba(0,0,0,.45);
+    border-color: rgba(255,255,255,.28);
+  }
+
+  /* Icône play (triangle) */
+  .video-lite__icon{
+    width:0;height:0;
+    border-left: 18px solid rgba(255,255,255,.95);
+    border-top: 11px solid transparent;
+    border-bottom: 11px solid transparent;
+    margin-left:4px;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.35));
+  }
+
+  /* Titre */
+  .video-lite__title{
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:14px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    color: rgba(255,255,255,.92);
+    font-size: .95rem;
+    line-height:1.2;
+    pointer-events:none;
+    text-shadow: 0 2px 12px rgba(0,0,0,.55);
+  }
+  .video-lite__badge{
+    font-size:.75rem;
+    padding:.35rem .55rem;
+    border-radius:999px;
+    border: 1px solid rgba(255,255,255,.16);
+    background: rgba(0,0,0,.28);
+    backdrop-filter: blur(8px);
+  }
+
+  /* Player injecté */
+  .video-lite__player video{
+    width:100%;
+    height:auto;
+    display:block;
+    aspect-ratio:16/9;
+    background:#000;
+  }
+
+  /* Accessibilité: focus visible */
+  .video-lite__button:focus-visible{
+    outline: 2px solid rgba(255,255,255,.7);
+    outline-offset: 3px;
+    border-radius:18px;
+  }
+
+  /* Réduction animation */
+  @media (prefers-reduced-motion: reduce){
+    .video-lite__poster,
+    .video-lite__overlay,
+    .video-lite__play{
+      transition:none !important;
+    }
+  }
+</style>
+
+<script>
+  (function(){
+    function upgradeVideoLite(root){
+      if (!root || root.dataset.upgraded === "1") return;
+      root.dataset.upgraded = "1";
+
+      const btn = root.querySelector('[data-video-lite-button]');
+      if (!btn) return;
+
+      btn.addEventListener('click', function(){
+        const src = root.dataset.src;
+        const type = root.dataset.type || 'video/mp4';
+        const title = root.dataset.title || 'Vidéo';
+        const poster = root.dataset.poster || '';
+
+        // Remplace le poster par le player seulement AU CLIC (lazy réel)
+        const player = document.createElement('div');
+        player.className = 'video-lite__player';
+        player.innerHTML = `
+          <video controls playsinline preload="metadata" autoplay ${poster ? `poster="${poster}"` : ''} aria-label="${title}">
+            <source src="${src}" type="${type}">
+            Votre navigateur ne supporte pas la lecture vidéo.
+          </video>
+        `;
+
+        // Nettoyage du contenu cliquable puis insertion
+        root.innerHTML = '';
+        root.appendChild(player);
+
+        // Tente de lancer la lecture (autoplay peut être bloqué, c’est ok)
+        const vid = root.querySelector('video');
+        if (vid) {
+          const p = vid.play();
+          if (p && typeof p.catch === 'function') p.catch(function(){ /* autoplay bloqué */ });
+        }
+      }, { once:true });
+    }
+
+    // Auto-init (et support de contenu chargé dynamiquement)
+    function init(){
+      document.querySelectorAll('[data-video-lite]').forEach(upgradeVideoLite);
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', init);
+    } else {
+      init();
+    }
+  })();
+</script>
+{{ end }}
+
+<div
+  id="{{ $id }}"
+  class="video-lite"
+  data-video-lite
+  data-src="{{ $src }}"
+  data-poster="{{ $poster }}"
+  data-title="{{ $title }}"
+  data-type="video/mp4"
+>
+  <button class="video-lite__button" type="button" aria-label="{{ $title }}" data-video-lite-button>
+    <img
+      class="video-lite__poster"
+      src="{{ $poster }}"
+      alt=""
+      loading="lazy"
+      decoding="async"
+    />
+    <span class="video-lite__overlay" aria-hidden="true"></span>
+    <span class="video-lite__play" aria-hidden="true">
+      <span class="video-lite__icon" aria-hidden="true"></span>
+    </span>
+
+    <span class="video-lite__title" aria-hidden="true">
+      <span>{{ $title }}</span>
+      <span class="video-lite__badge">▶︎ Lecture</span>
+    </span>
+  </button>
+</div>
+

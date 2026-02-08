@@ -1,0 +1,183 @@
+{{ define "main" }}
+<div class="projets-container">
+  <header class="projets-header">
+    <h1>Projets</h1>
+    <p>Une sélection de mes réalisations.</p>
+  </header>
+
+  {{ $pages := .Pages }}
+  {{ $total := len $pages }}
+  
+  {{ if gt $total 0 }}
+  <div class="projets-carousel" data-carousel>
+    <div class="carousel-track">
+      {{ range $index, $page := $pages }}
+      <article class="projet-card carousel-slide" data-index="{{ $index }}">
+        <div class="projet-card-media">
+          {{ with $page.Params.video }}
+          {{ $poster := $page.Params.videoPoster }}
+          {{ if $poster }}
+          <div class="projet-video-lite" data-video-lite data-src="{{ . }}" data-title="{{ $page.Title }}">
+            <button class="projet-video-lite-btn" type="button" aria-label="Lire la vidéo {{ $page.Title }}">
+              <img src="{{ $poster }}" alt="{{ $page.Title }}" loading="lazy" decoding="async" />
+              <div class="video-overlay">
+                <div class="play-icon"></div>
+              </div>
+            </button>
+          </div>
+          {{ else }}
+          <video 
+            src="{{ . }}" 
+            muted 
+            loop 
+            playsinline 
+            preload="metadata"
+            onmouseenter="this.play()" 
+            onmouseleave="this.pause(); this.currentTime=0;">
+          </video>
+          <div class="video-overlay">
+            <div class="play-icon"></div>
+          </div>
+          {{ end }}
+          {{ else }}
+          {{ with $page.Params.image }}
+          <img src="{{ . }}" alt="{{ $page.Title }}" loading="lazy" />
+          {{ else }}
+          <div class="placeholder-media">{{ substr $page.Title 0 1 | upper }}</div>
+          {{ end }}
+          {{ end }}
+        </div>
+        
+        <div class="projet-card-content">
+          {{ with $page.Params.tags }}
+          <div class="projet-card-tags">
+            {{ range . }}
+            <span class="projet-tag">{{ . }}</span>
+            {{ end }}
+          </div>
+          {{ end }}
+          
+          <h2><a href="{{ $page.RelPermalink }}">{{ $page.Title }}</a></h2>
+          
+          {{ with $page.Params.description }}
+          <p>{{ . }}</p>
+          {{ end }}
+          
+          <div class="projet-card-links">
+            {{ with $page.Params.demo }}
+            <a href="{{ . }}" class="projet-link" target="_blank" rel="noopener">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+              Démo
+            </a>
+            {{ end }}
+            {{ with $page.Params.github }}
+            <a href="{{ . }}" class="projet-link" target="_blank" rel="noopener">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+              Code
+            </a>
+            {{ end }}
+            <a href="{{ $page.RelPermalink }}" class="projet-link projet-link-more">
+              Voir plus →
+            </a>
+          </div>
+        </div>
+      </article>
+      {{ end }}
+    </div>
+    
+    {{ if gt $total 1 }}
+    <div class="carousel-nav">
+      <button class="carousel-btn carousel-prev" data-carousel-prev aria-label="Projet précédent">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <div class="carousel-dots">
+        {{ range $index, $page := $pages }}
+        <button class="carousel-dot{{ if eq $index 0 }} active{{ end }}" data-carousel-dot="{{ $index }}" aria-label="Aller au projet {{ add $index 1 }}"></button>
+        {{ end }}
+      </div>
+      <button class="carousel-btn carousel-next" data-carousel-next aria-label="Projet suivant">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    {{ end }}
+  </div>
+  {{ else }}
+  <p class="projets-empty">Aucun projet pour le moment.</p>
+  {{ end }}
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const carousel = document.querySelector('[data-carousel]');
+  if (!carousel) return;
+  
+  const track = carousel.querySelector('.carousel-track');
+  const slides = carousel.querySelectorAll('.carousel-slide');
+  const dots = carousel.querySelectorAll('[data-carousel-dot]');
+  const prevBtn = carousel.querySelector('[data-carousel-prev]');
+  const nextBtn = carousel.querySelector('[data-carousel-next]');
+  
+  let currentIndex = 0;
+  const total = slides.length;
+  
+  function goTo(index) {
+    if (index < 0) index = total - 1;
+    if (index >= total) index = 0;
+    currentIndex = index;
+    
+    track.style.transform = `translateX(-${currentIndex * 100}%)`;
+    pauseAllVideos();
+    
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === currentIndex);
+    });
+  }
+  
+  if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+  if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+  
+  dots.forEach(dot => {
+    dot.addEventListener('click', () => {
+      goTo(parseInt(dot.dataset.carouselDot));
+    });
+  });
+  
+
+  // Lazy video: injecte le <video> uniquement au clic (le MP4 n'est pas chargé avant)
+  carousel.querySelectorAll('[data-video-lite]').forEach(el => {
+    const btn = el.querySelector('button');
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      const src = el.dataset.src;
+      const title = el.dataset.title || 'Vidéo';
+      el.innerHTML = `
+        <video controls playsinline preload="metadata" aria-label="${title}">
+          <source src="${src}" type="video/mp4">
+        </video>
+      `;
+      const v = el.querySelector('video');
+      if (v) {
+        const p = v.play();
+        if (p && p.catch) p.catch(()=>{});
+      }
+    }, { once: true });
+  });
+
+  function pauseAllVideos() {
+    carousel.querySelectorAll('video').forEach(v => {
+      try { v.pause(); } catch(e) {}
+    });
+  }
+
+  // Swipe support
+  let startX = 0;
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; });
+  track.addEventListener('touchend', e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      goTo(currentIndex + (diff > 0 ? 1 : -1));
+    }
+  });
+});
+</script>
+{{ end }}

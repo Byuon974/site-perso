@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    {{ partial "head.html" . }}
+  </head>
+  <body>
+    <div class="layout">
+      {{/* Sidebar fixe */}}
+      <aside class="sidebar" id="sidebar" aria-label="Navigation">
+        <div class="sidebar-inner">
+          {{/* Section courante */}}
+          {{ if .Title }}
+          <div class="sidebar-current">
+            <span class="sidebar-label">current</span>
+            <span class="sidebar-current-title">{{ .Title }}</span>
+          </div>
+          {{ end }}
+
+          {{/* TOC pour pages single */}}
+          {{ if and .IsPage .TableOfContents }}
+          {{ $toc := .TableOfContents }}
+          {{ if $toc }}
+          <nav class="sidebar-toc">
+            <span class="sidebar-label">contents</span>
+            {{ $toc }}
+          </nav>
+          {{ end }}
+          {{ end }}
+
+          {{/* Navigation */}}
+          <nav class="sidebar-nav">
+            <span class="sidebar-label">explore</span>
+            <ul>
+              <li><a href="{{ "/" | relURL }}"{{ if .IsHome }} class="active"{{ end }}>Accueil</a></li>
+              <li><a href="{{ "/projets/" | relURL }}"{{ if eq .Section "projets" }} class="active"{{ end }}>Projets</a></li>
+              <li><a href="{{ "/blog/" | relURL }}"{{ if eq .Section "blog" }} class="active"{{ end }}>Blog</a></li>
+              <li><a href="{{ "/notes/" | relURL }}"{{ if eq .Section "notes" }} class="active"{{ end }}>Notes</a></li>
+              <li><a href="{{ "/about/" | relURL }}"{{ if eq .Section "about" }} class="active"{{ end }}>À propos</a></li>
+            </ul>
+          </nav>
+
+          {{/* Footer sidebar */}}
+          <div class="sidebar-footer">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Basculer le mode">
+              🌙
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      {{/* Overlay pour mobile */}}
+      <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+      {{/* Bouton mobile */}}
+      <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="sidebar">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </button>
+
+      {{/* Contenu principal */}}
+      <main class="main-content" id="content">
+        {{/* Header avec logo */}}
+        <header class="main-header">
+          <a href="{{ "/" | relURL }}" class="main-header-logo">
+            <img src="{{ "favicon-192.png" | relURL }}" alt="Logo" />
+            <span>nexus<span class="sep">-</span>tvs</span>
+          </a>
+        </header>
+
+        {{ block "main" . }}{{ end }}
+        {{ partial "footer.html" . }}
+      </main>
+    </div>
+    
+    <div id="fullscreen"></div>
+
+    <script src="https://unpkg.com/littlefoot@4.0.1/dist/littlefoot.js"></script>
+    <script>littlefoot.littlefoot();</script>
+    <script src="{{ "js/image-viewer.js" | relURL }}"></script>
+    <script src="{{ "js/theme-toggle.js" | relURL }}"></script>
+    <script>
+      // Sidebar mobile avec overlay
+      (function() {
+        const toggle = document.getElementById('sidebar-toggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        
+        if (!toggle || !sidebar || !overlay) return;
+
+        function openSidebar() {
+          sidebar.classList.add('open');
+          overlay.classList.add('visible');
+          toggle.setAttribute('aria-expanded', 'true');
+          toggle.setAttribute('aria-label', 'Fermer le menu');
+          document.body.style.overflow = 'hidden';
+        }
+
+        function closeSidebar() {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('visible');
+          toggle.setAttribute('aria-expanded', 'false');
+          toggle.setAttribute('aria-label', 'Ouvrir le menu');
+          document.body.style.overflow = '';
+        }
+
+        function toggleSidebar() {
+          if (sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        }
+
+        // Toggle button
+        toggle.addEventListener('click', toggleSidebar);
+
+        // Clic sur overlay = fermer
+        overlay.addEventListener('click', closeSidebar);
+
+        // Escape = fermer
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+            closeSidebar();
+            toggle.focus();
+          }
+        });
+
+        // Fermer si on clique sur un lien (navigation)
+        sidebar.querySelectorAll('a').forEach(link => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+              closeSidebar();
+            }
+          });
+        });
+
+        // Reset au resize (si on passe en desktop)
+        window.addEventListener('resize', () => {
+          if (window.innerWidth > 768) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('visible');
+            document.body.style.overflow = '';
+            toggle.setAttribute('aria-expanded', 'false');
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

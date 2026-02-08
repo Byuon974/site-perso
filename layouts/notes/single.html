@@ -1,0 +1,47 @@
+{{ define "main" }}
+<article class="note-single prose">
+  {{ partial "breadcrumbs.html" . }}
+
+  <header class="note-single-header">
+    {{ with .Params.tags }}
+    <div class="note-single-tags">
+      {{ range . }}
+      <span class="note-tag">#{{ . }}</span>
+      {{ end }}
+    </div>
+    {{ end }}
+
+    <h1>{{ .Title }}</h1>
+    
+    {{ with .Params.description }}
+    <p class="note-single-description">{{ . }}</p>
+    {{ end }}
+    
+    <div class="note-single-meta">
+      {{ with .Params.updated }}
+      <span>Mis à jour : {{ dateFormat "02 janvier 2006" . }}</span>
+      {{ end }}
+      <span class="meta-sep">·</span>
+      {{ partial "reading-time.html" . }}
+    </div>
+  </header>
+
+  <section class="note-single-body prose-content" id="post-body">
+    {{ .Content }}
+  </section>
+
+  {{ partial "related.html" . }}
+
+  <footer class="note-single-footer">
+    <nav class="note-back">
+      <a href="{{ "/notes/" | relURL }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Toutes les notes
+      </a>
+    </nav>
+  </footer>
+</article>
+{{ end }}
