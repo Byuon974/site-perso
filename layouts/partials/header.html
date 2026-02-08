@@ -1,27 +1,21 @@
 <header class="site-header">
-  <div class="site-header-inner">
-    <div id="logo">
-      <a href="{{ "/" | relURL }}">
-        <img src="{{ "favicon-192.png" | relURL }}" alt="Logo" class="logo-icon" />
-        <span class="logo-text">nexus<span class="logo-separator">-</span>tvs</span>
-      </a>
-    </div>
+  <div class="header-inner">
+    <a class="site-title" href="{{ "" | relURL }}">
+      {{ .Site.Title }}
+    </a>
 
-    <nav aria-label="Navigation principale">
-      <ul class="nav-list">
-        <li><a href="{{ "/projets/" | relURL }}"{{ if eq .Section "projets" }} class="active"{{ end }}>Projets</a></li>
-        <li><a href="{{ "/blog/" | relURL }}"{{ if eq .Section "blog" }} class="active"{{ end }}>Blog</a></li>
-        <li><a href="{{ "/notes/" | relURL }}"{{ if eq .Section "notes" }} class="active"{{ end }}>Notes</a></li>
-        <li><a href="{{ "/about/" | relURL }}"{{ if eq .Section "about" }} class="active"{{ end }}>À propos</a></li>
-      </ul>
+    <nav class="site-nav" aria-label="Navigation principale">
+      {{- with .Site.Menus.main -}}
+        {{- range . -}}
+          <a class="nav-link" href="{{ .URL | relURL }}">
+            {{ .Name }}
+          </a>
+        {{- end -}}
+      {{- end -}}
     </nav>
 
-    <button
-      class="theme-toggle"
-      type="button"
-      data-theme-toggle
-      aria-label="Basculer le mode clair/sombre">
-      🌙
+    <button class="theme-toggle" type="button" aria-label="Basculer le thème">
+      <span class="theme-toggle-icon" aria-hidden="true">◐</span>
     </button>
   </div>
 </header>
