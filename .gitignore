@@ -20,8 +20,3 @@ node_modules/
 # Logs
 *.log
 
-# Big media
-static/videos/
-*.mp4
-*.mov
-*.mkv
