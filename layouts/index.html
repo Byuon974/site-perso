@@ -295,41 +295,8 @@
           class="sun-core"
         />
       </svg>
-      <button class="animation-toggle" type="button" data-animation-toggle aria-label="Mettre en pause les animations">
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="anim-icon-pause">
-          <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
-        </svg>
-        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" class="anim-icon-play" style="display:none">
-          <polygon points="5,3 19,12 5,21"/>
-        </svg>
-        <span class="anim-label">pause</span>
-      </button>
     </div>
   </div>
-
-  <script>
-  (function(){
-    var btn = document.querySelector('[data-animation-toggle]');
-    if (!btn) return;
-    var paused = localStorage.getItem('animations-paused') === 'true';
-    var iconPause = btn.querySelector('.anim-icon-pause');
-    var iconPlay = btn.querySelector('.anim-icon-play');
-    var label = btn.querySelector('.anim-label');
-    function update(){
-      document.documentElement.classList.toggle('animations-paused', paused);
-      iconPause.style.display = paused ? 'none' : '';
-      iconPlay.style.display = paused ? '' : 'none';
-      label.textContent = paused ? 'play' : 'pause';
-      btn.setAttribute('aria-label', paused ? 'Reprendre les animations' : 'Mettre en pause les animations');
-    }
-    update();
-    btn.addEventListener('click', function(){
-      paused = !paused;
-      localStorage.setItem('animations-paused', paused);
-      update();
-    });
-  })();
-  </script>
 
   <section class="home-skills">
     <h2>Compétences</h2>
@@ -396,7 +363,12 @@
     <h2>Me contacter</h2>
     <div class="contact-links">
       {{ with .Site.Params.cv }}
-      <a href="{{ . | relURL }}" class="contact-link" target="_blank" rel="noopener">
+      <a
+        href="{{ . | relURL }}"
+        class="contact-link"
+        target="_blank"
+        rel="noopener"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="18"
