@@ -3,7 +3,9 @@
    ========================================================================== */
 
 /* Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
 }
@@ -25,17 +27,25 @@
 
   /* Code */
   --text-code-light: #575279;
-  --text-code-dark: #E0DEF4;
+  --text-code-dark: #e0def4;
   --bg-code-light: var(--color-ivory-mist);
   --bg-code-dark: #232136;
 }
 
 /* Base */
-:root, body {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+:root,
+body {
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
-html, body {
+html,
+body {
   height: 100%;
   width: 100%;
 }
@@ -69,7 +79,7 @@ a:hover {
 
 /* Code */
 code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.9em;
   padding: 0.15em 0.4em;
   background: var(--color-dust-grey);
@@ -210,7 +220,7 @@ html[data-theme="dark"] .sidebar {
 }
 
 .sidebar-logo-text {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: -0.02em;
@@ -399,7 +409,7 @@ html[data-theme="dark"] .prose {
 
 /* Headings */
 .prose h1 {
-  font-family: 'Instrument Serif', serif;
+  font-family: "Instrument Serif", serif;
   font-size: 2.25rem;
   font-weight: 400;
   margin: 0 0 1.5rem 0;
@@ -408,7 +418,7 @@ html[data-theme="dark"] .prose {
 }
 
 .prose h2 {
-  font-family: 'Instrument Serif', serif;
+  font-family: "Instrument Serif", serif;
   font-size: 1.5rem;
   font-weight: 400;
   margin: 2.5rem 0 1rem 0;
@@ -423,7 +433,13 @@ html[data-theme="dark"] .prose h2 {
 }
 
 .prose h3 {
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    Segoe UI,
+    Helvetica,
+    Arial,
+    sans-serif;
   font-size: 1.15rem;
   font-weight: 600;
   margin: 2rem 0 0.75rem 0;
@@ -436,7 +452,7 @@ html[data-theme="dark"] .prose h3 {
 }
 
 .prose h4 {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.9rem;
   font-weight: 500;
   margin: 1.5rem 0 0.5rem 0;
@@ -517,7 +533,7 @@ html[data-theme="dark"] .prose blockquote {
 
 /* Code inline */
 .prose code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-size: 0.85em;
   padding: 0.15em 0.4em;
   background: var(--bg-code-light);
@@ -613,7 +629,9 @@ html[data-theme="dark"] .prose td {
    ========================================================================== */
 
 .archive-container {
-  max-width: 700px;
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .archive-header {
@@ -621,8 +639,8 @@ html[data-theme="dark"] .prose td {
 }
 
 .archive-header h1 {
-  font-family: 'Instrument Serif', serif;
-  font-size: 2.5rem;
+  font-family: "Instrument Serif", serif;
+  font-size: clamp(2.6rem, 5vw, 3.6rem);
   font-weight: 400;
   margin: 0;
 }
@@ -632,12 +650,12 @@ html[data-theme="dark"] .prose td {
 }
 
 .archive-year-title {
-  font-family: 'Instrument Serif', serif;
-  font-size: 1.5rem;
+  font-family: "Instrument Serif", serif;
+  font-size: clamp(1.35rem, 2.2vw, 1.9rem);
   font-weight: 400;
   color: var(--color-grey-olive);
   margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
+  padding-bottom: 0.6rem;
   border-bottom: 1px solid var(--color-dust-grey);
 }
 
@@ -655,7 +673,7 @@ html[data-theme="dark"] .archive-year-title {
   display: flex;
   align-items: baseline;
   gap: 1rem;
-  padding: 0.6rem 0;
+  padding: clamp(0.75rem, 1.1vw, 0.95rem) 0;
   border-bottom: 1px solid transparent;
   transition: border-color 0.2s;
 }
@@ -669,18 +687,18 @@ html[data-theme="dark"] .archive-item:hover {
 }
 
 .archive-item time {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
+  font-family: "JetBrains Mono", monospace;
+  font-size: clamp(0.85rem, 1.1vw, 0.95rem);
   color: var(--color-grey-olive);
   flex-shrink: 0;
-  width: 50px;
+  width: clamp(58px, 7vw, 72px);
 }
 
 .archive-item a {
   flex: 1;
   color: var(--text-dark);
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: clamp(1.02rem, 1.05vw, 1.12rem);
   transition: color 0.2s;
 }
 
@@ -698,13 +716,35 @@ html[data-theme="dark"] .archive-item a:hover {
 
 .archive-arrow {
   color: var(--color-grey-olive);
-  opacity: 0.4;
-  font-size: 0.9rem;
+  opacity: 0.65;
+  font-size: 1rem;
 }
 
 .archive-empty {
   color: var(--color-grey-olive);
   font-style: italic;
+}
+
+@media (max-width: 520px) {
+  .archive-header {
+    margin-bottom: 2.25rem;
+  }
+
+  .archive-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    padding: 0.9rem 0;
+  }
+
+  .archive-item time {
+    width: auto;
+    opacity: 0.9;
+  }
+
+  .archive-arrow {
+    display: none;
+  }
 }
 
 /* ==========================================================================
@@ -744,7 +784,7 @@ html[data-theme="dark"] .main-header {
 }
 
 .main-header-logo span {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: "JetBrains Mono", monospace;
   font-weight: 600;
   font-size: 1.2rem;
   letter-spacing: -0.02em;
@@ -827,32 +867,33 @@ html[data-theme="dark"] .main-header {
     margin-left: 0;
     padding: 4rem 1.5rem 2rem;
   }
-  
+
   .main-header {
     margin-bottom: 2rem;
   }
 }
 
-
 /* Accessibilité: lien d’évitement */
-.skip-link{
+.skip-link {
   position: absolute;
   left: 0.75rem;
   top: 0.75rem;
   padding: 0.6rem 0.9rem;
   border-radius: 999px;
-  background: var(--card, rgba(0,0,0,.85));
+  background: var(--card, rgba(0, 0, 0, 0.85));
   color: var(--text, #fff);
   transform: translateY(-200%);
-  transition: transform .2s ease;
+  transition: transform 0.2s ease;
   z-index: 9999;
 }
 
-.skip-link:focus{
+.skip-link:focus {
   transform: translateY(0);
   outline: none;
 }
 
-@media (prefers-reduced-motion: reduce){
-  .skip-link{ transition:none; }
+@media (prefers-reduced-motion: reduce) {
+  .skip-link {
+    transition: none;
+  }
 }

@@ -2,7 +2,7 @@
 title: "Cp"
 description: "Commandes pour gérer les perms."
 tags: ["tty", "devops", "cli"]
-updated: 202-02-09
+updated: 2026-02-09
 ---
 
 # La Commande `cp` : Stratégies de Duplication et Préservation d'État

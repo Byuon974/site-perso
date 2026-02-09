@@ -4,24 +4,46 @@
     <h1>Notes</h1>
   </header>
 
-  {{/* Grouper par année - utilise .Lastmod si dispo, sinon .Date */}}
-  {{ range .Pages.GroupByLastmod "2006" }}
-  <section class="archive-year">
-    <h2 class="archive-year-title">{{ .Key }}</h2>
-    <ul class="archive-list">
-      {{ range .Pages.ByLastmod.Reverse }}
+  {{/* 
+    Notes : la date est portée par "updated: YYYY-MM-DD" dans le front matter.
+    On évite .Lastmod/.Date (souvent à 0001-01-01 si non défini) et on se base
+    sur .Params.updated quand présent, sinon on retombe sur .Date.
+  */}}
+
+  {{ $pages := .Pages }}
+  {{ if $pages }}
+    {{ $sorted := sort $pages ".Params.updated" "desc" }}
+    {{ $scratch := newScratch }}
+    {{ $scratch.Set "year" "" }}
+
+    {{ range $sorted }}
+      {{ $d := .Date }}
+      {{ if .Params.updated }}{{ $d = (time .Params.updated) }}{{ end }}
+      {{ $y := $d.Format "2006" }}
+
+      {{ if ne ($scratch.Get "year") $y }}
+        {{ if ne ($scratch.Get "year") "" }}
+          </ul>
+        </section>
+        {{ end }}
+
+        <section class="archive-year">
+          <h2 class="archive-year-title">{{ $y }}</h2>
+          <ul class="archive-list">
+        {{ $scratch.Set "year" $y }}
+      {{ end }}
+
       <li class="archive-item">
-        <time datetime="{{ .Lastmod.Format "2006-01-02" }}">{{ .Lastmod.Format "Jan 02" }}</time>
+        <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "Jan 02" }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         <span class="archive-arrow">»</span>
       </li>
-      {{ end }}
-    </ul>
-  </section>
-  {{ end }}
+    {{ end }}
 
-  {{ if not .Pages }}
-  <p class="archive-empty">Aucune note pour le moment.</p>
+          </ul>
+        </section>
+  {{ else }}
+    <p class="archive-empty">Aucune note pour le moment.</p>
   {{ end }}
 </div>
 {{ end }}

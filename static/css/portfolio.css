@@ -14,7 +14,7 @@
 
 .home-hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
   gap: 4rem;
   align-items: center;
   margin-bottom: 4rem;
@@ -642,7 +642,7 @@ html[data-theme="dark"] .blog-card:hover {
 
 .blog-nav {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -1518,7 +1518,7 @@ html[data-theme="dark"] .animation-toggle:hover {
   }
 
   .skills-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
   }
 
   .projets-grid {
@@ -1710,13 +1710,14 @@ html[data-theme="dark"] .related-section {
 
 .carousel-slide .projet-card {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.2fr);
   gap: 2rem;
   align-items: center;
   background: rgba(154, 153, 140, 0.05);
+  border: 1px solid rgba(154, 153, 140, 0.18);
   border-radius: 12px;
-  padding: 2rem;
-  min-height: 350px;
+  padding: clamp(1.5rem, 3vw, 2.5rem);
+  min-height: 380px;
 }
 
 .carousel-slide .projet-card-media {
@@ -1744,7 +1745,7 @@ html[data-theme="dark"] .related-section {
 
 .carousel-slide .projet-card-content h2 {
   font-family: "Instrument Serif", Georgia, serif;
-  font-size: 1.8rem;
+  font-size: clamp(2rem, 2.5vw, 2.6rem);
   font-weight: 400;
   margin: 0.5rem 0 0.75rem;
 }
@@ -1759,9 +1760,17 @@ html[data-theme="dark"] .related-section {
 }
 
 .carousel-slide .projet-card-content p {
-  color: var(--color-grey-olive);
-  line-height: 1.6;
-  margin-bottom: 1.25rem;
+  color: var(--text-muted-light);
+  font-size: clamp(1.08rem, 1.15vw, 1.28rem);
+  line-height: 1.78;
+  margin-bottom: 1.35rem;
+  max-width: 72ch;
+  text-wrap: pretty;
+  hyphens: auto;
+}
+
+html[data-theme="dark"] .carousel-slide .projet-card-content p {
+  color: var(--text-muted-dark);
 }
 
 .carousel-slide .projet-card-links {
@@ -1774,11 +1783,11 @@ html[data-theme="dark"] .related-section {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1.1rem;
   border: 1px solid var(--color-dust-grey);
   border-radius: 6px;
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: clamp(0.95rem, 0.9vw, 1.05rem);
   transition: all 0.2s;
 }
 
@@ -1806,8 +1815,8 @@ html[data-theme="dark"] .related-section {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px;
-  height: 44px;
+  width: clamp(44px, 4vw, 56px);
+  height: clamp(44px, 4vw, 56px);
   border: 1px solid var(--color-dust-grey);
   border-radius: 50%;
   background: var(--bg-light, #f8f4e3);
@@ -1838,6 +1847,18 @@ html[data-theme="dark"] .carousel-btn {
   color: var(--color-grey-olive);
 }
 
+.carousel-btn:focus-visible {
+  outline: 3px solid var(--color-grey-olive);
+  outline-offset: 3px;
+}
+
+.carousel-slide .projet-link:focus-visible,
+.carousel-slide .projet-card-content h2 a:focus-visible,
+.carousel-dot:focus-visible {
+  outline: 3px solid var(--color-grey-olive);
+  outline-offset: 3px;
+}
+
 /* Dots sous le carrousel */
 .carousel-dots {
   display: flex;
@@ -1847,8 +1868,8 @@ html[data-theme="dark"] .carousel-btn {
 }
 
 .carousel-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   border: none;
   background: var(--color-dust-grey);
@@ -1863,6 +1884,41 @@ html[data-theme="dark"] .carousel-btn {
 .carousel-dot.active {
   background: var(--color-grey-olive);
   transform: scale(1.2);
+}
+
+@media (max-width: 900px) {
+  .carousel-slide .projet-card {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    min-height: auto;
+  }
+
+  .carousel-slide .projet-card-content h2 {
+    font-size: clamp(1.9rem, 7vw, 2.4rem);
+  }
+
+  .carousel-slide .projet-card-content p {
+    max-width: 100%;
+  }
+
+  .carousel-prev {
+    left: 0.25rem;
+  }
+
+  .carousel-next {
+    right: 0.25rem;
+  }
+}
+
+@media (min-width: 1100px) {
+  .carousel-slide .projet-card {
+    gap: 2.25rem;
+    padding: clamp(2rem, 2.6vw, 3rem);
+  }
+
+  .carousel-slide .projet-card-content p {
+    max-width: 78ch;
+  }
 }
 
 /* --- Page 404 améliorée --- */
