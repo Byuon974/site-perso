@@ -16,7 +16,7 @@ taxonomies:
 params:
   author: "Thomas"
   description: "Développeur backend - La Réunion"
-  email: "contact@nexus-tvs.dev"
+  email: "thomasvs974@proton.me"
   cv: "cv/cv-thomas.pdf"
 
 # Menus (URLs RELATIVES – IMPORTANT pour GitHub Pages /site-perso/)
