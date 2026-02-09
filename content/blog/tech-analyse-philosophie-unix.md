@@ -23,7 +23,7 @@ bricolage complexe.
 Cette philosophie émerge d'un constat simple : avant Unix, les systèmes d'exploitation
 étaient des cathédrales monolithiques, complexes, propriétaires et coûteux. Ken
 Thompson, Dennis Ritchie et d'autres ont opéré un renversement fondamental. Leur idée
-de génie fut de préférer le **bazar au cathedral** : un ensemble de petits programmes
+de génie fut de préférer le **bazar à la cathédrale** : un ensemble de petits programmes
 simples, chacun excellant dans une tâche unique, et conçus pour collaborer. Doug
 McIlroy, l'inventeur des tubes Unix (« pipes »), a synthétisé cette vision en
 trois règles immuables :
