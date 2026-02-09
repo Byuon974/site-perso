@@ -1,4 +1,5 @@
-baseURL: "https://byuon974.github.io/site-perso/"
+# baseURL: "https://byuon974.github.io/site-perso/"
+baseURL: "nexus-tvs.xyz"
 languageCode: "fr-fr"
 title: "Thomas | Développeur Backend"
 publishDir: "docs"
