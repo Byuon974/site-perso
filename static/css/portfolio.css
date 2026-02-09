@@ -9,6 +9,7 @@
 .home-container {
   max-width: 900px;
   margin: 0 auto;
+  padding-bottom: 4rem;
 }
 
 .home-hero {
@@ -1359,22 +1360,45 @@ html[data-theme="dark"] .btn-home {
   color: var(--text-light);
 }
 
-/* Accessibilité : désactiver les animations du soleil si l'utilisateur le demande */
-@media (prefers-reduced-motion: reduce) {
-  .rays-outer,
-  .rays-middle,
-  .rays-inner,
-  .ray,
-  .ray-m,
-  .ray-i,
-  .pulse-ring,
-  .sun-core,
-  .sun-avatar,
-  .home-hero-visual::before,
-  .home-hero-visual::after {
-    animation: none !important;
-    transition: none !important;
-  }
+/* Bouton toggle animations */
+.animation-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-dust-grey);
+  border-radius: 2rem;
+  background: transparent;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-grey-olive);
+  transition: all 0.2s;
+}
+
+.animation-toggle:hover {
+  background: var(--color-dust-grey);
+}
+
+html[data-theme="dark"] .animation-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* État animations en pause (toggle manuel) */
+.animations-paused .rays-outer,
+.animations-paused .rays-middle,
+.animations-paused .rays-inner,
+.animations-paused .ray,
+.animations-paused .ray-m,
+.animations-paused .ray-i,
+.animations-paused .pulse-ring,
+.animations-paused .sun-core,
+.animations-paused .home-hero-visual::before,
+.animations-paused .home-hero-visual::after {
+  animation-play-state: paused !important;
 }
 
 /* ==========================================================================
