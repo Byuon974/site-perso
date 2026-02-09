@@ -3,7 +3,7 @@ name: Deploy Hugo site to GitHub Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: # permet un declenchement manuel
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -24,11 +24,11 @@ jobs:
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          hugo-version: "latest"
           extended: true
 
       - name: Build
-        run: hugo --minify --gc
+        run: hugo --minify --gc -d public
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
