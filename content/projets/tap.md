@@ -272,15 +272,15 @@ Mon vrai travail a consisté à **découvrir les points de friction** :
 
 Ce sont des questions que je suis seul à pouvoir poser, parce que je connais le projet, son contexte et son cahier des charges bien mieux que ce que l'IA pourrait en déduire : elle ne peut tout simplement pas les voir venir.
 
-### Reconnaître les patterns, pas coudre des solutions
+### S'appuyer sur les patterns connus plutôt que réinventer
 
-Je ne réinvente pas la roue : lorsqu'un pattern existe déjà, que ce soit dans React, Supabase ou Next.js, je m'appuie dessus plutôt que d'en recréer un. Mon travail consiste à :
+Le socle technique de TAP (Next.js 15, React, Supabase) est largement documenté, avec des patterns éprouvés pour la plupart des situations courantes. Ma valeur ajoutée n'est pas de les inventer, elle est de les reconnaître, de vérifier qu'ils s'appliquent bien à TAP, et de les intégrer sans les déformer. L'IA générative est particulièrement utile pour dérouler un pattern connu et en proposer un squelette de code ; mon travail consiste à :
 
-- Reconnaître les patterns qui s'appliquent à mon problème.
-- Les adapter au contexte de TAP (temporalité, données de santé, RGPD).
-- Les intégrer proprement.
+- Comprendre ce que le pattern proposé fait, avant de l'accepter.
+- Vérifier qu'il correspond au contexte de TAP (temporalité, données de santé, RGPD).
+- Adapter et intégrer proprement, ou rejeter et faire chercher autre chose.
 
-L'IA en génère le squelette ; à moi, ensuite, d'en assembler les pièces.
+L'IA propose le squelette ; à moi ensuite d'en juger la pertinence et d'assembler les pièces dans le projet réel.
 
 ### Le skill pour la documentation
 
