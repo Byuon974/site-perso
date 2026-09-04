@@ -1,9 +1,9 @@
 ---
 title: "Disques, partitions et systèmes de fichiers"
-description: "Runbook d'exploitation des opérations disques sous Linux : dd, mkfs, parted, ncdu. Opérations parmi les plus destructrices du système : le runbook insiste sur la vérification de la cible avant toute action."
-tags: ["linux", "cli", "dd", "mkfs", "parted", "runbook", "disques", "systemes-fichiers"]
-updated: 2026-06-18
-validated: 2026-06-18
+description: "Référence d'exploitation des opérations sur les disques sous Linux : écriture sectorielle et imagerie (dd), partitionnement GPT/MBR (parted), création de systèmes de fichiers (mkfs), analyse de l'espace (ncdu, du, df). Ces opérations sont parmi les plus destructrices du système :..."
+tags: ["linux", "cli", "dd", "parted", "mkfs", "ncdu", "runbook", "disques"]
+updated: 2026-08-18
+validated: 2026-08-18
 owner: "opérateur du système"
 target: "Linux, util-linux, parted/GNU, e2fsprogs, dosfstools"
 ---
@@ -12,21 +12,31 @@ _Référence d'exploitation des opérations sur les disques sous Linux : écritu
 
 ## Choisir le bon outil
 
-| Besoin | Outil | Pourquoi |
-|---|---|---|
-| Copier un disque ou une image secteur | `dd`, `ddrescue` | Copie brute, bit à bit |
-| Récupérer un disque défaillant | `ddrescue` | Tolère les erreurs de lecture |
-| Partitionner (GPT moderne) | `parted` | Scriptable, GPT et MBR |
-| Partitionner (interactif simple) | `cfdisk`, `fdisk` | Interface guidée |
-| Créer un système de fichiers ext4 | `mkfs.ext4` | FS Linux par défaut |
-| Créer un FS d'échange (clé USB) | `mkfs.vfat`, `mkfs.exfat` | Compatibilité multiplateforme |
-| Voir ce qui remplit un disque | `ncdu` | Navigation interactive par taille |
-| Espace libre par montage | `df -h` | Vue d'ensemble rapide |
+```
+Besoin                                    Outil               Pourquoi
+──────────────                            ──────────────      ──────────────
+Copier un disque ou une image secteur     dd (ou ddrescue)    Copie brute, bit à
+                                                              bit
+Récupérer un disque défaillant            ddrescue            Tolère les erreurs
+                                                              de lecture
+Partitionner (GPT moderne)                parted              Scriptable, GPT et
+                                                              MBR
+Partitionner (interactif simple)          cfdisk / fdisk      Interface guidée
+Créer un système de fichiers ext4         mkfs.ext4           FS Linux par
+                                                              défaut
+Créer un FS d'échange (clé USB)           mkfs.vfat / exfat   Compatibilité
+                                                              multiplateforme
+Voir ce qui remplit un disque             ncdu                Navigation
+                                                              interactive par
+                                                              taille
+Espace libre par montage                  df -h               Vue d'ensemble
+                                                              rapide
+```
 
 > En une  phrase : lsblk  pour identifier, parted  pour partitionner,  mkfs pour
 > formater, dd/ddrescue pour imager ou copier secteur à secteur, ncdu et df pour
 > analyser   l'occupation.   Toutes   ces   actions,    sauf  l'analyse,    sont
-> destructrices : vérifier la cible deux fois.
+> destructrices : vérifier la cible 2 fois.
 
 ## Principes fondamentaux
 
@@ -58,10 +68,10 @@ _Référence d'exploitation des opérations sur les disques sous Linux : écritu
 > des erreurs de  lecture, ddrescue est  préférable à dd car  il continue malgré
 > les secteurs défectueux.
 
-> L'espace  disque a  deux ennemis  distincts :  les octets  et  les inodes.  Un
+> L'espace  disque a  2 ennemis  distincts :  les octets  et  les inodes.  Un
 > « disque plein » peut  venir de fichiers volumineux (df montre  les octets) ou
 > d'une  multitude  de  petits  fichiers   épuisant  les  inodes  (  `df -i`  ).
-> Diagnostiquer les deux ; ncdu trouve  les gros consommateurs d'octets, mais un
+> Diagnostiquer les 2 ; ncdu trouve  les gros consommateurs d'octets, mais un
 > manque d'inodes exige `df -i` et la chasse aux répertoires surpeuplés.
 
 ## Opérations standard
@@ -69,8 +79,10 @@ _Référence d'exploitation des opérations sur les disques sous Linux : écritu
 ### Identifier les disques (préalable obligatoire)
 
 ```bash
-lsblk -f                              # arbre disques/partitions, FS, montage, UUID
-lsblk -o NAME,SIZE,MODEL,SERIAL       # identifier par taille, modèle, numéro de série
+# arbre disques/partitions, FS, montage, UUID
+lsblk -f
+# identifier par taille, modèle, numéro de série
+lsblk -o NAME,SIZE,MODEL,SERIAL
 sudo parted /dev/sdX print            # table de partitions d'un disque
 sudo blkid                            # UUID et type de chaque partition
 df -h                                 # espace par système de fichiers monté
@@ -136,7 +148,8 @@ journal, qui permet de reprendre et de réessayer les zones difficiles.
 
 ```bash
 df -h                                 # espace par système de fichiers (octets)
-df -i                                 # espace en INODES (autre cause de « disque plein »)
+# espace en INODES (autre cause de « disque plein »)
+df -i
 ncdu /                                # navigation interactive par taille
 du -sh /chemin/*                      # taille de chaque sous-élément
 du -sh /chemin/* | sort -rh | head    # les plus gros, classés
@@ -158,7 +171,7 @@ arrêter immédiatement, ne plus écrire, tenter une récupération.
 ```bash
 # NE PLUS RIEN ÉCRIRE sur le disque. Démonter si monté.
 sudo umount /dev/sdX* 2>/dev/null
-# Tenter une récupération de données (voir aussi runbook archivage pour les images)
+# Récupération de données : voir aussi le runbook archivage
 sudo ddrescue /dev/sdX rescue.img rescue.log   # imager d'abord
 # puis testdisk/photorec sur l'image, jamais sur le disque d'origine
 ```
@@ -216,6 +229,174 @@ sudo parted -a optimal /dev/sdX mkpart primary ext4 1MiB 100%
 > d'imager  le disque  (ddrescue) et  de  travailler sur  la copie,  jamais  sur
 > l'original, pour ne pas réduire les chances de récupération.
 
+## Protocole d'urgence
+
+Situation : une écriture s'est faite sur le mauvais support, une partition a été
+supprimée, un système de fichiers a été créé par-dessus des données.
+
+**1. Arrêter toute écriture, immédiatement.** C'est la seule action dont
+dépendent toutes les suivantes. Chaque écriture réduit ce qui est récupérable.
+
+```bash
+sync                                     # vider les tampons en attente
+sudo umount /dev/sdXN                    # démonter la cible
+sudo mount -o remount,ro /point_montage  # si le démontage est refusé
+```
+
+Si un `dd` est encore en cours, l'interrompre. Ne pas le relancer « pour
+corriger », ne pas reformater, ne pas repartitionner.
+
+**2. Préserver l'état.** Noter ce qui a été tapé, exactement, avant de
+l'oublier. La commande fautive dit où l'écriture a eu lieu et sur quelle
+longueur.
+
+```bash
+history | tail -20 > /tmp/incident-$(date +%s).txt
+lsblk -o NAME,SIZE,TYPE,FSTYPE,MOUNTPOINT >> /tmp/incident-$(date +%s).txt
+```
+
+**3. Observer sans monter.** Lire la table de partitions et signer le contenu
+sans écrire dessus.
+
+```bash
+sudo fdisk -l /dev/sdX          # table lue, rien d'écrit
+sudo blkid /dev/sdX*            # systèmes de fichiers reconnus
+sudo file -s /dev/sdXN          # signature de début de partition
+```
+
+**4. Isoler le support.** Débrancher si c'est un disque externe. S'il s'agit
+d'un disque système et que la machine tourne encore, ne pas redémarrer : le
+démarrage écrit. Passer par une clé de secours pour la suite.
+
+**5. Décider avant d'agir.** 2 chemins seulement, et ils s'excluent :
+
+```
+Données irremplaçables       imager d'abord, travailler sur la copie,
+                             envisager un service spécialisé si l'image
+                             elle-même est illisible
+Données sauvegardées         ne rien tenter de récupérer, restaurer
+ailleurs                     depuis la sauvegarde, c'est plus rapide
+                             et plus sûr
+```
+
+---
+
+## Processus de récupération
+
+### Prérequis
+
+Vérifier avant de commencer. S'il manque un élément, s'arrêter et le signaler.
+
+```bash
+lsblk                            # identifier le support source, sans le monter
+df -h /destination               # espace libre >= taille du support source
+command -v ddrescue              # sinon : installer depuis un AUTRE support
+```
+
+L'espace de destination doit être au moins égal à la taille totale du disque
+source, pas à celle des données : l'image est sectorielle.
+
+### Étapes
+
+Chaque étape se vérifie avant la suivante.
+
+**1. Imager le support, jamais travailler sur l'original.**
+
+```bash
+sudo ddrescue -d -r3 /dev/sdX /destination/image.img /destination/image.map
+```
+
+État attendu : `ddrescue` affiche le taux de secteurs récupérés et écrit un
+fichier de journal. Ce journal permet de reprendre une passe interrompue :
+ne pas le supprimer.
+
+**2. Travailler sur une copie de l'image, pas sur l'image elle-même.**
+
+```bash
+cp --reflink=auto /destination/image.img /destination/travail.img
+```
+
+**3. Retrouver les partitions perdues, sur la copie.**
+
+```bash
+sudo losetup -fP --show /destination/travail.img    # expose /dev/loopN
+sudo testdisk /destination/travail.img              # analyse et reconstruction
+```
+
+Pour extraire des fichiers sans reconstruire la table, `photorec` travaille par
+signatures : il retrouve le contenu mais perd les noms et l'arborescence.
+
+**4. Vérifier un système de fichiers retrouvé avant de le monter en écriture.**
+
+```bash
+sudo fsck -n /dev/loopNp1        # -n : diagnostic seul, aucune réparation
+sudo mount -o ro /dev/loopNp1 /mnt/verif
+```
+
+**5. Recopier ce qui a été retrouvé vers un support sain**, puis seulement
+alors réutiliser le support d'origine.
+
+### Validation d'état
+
+```bash
+diff -r /mnt/verif/dossier /destination/restaure/dossier | head
+find /destination/restaure -type f | wc -l       # volumétrie attendue
+sudo losetup -d /dev/loopN                       # détacher proprement
+```
+
+État attendu : le nombre de fichiers correspond à ce qui était attendu, un
+échantillon s'ouvre correctement, et le périphérique de boucle est détaché.
+
+---
+
+## Pipelines utiles
+
+```bash
+# Occupation par système de fichiers, sans les pseudo-systèmes
+df -hT -x tmpfs -x devtmpfs -x squashfs | sort -k6 -h
+
+# Répertoires les plus lourds sans franchir de point de montage
+du -xh --max-depth=2 / 2>/dev/null | sort -rh | head -20
+
+# Inodes consommés, cause fréquente d'un disque « plein » qui ne l'est pas
+df -i | awk 'NR==1 || $5+0 > 80'
+
+# Fichiers supprimés mais toujours ouverts, qui retiennent l'espace
+lsof -nP 2>/dev/null |
+  awk '/deleted/ {s[$1"/"$2]+=$7} END{for(p in s) print s[p], p}' |
+  sort -rn | head
+
+# Correspondance périphérique, UUID et point de montage
+lsblk -o NAME,SIZE,FSTYPE,UUID,MOUNTPOINT
+
+# Vérifier qu'une entrée de fstab correspond à un périphérique présent
+awk '$1 ~ /^UUID=/ {print substr($1,6)}' /etc/fstab |
+  while read -r u; do blkid -U "$u" >/dev/null || echo "UUID ABSENT: $u"; done
+```
+
+L'occupation de `/tmp` en tmpfs, bornée indépendamment du disque, relève du
+runbook temporaires-vidages.
+
+Le cas des fichiers supprimés encore ouverts explique la plupart des écarts
+entre `du` et `df` : `du` parcourt les entrées de répertoire, un fichier
+supprimé n'en a plus, et son espace reste pourtant réservé jusqu'à la fermeture
+du dernier descripteur.
+
+---
+
+## Sources amont
+
+À ouvrir quand une commande de vérification révèle un écart avec ce qui est
+relevé plus haut.
+
+```
+util-linux           https://github.com/util-linux/util-linux/releases
+e2fsprogs            https://e2fsprogs.sourceforge.net/
+Documentation btrfs  https://btrfs.readthedocs.io/
+```
+
+---
+
 ## Points clés à retenir
 
 > dd,  mkfs et  parted sont destructeurs  et sans  confirmation :  identifier la
@@ -230,8 +411,8 @@ sudo parted -a optimal /dev/sdX mkpart primary ext4 1MiB 100%
 > dd :  bs=4M pour la  vitesse, status=progress pour  le suivi,  conv=fsync pour
 > garantir l'écriture. ddrescue sur un support défaillant.
 
-> « Disque plein »  a  deux causes :  octets (df  -h, ncdu)  ou inodes  (df -i).
-> Diagnostiquer les deux.
+> « Disque plein »  a  2 causes :  octets (df  -h, ncdu)  ou inodes  (df -i).
+> Diagnostiquer les 2.
 
 > Récupération : ne  plus écrire sur  le disque touché, l'imager  avec ddrescue,
 > travailler sur la copie.

@@ -3,11 +3,15 @@
   <div class="error-visual">
     <svg viewBox="0 0 120 120" class="error-icon" aria-hidden="true">
       <circle cx="60" cy="60" r="50" fill="none" stroke="var(--color-dust-grey)" stroke-width="2" stroke-dasharray="8 4"/>
-      <text x="60" y="70" text-anchor="middle" font-size="36" font-weight="600" fill="var(--color-grey-olive)">404</text>
+      <text x="60" y="70" text-anchor="middle" font-size="36" font-weight="600" fill="var(--color-accent)">404</text>
     </svg>
   </div>
   <h1>Page introuvable</h1>
-  <p>Cette page n'existe pas, a été déplacée, ou tu as peut-être fait une faute de frappe dans l'URL.</p>
+  <p>Cette page n'existe pas, a été déplacée, ou l'URL contient peut-être une faute de frappe.</p>
+  <p class="error-hint">
+    Tu cherchais peut-être un projet, un runbook Linux, ou un article du blog ?
+    Choisis une section ci-dessous.
+  </p>
   <div class="error-actions">
     <a href="{{ "" | relURL }}" class="btn-primary">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -17,7 +21,9 @@
       Accueil
     </a>
     <a href="{{ "projets/" | relURL }}" class="btn-secondary">Projets</a>
+    <a href="{{ "blog/" | relURL }}" class="btn-secondary">Blog</a>
     <a href="{{ "notes/" | relURL }}" class="btn-secondary">Notes</a>
+    <a href="{{ "about/" | relURL }}" class="btn-secondary">À propos</a>
   </div>
 </div>
 {{ end }}

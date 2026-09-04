@@ -5,6 +5,9 @@ date: 2025-09-13
 video: "/videos/gamefaqs-scraper.webm"
 videoPoster: "/videos/gamefaqs-scraper.jpg"
 tags: ["Python", "CLI", "Web scraping", "Pandoc", "Documentation"]
+status: "Actif"
+role: "Conception et développement solo"
+period: "2025 — en cours"
 draft: false
 ---
 

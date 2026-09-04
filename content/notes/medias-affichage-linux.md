@@ -1,9 +1,9 @@
 ---
-title: "Médias et affichage graphique"
-description: "Runbook d'exploitation des outils multimédias et d'affichage sous Linux/X11 : ffmpeg (transcodage), feh (visionneuse), scrcpy (miroir Android), xrandr (écrans). Opérations courantes, choix d'outil et dépannage par symptôme."
+title: "Médias et affichage graphique sous Linux"
+description: "Référence d'exploitation des outils multimédias et d'affichage sous Linux/X11 : transcodage et filtrage audio-vidéo (ffmpeg), visionneuse d'images légère (feh), miroir et contrôle d'appareils Android (scrcpy), configuration dynamique des écrans (xrandr). Couvre les opérations cou..."
 tags: ["linux", "cli", "ffmpeg", "scrcpy", "xrandr", "x11", "runbook", "medias"]
 updated: 2026-06-18
-validated: 2026-06-18
+validated: 2026-08-18
 owner: "opérateur du système"
 target: "Linux X11, ffmpeg 6.x/7.x, scrcpy 2.x/3.x, xrandr"
 ---
@@ -12,16 +12,26 @@ _Référence d'exploitation des outils multimédias et d'affichage sous Linux/X1
 
 ## Choisir le bon outil
 
-| Besoin | Outil | Pourquoi |
-|---|---|---|
-| Convertir ou compresser une vidéo | `ffmpeg` | Transcodage universel |
-| Extraire l'audio d'une vidéo | `ffmpeg` | Démuxage et réencodage |
-| Couper, concaténer, redimensionner | `ffmpeg` | Filtres et flux |
-| Afficher une image, un diaporama | `feh` | Visionneuse X11 légère |
-| Définir un fond d'écran (X11) | `feh` | `--bg-scale` et dérivés |
-| Miroir et contrôle d'un Android | `scrcpy` | Affichage et contrôle USB, réseau |
-| Enregistrer l'écran d'un Android | `scrcpy` | `--record` |
-| Configurer résolution et écrans | `xrandr` | Sorties, résolution, disposition |
+```
+Besoin                                    Outil               Pourquoi
+──────────────                            ──────────────      ──────────────
+Convertir ou compresser une vidéo         ffmpeg              Transcodage
+                                                              universel
+Extraire l'audio d'une vidéo              ffmpeg              Démuxage et
+                                                              réencodage
+Couper, concaténer, redimensionner        ffmpeg              Filtres et flux
+Afficher une image, un diaporama          feh                 Visionneuse X11
+                                                              légère
+Définir un fond d'écran (X11)             feh                 --bg-scale et
+                                                              dérivés
+Miroir et contrôle d'un Android           scrcpy              Affichage et
+                                                              contrôle
+                                                              USB/réseau
+Enregistrer l'écran d'un Android          scrcpy              --record
+Configurer résolution et écrans           xrandr              Sorties,
+                                                              résolution,
+                                                              disposition
+```
 
 > En une  phrase : ffmpeg pour  tout transcodage audio-vidéo, feh  pour afficher
 > des  images et  poser un  fond d'écran,  scrcpy  pour miroiter  et piloter  un
@@ -33,7 +43,7 @@ _Référence d'exploitation des outils multimédias et d'affichage sous Linux/X1
 > (mp4, mkv) qui transporte des flux  (vidéo, audio, sous-titres), chacun encodé
 > avec un  codec (H.264,  AAC).  ffmpeg peut  copier les  flux sans  réencoder (
 > `-c copy`  , rapide,  sans  perte) ou  les réencoder  (lent,  avec réglage  de
-> qualité). Distinguer les deux est la clé de l'efficacité.
+> qualité). Distinguer les 2 est la clé de l'efficacité.
 
 > Copier vaut  mieux que  réencoder quand c'est  possible. Changer  de conteneur
 > sans  toucher aux  flux (  `-c copy`  ) est  quasi instantané  et sans  perte.
@@ -115,7 +125,8 @@ scrcpy                                # miroir + contrôle (USB)
 scrcpy --max-size 1024                # limiter la résolution (fluidité)
 scrcpy --record capture.mp4           # enregistrer la session
 scrcpy --no-audio                     # sans audio (scrcpy 2.x+ gère l'audio)
-scrcpy --turn-screen-off              # éteindre l'écran du téléphone, garder le contrôle
+# éteindre l'écran du téléphone, garder le contrôle
+scrcpy --turn-screen-off
 # Connexion sans fil
 adb tcpip 5555 && adb connect IP:5555 && scrcpy
 ```
@@ -130,7 +141,8 @@ mode TCP via adb en USB.
 ```bash
 xrandr                                # liste sorties, résolutions, état
 xrandr --output HDMI-1 --auto         # active une sortie à sa résolution native
-xrandr --output HDMI-1 --mode 1920x1080 --rate 60   # résolution et fréquence précises
+# résolution et fréquence précises
+xrandr --output HDMI-1 --mode 1920x1080 --rate 60
 xrandr --output HDMI-1 --right-of eDP-1   # placer un écran à droite du portable
 xrandr --output eDP-1 --primary       # définir l'écran principal
 xrandr --output HDMI-1 --off          # désactiver une sortie
@@ -147,12 +159,13 @@ fenêtres pour les rendre permanents.
 ### ffmpeg : le découpage avec -c copy décale ou fige le début
 
 Symptôme : un extrait  coupé sans réencodage commence par un  gel ou un décalage
-audio.  Cause  probable : la  coupe  tombe entre  deux images-clés  (keyframes).
+audio.  Cause  probable : la  coupe  tombe entre  2 images-clés  (keyframes).
 Correction : réencoder pour une coupe précise, ou couper sur une image-clé.
 
 ```bash
 # Coupe précise (réencode, donc exacte à la frame)
-ffmpeg -ss 00:01:00 -i entree.mp4 -t 30 -c:v libx264 -crf 20 -c:a aac extrait.mp4
+ffmpeg -ss 00:01:00 -i entree.mp4 -t 30 \
+  -c:v libx264 -crf 20 -c:a aac extrait.mp4
 ```
 
 ### ffmpeg : la concaténation échoue ou désynchronise
@@ -163,7 +176,9 @@ Correction :    harmoniser    par   réencodage   avant   de    concaténer,  
 utiliser le filtre concat.
 
 ```bash
-ffmpeg -i a.mp4 -i b.mp4 -filter_complex "[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]" -map "[v]" -map "[a]" sortie.mp4
+ffmpeg -i a.mp4 -i b.mp4 \
+  -filter_complex "[0:v][0:a][1:v][1:a]concat=n=2:v=1:a=1[v][a]" \
+  -map "[v]" -map "[a]" sortie.mp4
 ```
 
 ### feh : « Can't open X display »
@@ -196,10 +211,88 @@ sortie  non activée,  ou  mode non  détecté.  Correction :  forcer la  dét
 et activer la sortie.
 
 ```bash
-xrandr                                # vérifier si la sortie est listée comme « connected »
+# vérifier si la sortie est listée comme « connected »
+xrandr
 xrandr --output HDMI-1 --auto         # activer à la résolution native
 # Si le mode manque, l'ajouter avec cvt puis xrandr --newmode/--addmode
 ```
+
+## Traitement par lots
+
+```bash
+shopt -s nullglob
+
+# Transcoder tout un dossier, une sortie par entrée
+for f in *.mkv; do
+  ffmpeg -i "$f" -c:v libx264 -crf 23 -c:a aac "${f%.mkv}.mp4" ||
+    printf 'ÉCHEC: %s\n' "$f" >&2
+done
+
+# Extraire la piste audio de chaque vidéo
+for f in *.mp4; do ffmpeg -i "$f" -vn -c:a copy "${f%.mp4}.m4a"; done
+
+# Inventaire des durées et des dimensions, en colonnes
+for f in *.mp4; do
+  printf '%s\t%s\n' "$f" "$(ffprobe -v error -show_entries \
+    format=duration -of csv=p=0 "$f")"
+done | column -t
+```
+
+Le transcodage est coûteux : sur un gros lot, préférer `xargs -P "$(nproc)"` au
+tour par tour, en surveillant la charge.
+
+---
+
+## Pipelines utiles
+
+```bash
+# Durée et taille de chaque média d'un dossier, classées
+for f in *.mkv *.mp4; do
+  [ -e "$f" ] || continue
+  printf '%s\t%s\t%s\n' \
+    "$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f")" \
+    "$(stat -c %s "$f")" "$f"
+done | sort -rn
+
+# Codecs présents, pour repérer ce qui ne se lit pas en accélération
+for f in *.mkv; do
+  printf '%s\t%s\n' \
+    "$(ffprobe -v error -select_streams v:0 -show_entries stream=codec_name \
+       -of csv=p=0 "$f")" "$f"
+done | sort | uniq -c
+
+# Durée cumulée d'un dossier, en secondes puis en heures
+ffprobe -v error -show_entries format=duration -of csv=p=0 *.mp4 |
+  awk '{s+=$1} END{printf "%.0f s soit %.2f h\n", s, s/3600}'
+
+# Dimensions et profondeur de toutes les images
+identify -format '%w %h %[bit-depth] %f\n' *.png | sort -k1 -rn
+
+# Images plus larges qu'une borne, à réduire
+identify -format '%w %f\n' *.jpg | awk '$1>1920 {print $2}'
+```
+
+Le traitement d'un dossier entier, images comprises, suit la boucle sûre du
+runbook conversion-lots.
+
+`ffprobe` avec `-of csv=p=0` rend les valeurs sans étiquette, dans l'ordre des
+`-show_entries`. Vérifié : une demande combinée de `format` et de `stream` rend
+2 lignes distinctes, la ligne de flux d'abord. Grouper les 2 sur une ligne
+demande 2 appels, ce que fait la première forme.
+
+---
+
+## Sources amont
+
+À ouvrir quand une commande de vérification révèle un écart avec ce qui est
+relevé plus haut.
+
+```
+FFmpeg, publications  https://ffmpeg.org/download.html
+ImageMagick           https://github.com/ImageMagick/ImageMagick/releases
+```
+
+---
 
 ## Points clés à retenir
 

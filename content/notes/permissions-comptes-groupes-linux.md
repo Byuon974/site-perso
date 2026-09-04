@@ -1,9 +1,9 @@
 ---
 title: "Permissions, comptes et groupes"
-description: "Runbook d'exploitation de la gestion des droits et des identités sous Linux : chmod, chown, chgrp, useradd, groupadd, gpasswd, who/w. Opérations courantes, dépannage, sécurité et pièges classiques."
+description: "Référence d'exploitation de la gestion des droits et des identités sous Linux : permissions de fichiers (chmod), propriété (chown, chgrp), comptes utilisateurs (useradd), groupes (groupadd, groupmod, gpasswd), et surveillance des sessions (who, w). Couvre les opérations courantes..."
 tags: ["linux", "cli", "chmod", "chown", "useradd", "runbook", "permissions", "securite"]
-updated: 2026-06-18
-validated: 2026-06-18
+updated: 2026-08-18
+validated: 2026-08-18
 owner: "opérateur du système"
 target: "Linux (Arch/Artix, Debian, RHEL), shadow-utils"
 ---
@@ -12,11 +12,11 @@ _Référence d'exploitation de la gestion des droits et des identités sous Linu
 
 ## Principes fondamentaux
 
-> Trois  entités, trois  permissions,  lues en  octal ou  en symbolique.  Chaque
+> 3  entités, 3  permissions,  lues en  octal ou  en symbolique.  Chaque
 > fichier porte des droits pour le propriétaire (u), le groupe (g) et les autres
 > (o),  chacun en lecture  (r=4),  écriture (w=2),  exécution (x=1).  Le triplet
-> octal (par exemple 755) résume les trois ; la forme symbolique (rwxr-xr-x) les
-> détaille. chmod accepte les deux notations.
+> octal (par exemple 755) résume les 3 ; la forme symbolique (rwxr-xr-x) les
+> détaille. chmod accepte les 2 notations.
 
 > Sur un répertoire, x veut dire « traverser »,  pas « exécuter ». Le bit x d'un
 > répertoire autorise l'accès à son contenu (cd, accès aux fichiers par chemin),
@@ -30,7 +30,7 @@ _Référence d'exploitation de la gestion des droits et des identités sous Linu
 > (1000) sur un répertoire (comme /tmp) empêche chacun de supprimer les fichiers
 > des autres. Ces bits sont sensibles en sécurité.
 
-> Propriété  et  permissions  sont deux  choses  distinctes.  chown  change  qui
+> Propriété  et  permissions  sont 2  choses  distinctes.  chown  change  qui
 > possède, chmod change ce que chacun peut faire. Modifier l'un sans l'autre est
 > une cause  fréquente d'accès  refusé : un fichier  bien permissionné  mais mal
 > possédé reste inaccessible.
@@ -52,11 +52,14 @@ _Référence d'exploitation de la gestion des droits et des identités sous Linu
 
 ```bash
 chmod 755 fichier                  # rwxr-xr-x (octal)
-chmod u+x script.sh                # ajoute exécution au propriétaire (symbolique)
+# ajoute exécution au propriétaire (symbolique)
+chmod u+x script.sh
 chmod go-w fichier                 # retire écriture au groupe et aux autres
-chmod -R u+rwX,go+rX dossier/      # récursif ; X = x seulement sur dossiers et exécutables
+# récursif ; X = x seulement sur dossiers et exécutables
+chmod -R u+rwX,go+rX dossier/
 chmod 2775 dossier/                # setgid : héritage du groupe dans le dossier
-chmod 1777 /tmp                    # sticky bit : chacun ne supprime que ses fichiers
+# sticky bit : chacun ne supprime que ses fichiers
+chmod 1777 /tmp
 chmod --reference=modele fichier   # copie les permissions d'un autre fichier
 ```
 
@@ -71,7 +74,8 @@ chown utilisateur fichier          # change le propriétaire
 chown utilisateur:groupe fichier   # propriétaire et groupe
 chgrp groupe fichier               # change seulement le groupe
 chown -R www-data:www-data /var/www/   # récursif
-chown --reference=modele fichier   # copie propriétaire et groupe d'un autre fichier
+# copie propriétaire et groupe d'un autre fichier
+chown --reference=modele fichier
 chown :groupe fichier              # change seulement le groupe (syntaxe chown)
 ```
 
@@ -83,9 +87,11 @@ jamais au propriétaire, utile quand seule l'appartenance de groupe doit bouger.
 
 ```bash
 useradd -m -s /bin/bash alice           # crée le compte avec home et shell
-useradd -r -s /usr/sbin/nologin svc      # compte de service (système, sans login)
+# compte de service (système, sans login)
+useradd -r -s /usr/sbin/nologin svc
 passwd alice                             # définit le mot de passe
-usermod -aG docker alice                 # AJOUTE au groupe docker (-a indispensable)
+# AJOUTE au groupe docker (-a indispensable)
+usermod -aG docker alice
 usermod -L alice                         # verrouille le compte
 usermod -s /bin/zsh alice                # change le shell
 userdel -r alice                         # supprime le compte ET son home
@@ -116,7 +122,8 @@ ajout de  groupe secondaire, l'utilisateur  doit rouvrir une session  (ou lancer
 ```bash
 who                                # utilisateurs connectés, terminal, heure
 who -b                             # heure du dernier démarrage
-w                                  # connectés + charge système + activité courante
+# connectés + charge système + activité courante
+w
 w utilisateur                      # sessions d'un utilisateur précis
 last                               # historique des connexions
 ```
@@ -194,10 +201,183 @@ chmod 700 ~/.ssh && chmod 600 ~/.ssh/*
 > pour plusieurs utilisateurs  (type /tmp), le sticky bit  (1777) empêche chacun
 > de supprimer ou renommer les fichiers des autres.
 
+## Protocole d'urgence
+
+Situation : un `chmod` ou un `chown` récursif a été lancé sur une arborescence
+système, ou un compte a perdu son accès. Le symptôme typique est immédiat :
+`sudo` refuse de fonctionner, les services tombent, la session graphique ne
+démarre plus.
+
+**1. Ne pas fermer le terminal en cours.** S'il détient encore une élévation
+valide, c'est la seule voie de réparation. Ne pas se déconnecter, ne pas
+redémarrer.
+
+**2. Vérifier ce qui reste possible**, avant que le ticket sudo n'expire :
+
+```bash
+sudo -v                          # renouvelle l'autorisation tant qu'elle marche
+sudo -i                          # ouvre un shell root et le GARDE ouvert
+```
+
+Un shell root ouvert dans un second terminal vaut mieux que toute autre
+précaution : le conserver pendant toute la réparation.
+
+**3. Mesurer l'étendue.** Un récursif laisse une trace de date homogène, ce qui
+permet de délimiter précisément ce qui a été touché.
+
+```bash
+find /chemin -newermt '-10 minutes' -printf '%M %u:%g %p\n' | head -30
+find /chemin -newermt '-10 minutes' | wc -l
+```
+
+**4. Vérifier les 3 points qui bloquent tout.** Dans cet ordre, ce sont eux
+qui décident si le système reste utilisable :
+
+```bash
+stat -c '%a %U:%G %n' /usr/bin/sudo   # attendu : 4755 root:root
+stat -c '%a %U:%G %n' /etc/sudoers    # attendu : 440 root:root
+stat -c '%a %U:%G %n' /etc/shadow     # attendu : 600 ou 640, jamais 644
+```
+
+Un `/etc/shadow` devenu lisible par tous est un incident de sécurité, pas
+seulement une gêne : traiter les mots de passe comme exposés.
+
+**5. Escalader si l'élévation est déjà perdue.** Sans sudo ni session root,
+essayer dans l'ordre `pkexec`, puis `su -`, puis le démarrage sur une clé de
+secours. Le runbook clé de secours prend le relais.
+
+---
+
+## Processus de récupération
+
+### Prérequis
+
+```bash
+id                               # identité et groupes réels
+sudo -l                          # les règles répondent-elles encore
+pacman -Qkk 2>&1 | tail -3       # sur Arch : ampleur des écarts constatés
+```
+
+### Étapes
+
+**1. Rétablir les droits critiques à la main**, avant tout le reste, parce que
+la suite en dépend :
+
+```bash
+sudo chown root:root /usr/bin/sudo && sudo chmod 4755 /usr/bin/sudo
+sudo chown root:root /etc/sudoers && sudo chmod 440 /etc/sudoers
+sudo chmod 600 /etc/shadow /etc/gshadow    # 640 root:shadow sur Debian
+sudo chmod 644 /etc/passwd /etc/group
+```
+
+**2. Restaurer les droits d'un ensemble de paquets.** C'est la seule méthode
+fiable pour une arborescence système : le gestionnaire de paquets connaît les
+modes attendus, pas l'opérateur.
+
+```bash
+# Arch et Artix : réinstaller les paquets dont les fichiers ont changé
+sudo pacman -Qkk 2>&1 | awk -F: '/Permissions/ {print $1}' | sort -u
+sudo pacman -S --overwrite '*' paquet1 paquet2
+
+# Debian et Ubuntu
+sudo dpkg --verify | awk '{print $NF}' | head
+sudo apt install --reinstall paquet
+```
+
+**3. Réparer un dossier personnel.** Les droits y sont uniformes, la
+reconstruction est directe :
+
+```bash
+sudo chown -R utilisateur:utilisateur /home/utilisateur
+chmod 700 /home/utilisateur
+chmod 700 /home/utilisateur/.ssh
+chmod 600 /home/utilisateur/.ssh/id_* /home/utilisateur/.ssh/authorized_keys
+chmod 644 /home/utilisateur/.ssh/*.pub
+```
+
+Les droits de `~/.ssh` sont vérifiés par le démon SSH : trop larges, il refuse
+l'authentification par clé sans message explicite côté client.
+
+**4. Rétablir un compte perdu de ses groupes.** Le groupe d'élévation n'a pas le
+même nom partout, `wheel` sur Arch et RHEL, `sudo` sur Debian.
+
+```bash
+getent group wheel sudo
+sudo gpasswd -a utilisateur wheel      # ajoute sans écraser les autres groupes
+```
+
+L'appartenance ne prend effet qu'à la prochaine ouverture de session : vérifier
+avec `id` dans un nouveau terminal, pas dans celui en cours.
+
+### Validation d'état
+
+```bash
+sudo -l                                  # les règles s'affichent
+stat -c '%a %U:%G' /usr/bin/sudo /etc/sudoers /etc/shadow
+id utilisateur                           # groupes attendus
+ssh -o BatchMode=yes utilisateur@localhost true   # si SSH est en service
+systemctl --failed                       # ou rc-status, selon l'init
+```
+
+État attendu : les règles sudo répondent, les 3 fichiers critiques ont
+retrouvé leurs modes, aucun service en échec.
+
+---
+
+## Pipelines utiles
+
+```bash
+# Fichiers accessibles en écriture au groupe ou aux autres
+find . -type f -perm /go+w -printf '%M %U:%G %p\n'
+
+# SUID et SGID présents sur le système, à comparer à un relevé de référence
+find / -xdev -type f -perm /6000 -printf '%M %p\n' 2>/dev/null | sort
+
+# Modes numériques d'une arborescence, pour diff avant et après
+find . -printf '%m %y %p\n' | sort -k3 > /tmp/modes-avant.txt
+
+# Fichiers sans propriétaire connu, après suppression d'un compte
+find / -xdev \( -nouser -o -nogroup \) -printf '%U:%G %p\n' 2>/dev/null
+
+# Comptes autorisés à ouvrir une session, lus dans la base
+getent passwd | awk -F: '$7 !~ /(nologin|false)$/ {print $1, $3, $7}'
+
+# Groupes secondaires d'un utilisateur, dans les deux bases
+getent group | awk -F: -v u=alice '$4 ~ u {print $1}'
+```
+
+Ces commandes écrivent dans `/etc/passwd`, `/etc/shadow` et `/etc/group`, dont
+le format et la réparation sont traités dans le runbook fichiers-etat-systeme.
+
+Le `/` de `-perm /go+w` signifie « au moins un de ces bits », là où `-perm -go+w`
+exige les 2 et `-perm go+w` exige une correspondance exacte. La confusion
+entre les 3 donne des relevés silencieusement vides.
+
+---
+
+## Sources amont
+
+```
+Source                                          Nature      Relevé le
+─────────────────────────────────────────────   ─────────   ──────────
+github.com/shadow-maint/shadow, notes de        primaire    2026-09-03
+version
+man 1 chmod, man 1 chown, coreutils             primaire    2026-09-03
+man 5 sudoers, man 8 visudo                     primaire    2026-09-03
+man 7 acl, man 1 setfacl                        primaire    2026-09-03
+```
+
+Ce qui bouge : les valeurs par défaut de `/etc/login.defs` selon la
+distribution, et le comportement de `sudo` sur les variables d'environnement.
+La série sudo-rs diverge de sudo sur certaines options : voir le runbook
+socle-gnu-outils-rust.
+
+---
+
 ## Points clés à retenir
 
 > Permissions  en  octal  (755)  ou  symbolique  (rwxr-xr-x),   pour  u/g/o,  en
-> r=4/w=2/x=1. chmod accepte les deux.
+> r=4/w=2/x=1. chmod accepte les 2.
 
 > Sur un répertoire,  x = traverser, r = lister.  Un « Permission denied » vient
 > souvent d'un parent sans x : namei -l le révèle.

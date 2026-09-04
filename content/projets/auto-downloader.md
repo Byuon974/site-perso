@@ -4,6 +4,9 @@ description: "Script Python qui automatise la récupération de bandes-son de je
 date: 2024-11-20
 image: "/images/uploads/projet-auto-downloader.png"
 tags: ["Python", "CLI", "Web scraping", "BeautifulSoup", "requests"]
+status: "Terminé"
+role: "Projet d'apprentissage solo"
+period: "2024"
 draft: false
 ---
 

@@ -23,32 +23,21 @@ déploiements avec Ansible, modélisation de bases de données, refonte applicat
 en PHP.
 
 J'entre en dernière année du MSc Intelligence Artificielle et Big Data à Epitech
-et je cherche l'entreprise qui m'accueillera en alternance. Le rythme est de six
-semaines en entreprise pour deux à l'école.
+pour élargir mon socle vers la donnée à grande échelle, et je cherche
+l'entreprise qui m'accueillera en alternance. Le rythme est de six semaines en
+entreprise pour deux à l'école.
 
 ---
 
 ## Comment je travaille
 
-Mes outils en ligne de commande disent plus sur ma façon de concevoir que la
-plateforme, parce qu'ils sont assez courts pour être lus en entier. Trois règles
-y reviennent.
+Un script qui sert vraiment vaut mieux qu'un discours sur ma façon de concevoir. Celui qui a servi à retirer la dépendance Google Fonts de ce site est court, il est dans le dépôt, et il illustre ce que j'essaie de faire à chaque fois : `recuperer-polices.sh`.
 
-**Un outil doit rester jetable.** Mes enveloppes autour de `yt-dlp` portent en
-commentaire la commande native équivalente à chaque option. Quelqu'un qui n'a
-pas mes scripts obtient le même résultat en copiant la ligne. Une dépendance
-qu'on peut abandonner sans rien perdre n'est plus une dépendance.
+Le script télécharge les `woff2` de Google, récrit les chemins vers l'arborescence locale, et affiche à la fin ce qu'il reste à faire à la main. En quarante lignes, on retrouve les choses qui comptent pour moi.
 
-**Un essai à blanc doit valider ce qu'il annonce.** Afficher un chemin de
-destination sans avoir vérifié qu'il est inscriptible ne prouve rien. Les
-dossiers sont donc créés et testés avant l'essai, pas après.
+Il déclare ses codes de sortie en tête (0 succès, 1 erreur d'exécution, 2 dépendance absente), il vérifie la présence de `curl` avant de commencer, et il crée le dossier de destination avant de télécharger dedans plutôt qu'après avoir tenté d'y écrire. La ligne `curl` porte en commentaire pourquoi l'en-tête `User-Agent` d'un navigateur récent est nécessaire, sans quoi Google renvoie du `ttf`. Les messages d'aide sortent sur `stderr`, les données pipeables sur `stdout`, ce qui permet de rediriger la sortie sans avoir à filtrer le bavardage. Et à la toute fin, plutôt qu'un `Done!` creux, le script énumère les trois actions restantes que l'automatisation n'a volontairement pas prises en charge : coller le bloc `@font-face` généré, retirer les balises Google Fonts du `<head>`, ajouter les préchargements listés en sortie.
 
-**Un message d'erreur doit dire quoi faire ensuite.** La commande qui montre le
-détail, celle qui revient en arrière, celle qui contourne. Sans ça, le lecteur
-repart chercher ailleurs ce que le programme sait déjà.
-
-Le reste suit : mode strict, codes de sortie conventionnels, `shellcheck`
-propre, et une vérification par exécution plutôt que par affirmation.
+Le principe qui tient tout ça ensemble tient en une phrase : un outil doit prouver ce qu'il annonce par ce qu'il exécute, pas par ce qu'il affiche. Le reste (mode strict bash, `shellcheck` propre, `set -euo pipefail`, `IFS` désarmé) suit naturellement quand cette exigence est posée.
 
 ---
 

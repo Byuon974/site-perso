@@ -4,6 +4,9 @@ description: "Plateforme SaaS de régulation transport médico-social pour les s
 date: 2026-07-14
 image: "/images/uploads/tap-dashboard.png"
 tags: ["Next.js", "TypeScript", "Supabase", "Sécurité", "RGPD"]
+status: "Livré, sort du projet hors de ma main"
+role: "Seul informaticien, conception et développement"
+period: "2025 — 2026"
 draft: false
 ---
 

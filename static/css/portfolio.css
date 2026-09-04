@@ -1597,3 +1597,144 @@ html[data-theme="dark"] .related-section {
     font-size: var(--t-xs);
   }
 }
+
+/* ── Cartouche métadonnées projet ─────────────────────────────────────
+   Statut, rôle et période, affichés en tête de chaque page projet.
+   Rendu inspiré des cartouches d'ouvrages : trois cellules alignées,
+   étiquette petite en JetBrains Mono, valeur en corps de lecture. */
+
+.projet-meta-cartouche {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--s-4);
+  padding: var(--s-4) var(--s-5);
+  margin: var(--s-5) 0 var(--s-6);
+  border-top: 1px solid var(--color-dust-grey);
+  border-bottom: 1px solid var(--color-dust-grey);
+}
+
+.projet-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.projet-meta-item dt {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.projet-meta-item dd {
+  font-size: var(--t-sm);
+  margin: 0;
+  color: var(--text-dark);
+  line-height: 1.4;
+}
+
+html[data-theme="dark"] .projet-meta-item dd {
+  color: var(--text-light);
+}
+
+/* Badges de statut : couleur porteuse de sens.
+   Contrastes calculés pour AA sur ivory-mist et sur bg-dark. */
+.meta-status {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.meta-status-active {
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
+  border-color: var(--color-accent-border);
+}
+
+.meta-status-done {
+  background: rgba(88, 87, 71, 0.10);
+  color: var(--text-secondary);
+  border-color: rgba(88, 87, 71, 0.30);
+}
+
+.meta-status-archived,
+.meta-status-neutral {
+  background: transparent;
+  color: var(--text-secondary);
+  border-color: var(--color-dust-grey);
+}
+
+html[data-theme="dark"] .meta-status-done {
+  background: rgba(176, 177, 159, 0.10);
+  border-color: rgba(176, 177, 159, 0.30);
+}
+
+
+/* ── Filtre catégorie de notes ────────────────────────────────────────
+   Boutons pour basculer entre toutes les notes, les fiches courtes
+   (commandes unitaires) et les runbooks (documents longs). */
+
+.notes-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s-2);
+  margin-bottom: var(--s-5);
+  padding-bottom: var(--s-4);
+  border-bottom: 1px solid var(--color-dust-grey);
+}
+
+.notes-filter-btn {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--color-dust-grey);
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: color var(--dur), border-color var(--dur), background var(--dur);
+}
+
+.notes-filter-btn:hover {
+  color: var(--color-accent);
+  border-color: var(--color-accent-border);
+}
+
+.notes-filter-btn.is-active {
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
+  border-color: var(--color-accent-border);
+  font-weight: 500;
+}
+
+/* Badge runbook affiché à côté du titre dans la liste */
+.archive-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.1rem 0.4rem;
+  background: var(--color-accent-bg);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent-border);
+  border-radius: 2px;
+  margin-left: var(--s-2);
+}
+
+
+/* ── Page 404 : phrase de guidage ────────────────────────────────── */
+
+.page-404 .error-hint {
+  font-size: var(--t-sm);
+  color: var(--text-secondary);
+  margin: var(--s-3) 0 var(--s-5);
+  max-width: 42ch;
+  margin-left: auto;
+  margin-right: auto;
+}

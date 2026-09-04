@@ -4,22 +4,31 @@
     <h1><span class="path-prefix">~/</span>notes</h1>
   </header>
 
-  {{/* 
-    Notes : la date est portée par "updated: YYYY-MM-DD" dans le front matter.
-    On évite .Lastmod/.Date (souvent à 0001-01-01 si non défini) et on se base
-    sur .Params.updated quand présent, sinon on retombe sur .Date.
+  {{/*
+    Notes : mélange de fiches courtes (commandes unitaires : cat, chmod, cp, chgrp)
+    et de runbooks longs (tagués "runbook"). Filtre client pour basculer entre les
+    deux ou tout afficher.
   */}}
 
   {{ $pages := .Pages }}
   {{ if $pages }}
+    <div class="notes-filter" role="tablist" aria-label="Filtrer les notes">
+      <button type="button" class="notes-filter-btn is-active" data-filter="all" role="tab" aria-selected="true">Tout</button>
+      <button type="button" class="notes-filter-btn" data-filter="fiche" role="tab" aria-selected="false">Fiches courtes</button>
+      <button type="button" class="notes-filter-btn" data-filter="runbook" role="tab" aria-selected="false">Runbooks</button>
+    </div>
+
     {{ $sorted := sort $pages ".Params.updated" "desc" }}
     {{ $scratch := newScratch }}
     {{ $scratch.Set "year" "" }}
 
+    <div class="notes-list-wrapper">
     {{ range $sorted }}
       {{ $d := .Date }}
       {{ if .Params.updated }}{{ $d = (time .Params.updated) }}{{ end }}
       {{ $y := $d.Format "2006" }}
+      {{ $cat := "fiche" }}
+      {{ if in .Params.tags "runbook" }}{{ $cat = "runbook" }}{{ end }}
 
       {{ if ne ($scratch.Get "year") $y }}
         {{ if ne ($scratch.Get "year") "" }}
@@ -33,17 +42,56 @@
         {{ $scratch.Set "year" $y }}
       {{ end }}
 
-      <li class="archive-item">
+      <li class="archive-item" data-category="{{ $cat }}">
         <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "Jan 02" }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        {{ if eq $cat "runbook" }}
+          <span class="archive-badge">runbook</span>
+        {{ end }}
         <span class="archive-arrow">»</span>
       </li>
     {{ end }}
 
           </ul>
         </section>
+    </div>
   {{ else }}
     <p class="archive-empty">Aucune note pour le moment.</p>
   {{ end }}
 </div>
+
+<script>
+(function () {
+  "use strict";
+  const buttons = document.querySelectorAll(".notes-filter-btn");
+  const items = document.querySelectorAll(".notes-list-wrapper .archive-item");
+  const sections = document.querySelectorAll(".notes-list-wrapper .archive-year");
+
+  if (buttons.length === 0) return;
+
+  function applyFilter(filter) {
+    items.forEach((li) => {
+      const cat = li.dataset.category;
+      const visible = filter === "all" || filter === cat;
+      li.hidden = !visible;
+    });
+    sections.forEach((section) => {
+      const visibleInside = section.querySelectorAll(".archive-item:not([hidden])").length;
+      section.hidden = visibleInside === 0;
+    });
+  }
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      buttons.forEach((b) => {
+        b.classList.remove("is-active");
+        b.setAttribute("aria-selected", "false");
+      });
+      btn.classList.add("is-active");
+      btn.setAttribute("aria-selected", "true");
+      applyFilter(btn.dataset.filter);
+    });
+  });
+})();
+</script>
 {{ end }}

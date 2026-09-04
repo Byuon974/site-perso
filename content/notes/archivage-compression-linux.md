@@ -1,36 +1,57 @@
 ---
 title: "Archivage et compression sous Linux"
-description: "Runbook d'exploitation des cinq outils d'archivage et de compression courants sous Linux : tar, zip/unzip, 7-Zip, rar/unrar, gzip. Création, extraction, chiffrement, transfert, dépannage, sécurité et récupération."
-tags: ["linux", "cli", "tar", "zip", "gzip", "runbook", "archivage"]
+description: "Référence d'exploitation des 5 outils d'archivage et de compression courants sous Linux : création, extraction, inspection, mise à jour, chiffrement, transfert, sauvegarde, dépannage par symptôme, sécurité, urgence et récupération. Couvre tar (archivage Unix et streaming), zip/un..."
+tags: ["linux", "cli", "tar", "zip", "gzip", "7z", "runbook", "archivage"]
 updated: 2026-06-18
-validated: 2026-06-18
+validated: 2026-08-18
 owner: "opérateur du système"
-target: "Linux (Arch/Artix, Debian, RHEL), GNU tar, InfoZip, 7zip (7zz), unrar, gzip"
+target: "Linux (Arch/Artix, Debian, RHEL), GNU tar, InfoZip, 7zip"
 ---
 
-_Référence d'exploitation des cinq outils d'archivage et de compression courants sous Linux : création, extraction, inspection, mise à jour, chiffrement, transfert, sauvegarde, dépannage par symptôme, sécurité, urgence et récupération. Couvre tar (archivage Unix et streaming), zip/unzip (interopérabilité), 7-Zip (compression et chiffrement), rar/unrar (format propriétaire) et gzip (compression de flux et de fichiers individuels). Cible un usage en ligne de commande sur systèmes Linux._
+_Référence d'exploitation des 5 outils d'archivage et de compression courants sous Linux : création, extraction, inspection, mise à jour, chiffrement, transfert, sauvegarde, dépannage par symptôme, sécurité, urgence et récupération. Couvre tar (archivage Unix et streaming), zip/unzip (interopérabilité), 7-Zip (compression et chiffrement), rar/unrar (format propriétaire) et gzip (compression de flux et de fichiers individuels). Cible un usage en ligne de commande sur systèmes Linux._
 
 ## Choisir le bon outil
 
 Le choix de  l'outil se décide sur l'usage réel :  interopérabilité, métadonnées
 Unix, ratio de compression, chiffrement, accès aléatoire.
 
-| Besoin | Outil recommandé | Pourquoi |
-|---|---|---|
-| Sauvegarde système Linux (permissions, liens, owner) | `tar` seul ou `tar` piped vers `7z` | Préserve permissions, owner, liens, xattrs, sparse |
-| Streaming réseau, pipeline SSH | `tar` | Flux séquentiel, pas d'index |
-| Archive incrémentale (niveaux) | `tar --listed-incremental` | Snapshot des fichiers modifiés |
-| Échange multiplateforme simple | `zip` | Lu partout, accès sélectif |
-| Mise à jour fréquente de membres | `zip` | Index central, ajout sans tout réécrire |
-| Meilleur ratio de compression | `7z` (LZMA2) | Compression solide inter-fichiers |
-| Chiffrement réel (AES-256 + noms) | `7z -mhe=on` | ZipCrypto est cassé, RAR fermé |
-| Accès aléatoire à un membre | `zip` ou `7z` non solide | Index, pas de scan complet |
-| Réception d'une archive `.rar` | `unrar` | Extraction seule sous Linux |
-| Archivage long terme interopérable | `tar.zst`, `tar.gz`, `7z` | Formats ouverts, pérennes |
-| Compresser un seul fichier ou flux | `gzip` | Mono-flux, idéal texte, logs, CSV |
-| Compresser un répertoire en `.tar.gz` | `tar + gzip` | `tar` assemble, `gzip` compresse |
-| Append à un log compressé | `gzip -c >>` | Flux `.gz` concaténables |
-| Accélérer gzip sur gros volumes | `pigz` | Multithread, format `.gz` identique |
+```
+Besoin                                  Outil recommandé    Pourquoi
+──────────────                          ──────────────      ──────────────
+Sauvegarde système Linux                tar (ou tar|7z)     Préserve
+                                                            permissions, owner,
+(permissions, liens, owner)                                 liens, xattrs,
+                                                            sparse
+Streaming réseau, pipeline SSH          tar                 Flux séquentiel, pas
+                                                            d'index
+Archive incrémentale (niveaux)          tar --listed-       Snapshot des
+                                                            fichiers modifiés
+                                        incremental
+Échange multiplateforme simple          zip                 Lu partout, accès
+                                                            sélectif
+Mise à jour fréquente de membres        zip                 Index central, ajout
+                                                            sans
+                                                            tout réécrire
+Meilleur ratio de compression           7z (LZMA2)          Compression solide
+                                                            inter-fichiers
+Chiffrement réel (AES-256 + noms)       7z -mhe=on          ZipCrypto est cassé,
+                                                            RAR fermé
+Accès aléatoire à un membre             zip ou 7z non solide Index, pas de scan
+                                        complet
+Réception d'une archive .rar            unrar               Extraction seule
+                                                            sous Linux
+Archivage long terme interopérable      tar.zst / tar.gz    Formats ouverts,
+                                                            pérennes
+                                        ou 7z
+Compresser un seul fichier ou flux      gzip                Mono-flux, idéal
+                                                            texte/logs/CSV
+Compresser un répertoire en .tar.gz     tar + gzip          tar assemble, gzip
+                                                            compresse
+Append à un log compressé               gzip -c >>          Flux .gz
+                                                            concaténables
+Accélérer gzip sur gros volumes         pigz                Multithread, format
+                                                            .gz identique
+```
 
 > En une phrase :  tar pour sauvegarder et streamer du Linux,  zip pour échanger
 > et mettre  à jour,  7z  pour compresser fort  et chiffrer,  rar  uniquement en
@@ -43,7 +64,7 @@ Unix, ratio de compression, chiffrement, accès aléatoire.
 Ces  règles  fondent un  usage  correct  et  évitent les  erreurs  destructrices
 (écrasement, perte de métadonnées, corruption de flux).
 
-> Archivage  et compression  sont deux  fonctions distinctes.  tar regroupe  les
+> Archivage  et compression  sont 2  fonctions distinctes.  tar regroupe  les
 > fichiers en  un flux  séquentiel sans les  compresser ; la  compression (gzip,
 > bzip2,  xz,  zstd) est  un filtre  appliqué au  flux entier.  Une archive  tar
 > compressée ne peut être ni parcourue ni modifiée sans décompression intégrale.
@@ -91,7 +112,7 @@ Ces  règles  fondent un  usage  correct  et  évitent les  erreurs  destructric
 > fois l'original et le `.gz` en cas de crash.
 
 > Les flux gzip  sont concaténables, et  `gzip -l` ment au-delà de 4  Go. Coller
-> deux  `.gz` (  `cat a.gz b.gz > ab.gz` )  produit  un gzip  valide que  gunzip
+> 2  `.gz` (  `cat a.gz b.gz > ab.gz` )  produit  un gzip  valide que  gunzip
 > décompresse  en  séquence,   ce  qui  permet  l'append  atomique  aux  logs  (
 > `gzip -c nouveau >> archive.gz` ).  En revanche, `gzip -l`  affiche une taille
 > fausse pour un original  de plus de 4 Go (champ ISIZE modulo  2^32) et pour un
@@ -108,12 +129,15 @@ concerné. Choisir l'outil selon le tableau ci-dessus.
 ```bash
 # tar : archivage Unix, compression par filtre (-C contrôle le chemin de base)
 tar -czf archive.tar.gz -C /home/user data/      # gzip
-tar -cJf archive.tar.xz -C /home/user data/      # xz (meilleur ratio, plus lent)
-tar --zstd -cf archive.tar.zst -C /home/user data/   # zstd (rapide, multithread)
+# xz (meilleur ratio, plus lent)
+tar -cJf archive.tar.xz -C /home/user data/
+# zstd (rapide, multithread)
+tar --zstd -cf archive.tar.zst -C /home/user data/
 
 # zip : récursif, niveau de compression, exclusion de patterns
 zip -r archive.zip /chemin/source -x "*/node_modules/*" "*.log"
-zip -r -0 media.zip /dossier/videos               # stockage seul (déjà compressés)
+# stockage seul (déjà compressés)
+zip -r -0 media.zip /dossier/videos
 
 # 7z : meilleur ratio (LZMA2), niveau -mx, solide -ms
 7z a -t7z -mx=5 archive.7z /source/               # usage courant
@@ -125,7 +149,8 @@ rar a archive.rar /source/
 # gzip : compresser un fichier unique (pas un répertoire)
 gzip -k fichier.log                               # garde l'original (-k)
 gzip -c fichier.log > fichier.log.gz              # vers stdout, original intact
-gzip -9 fichier.log                               # ratio max (gain marginal vs -6)
+# ratio max (gain marginal vs -6)
+gzip -9 fichier.log
 ```
 
 État  attendu :  le fichier  d'archive  est créé.  Vérifier  sa structure  avant
@@ -138,12 +163,14 @@ JPEG, archives), gain nul pour un coût CPU réel.
 ```bash
 tar -tvf archive.tar.gz                  # liste détaillée
 unzip -l archive.zip                     # noms et tailles
-zipinfo archive.zip                      # détails complets (méthode, CRC, permissions)
+# détails complets (méthode, CRC, permissions)
+zipinfo archive.zip
 7z l -slt archive.7z                     # liste avec détails techniques
 unrar l archive.rar                      # liste (sans extraction, sûr)
 zipgrep "motif" logs.zip "*.log"         # grep dans les membres sans extraire
 gzip -tv fichier.log.gz                  # tester le CRC32 d'un .gz
-gzip -lv fichier.log.gz                  # taille/ratio (FAUX si original > 4 Go)
+# taille/ratio (FAUX si original > 4 Go)
+gzip -lv fichier.log.gz
 zgrep "ERROR" fichier.log.gz             # grep dans un .gz sans décompresser
 ```
 
@@ -157,7 +184,8 @@ incertaine.  Pour un `.gz`  de plus de  4 Go décompressé,  ignorer la  taille 
 ```bash
 # tar : autodétection de la compression sur GNU tar récent
 tar -xf archive.tar.gz -C /destination/
-tar -xpf archive.tar.gz --acls --xattrs --selinux -C /destination/   # sauvegarde système
+# sauvegarde système
+tar -xpf archive.tar.gz --acls --xattrs --selinux -C /destination/
 
 # zip : contrôle de l'écrasement
 unzip archive.zip -d /destination/       # demande avant d'écraser
@@ -173,7 +201,8 @@ unrar x archive.rar /destination/
 # gzip : décompresser un .gz (supprime le .gz par défaut)
 gunzip fichier.log.gz                    # restaure fichier.log, efface le .gz
 gunzip -k fichier.log.gz                 # garde le .gz
-zcat fichier.log.gz > /destination/fichier.log   # vers une destination, .gz intact
+# vers une destination, .gz intact
+zcat fichier.log.gz > /destination/fichier.log
 ```
 
 État attendu :  les fichiers  apparaissent dans le  répertoire cible.  Sans `-C`
@@ -204,11 +233,14 @@ jour échoue : décompresser, modifier, recompresser, ou recréer l'archive.
 
 ```bash
 # Copier un répertoire vers un serveur distant sans fichier intermédiaire
-tar -czf - /chemin/source/ | ssh user@serveur "tar -xzf - -C /chemin/destination/"
+tar -czf - /chemin/source/ |
+  ssh user@serveur "tar -xzf - -C /chemin/destination/"
 # Sans compression sur réseau local rapide (le CPU est le goulot)
 tar -cf - /chemin/source/ | ssh user@serveur "tar -xf - -C /chemin/destination/"
 # Avec barre de progression
-tar -cf - /src/ | pv -s $(du -sb /src/ | awk '{print $1}') | gzip | ssh user@hôte "tar -xzf - -C /dst/"
+tar -cf - /src/ |
+  pv -s "$(du -sb /src/ | awk '{print $1}')" |
+  gzip | ssh user@serveur "cat > /sauvegarde/src.tar.gz"
 ```
 
 État  attendu :  l'arborescence  est  recréée  à distance  en  préservant  liens
@@ -225,8 +257,10 @@ tar cf - /data/ | 7z a -si -mx=5 /backups/data_$(date +%Y%m%d).tar.7z
 7z x -so /backups/data_20260618.tar.7z | tar xf - -C /restore/
 
 # Incrémentale par snapshot
-tar --listed-incremental=/backup/data.snar -czf /backup/full.tar.gz /source/    # niveau 0
-tar --listed-incremental=/backup/data.snar -czf /backup/incr1.tar.gz /source/   # niveau 1
+# niveau 0
+tar --listed-incremental=/backup/data.snar -czf /backup/full.tar.gz /source/
+# niveau 1
+tar --listed-incremental=/backup/data.snar -czf /backup/incr1.tar.gz /source/
 ```
 
 État attendu : la sauvegarde complète crée le fichier snapshot ( `.snar` ) ; les
@@ -243,7 +277,8 @@ sauvegarde sera complète.
 7z t archive_securisee.7z -p                     # tester (obligatoire)
 
 # zip : ZipCrypto FAIBLE, à éviter pour des données sensibles
-zip -r -e archive.zip /donnees                   # saisie interactive du mot de passe
+# saisie interactive du mot de passe
+zip -r -e archive.zip /donnees
 
 # Alternative robuste : chiffrer une archive avec GPG après création
 tar -czf - /donnees/ | gpg -c > archive.tar.gz.gpg
@@ -274,7 +309,8 @@ lance depuis le premier ( `.001` ou `.part1` ).
 gzip -c nouveau.log >> archive.log.gz
 
 # Compression compatible rsync : ne retransmet que les blocs modifiés
-gzip --rsyncable fichier.log             # coût ~1% de taille, gros gain en bande passante
+# coût ~1% de taille, gros gain en bande passante
+gzip --rsyncable fichier.log
 
 # Compression sûre contre les crashs (fsync avant suppression de l'original)
 gzip --synchronous fichier_critique.log
@@ -308,7 +344,8 @@ utiliser l'option correspondante.
 
 ```bash
 file archive.tar.gz       # "gzip compressed data", "XZ", "Zstandard"...
-tar -xf archive.tar.gz    # GNU tar récent détecte seul ; forcer -z/-j/-J en script portable
+# GNU tar récent détecte seul ; forcer -z/-j/-J en script portable
+tar -xf archive.tar.gz
 ```
 
 ### « Removing leading '/' from member names »
@@ -332,7 +369,8 @@ l'index depuis les en-têtes locaux.
 ```bash
 unzip -t archive.zip 2>&1 | tee diagnostic.log
 zip -F archive.zip --out reparee.zip       # reconstruction légère
-zip -FF archive.zip --out reparee.zip      # reconstruction agressive (scan octet par octet)
+# reconstruction agressive (scan octet par octet)
+zip -FF archive.zip --out reparee.zip
 unzip reparee.zip -d /destination/recuperation/
 ```
 
@@ -349,8 +387,10 @@ l'encodage à l'extraction, ou passer par 7z, ou renommer après coup.
 ```bash
 unzip -O CP1252 archive_windows.zip -d /destination/      # patch Debian/Ubuntu
 unzip -O Shift_JIS archive_japonaise.zip -d /destination/
-7z x archive.zip -o/destination/                          # 7z gère mieux les encodages
-convmv --notest -f cp1252 -t utf-8 -r /destination/       # renommage après extraction
+# 7z gère mieux les encodages
+7z x archive.zip -o/destination/
+# renommage après extraction
+convmv --notest -f cp1252 -t utf-8 -r /destination/
 ```
 
 ### Extraction très lente, CPU saturé à 100 %
@@ -399,7 +439,8 @@ format). Correction : vérifier le format réel et le magic number.
 
 ```bash
 file fichier.gz                  # identifier le format réel
-xxd fichier.gz | head -1         # gzip commence par 1f 8b ; bzip2 par 42 5a ; xz par fd 37 7a 58 5a
+# gzip commence par 1f 8b ; bzip2 par 42 5a ; xz par fd 37 7a 58 5a
+xxd fichier.gz | head -1
 ```
 
 Si le  magic number n'est  pas `1f 8b` ,  le fichier n'est  pas du gzip.  gunzip
@@ -443,7 +484,8 @@ Correction : passer par `find` ou compresser récursivement.
 
 ```bash
 find . -name "*.log" -exec gzip {} +     # regroupe les arguments en lots
-gzip -r .                                # compresse récursivement le répertoire courant
+# compresse récursivement le répertoire courant
+gzip -r .
 ```
 
 ## Sécurité des archives
@@ -498,7 +540,8 @@ Si le  `~/.bashrc` distant  écrit sur  stdout (bannière,  fortune),  ces donn�
 polluent le flux tar. Diagnostic et contournement :
 
 ```bash
-ssh user@serveur "echo CLEAN_CHECK" | head -1     # doit afficher CLEAN_CHECK seul
+# doit afficher CLEAN_CHECK seul
+ssh user@serveur "echo CLEAN_CHECK" | head -1
 ssh user@serveur "bash --norc --noprofile -c 'tar -czf - /src/'" | tar -xzf -
 ```
 
@@ -524,10 +567,10 @@ alors que l'original est déjà supprimé. Contournement pour un fichier critiqu
 
 Le  niveau  maximal n'est  pas  garanti  optimal :  sur  certains  fichiers,  la
 recherche exhaustive de `-9` fait des choix localement optimaux mais globalement
-moins bons que `-6` . Pour  l'archivage critique, comparer les deux ( `gzip -6k`
+moins bons que `-6` . Pour  l'archivage critique, comparer les 2 ( `gzip -6k`
 puis `gzip -9k` ,  puis `ls -l` ) plutôt que d'assumer  que `-9` gagne toujours.
 Le  gain  typique de  `-9`  sur  `-6`  reste de  2  à  3  points pour  un  temps
-deux fois plus long.
+2 fois plus long.
 
 ### La variable d'environnement GZIP n'honore que quelques options
 
@@ -563,18 +606,22 @@ Ne jamais  inverser : un redémarrage  ou une suppression manuelle  avant d'av
 **Prérequis.**    Vérifier   avant    de    commencer ;     si   l'un    manque,
 arrêter et le signaler.
 
-| Prérequis | Vérification |
-|---|---|
-| Commande et répertoire connus | Historique shell, note de l'étape urgence |
-| Archive originale intacte | `file archive.xxx`, test d'intégrité |
-| Source de référence disponible | Sauvegarde récente, snapshot, paquets distrib |
+```
+Prérequis                          Vérification
+──────────────                     ──────────────
+Commande et répertoire connus      historique shell, note de l'étape urgence
+Archive originale intacte          file archive.xxx, test d'intégrité
+Source de référence disponible     sauvegarde récente, snapshot, paquets distrib
+```
 
 ### Cas 1 : extraction accidentelle au mauvais endroit
 
 ```bash
 # Lister ce qui a été écrit, repérer les fichiers écrasés
 tar -tf archive.tar.gz > /tmp/extraits.txt
-while IFS= read -r f; do [ -e "$f" ] && echo "ÉCRASÉ: $f"; done < /tmp/extraits.txt
+while IFS= read -r f; do
+  [ -e "$f" ] && echo "ÉCRASÉ: $f"
+done < /tmp/extraits.txt
 # Restaurer les fichiers système depuis les paquets
 dpkg -S /chemin/fichier && apt-get install --reinstall paquet      # Debian
 rpm -qf /chemin/fichier && dnf reinstall paquet                    # RHEL/Fedora
@@ -586,7 +633,8 @@ rpm -qf /chemin/fichier && dnf reinstall paquet                    # RHEL/Fedora
 1. Éradication : déconnecter du réseau, identifier et supprimer les fichiers
    extraits, analyser le système à l'antivirus.
 2. Restauration : restaurer les données légitimes endommagées depuis une
-   sauvegarde propre antérieure à l'incident, jamais depuis l'archive compromise.
+   sauvegarde propre antérieure à l'incident, jamais depuis l'archive
+   compromise.
 3. Validation : vérifier l'intégrité des fichiers restaurés, changer les mots
    de passe potentiellement exposés, réanalyser pour confirmer l'éradication.
 ```
@@ -621,6 +669,74 @@ seule immédiatement.
 
 **Validation finale.** Fichiers restaurés intègres,  aucun reliquat de l'archive
 incriminée, services fonctionnels, sauvegarde récente disponible.
+
+## Traitement par lots
+
+```bash
+shopt -s nullglob                     # bash ; sous zsh : *.tar.gz(N)
+
+# Archiver chaque répertoire séparément, une archive par dossier
+for d in */; do tar czf "${d%/}.tar.gz" "$d"; done
+
+# Vérifier l'intégrité de tout un lot d'archives, échecs signalés
+for f in *.tar.gz; do
+  tar tzf "$f" >/dev/null 2>&1 || printf 'CORROMPUE: %s\n' "$f" >&2
+done
+
+# Recompresser un lot vers un format plus efficace
+for f in *.tar.gz; do
+  gunzip -c "$f" | zstd -19 -o "${f%.tar.gz}.tar.zst"
+done
+```
+
+`${d%/}` retire la barre oblique finale de `*/`, `${f%.tar.gz}` coupe le double
+suffixe : `${f%.*}` ne suffirait pas ici.
+
+---
+
+## Pipelines utiles
+
+```bash
+# Contenu d'une archive classé par taille, sans extraction
+tar tzvf archive.tgz | awk '{print $3, $6}' | sort -rn | head -20
+
+# Refuser une archive contenant un chemin absolu ou remontant
+tar tzf archive.tgz | grep -E '^/|(^|/)\.\./' && echo 'ARCHIVE SUSPECTE'
+
+# Taux de compression réel, comparé à la somme des membres
+tar tzvf archive.tgz | awk '{s+=$3} END{print "contenu:", s}'
+stat -c '%s compressé' archive.tgz
+
+# Membres d'un zip triés par taux de compression
+unzip -v archive.zip | awk 'NR>3 && NF>7 {print $5, $8}' | sort -n | head
+
+# Archiver en excluant ce qui se reconstruit
+tar --exclude-vcs --exclude='*.o' --exclude='node_modules' \
+    -caf sortie.tar.zst dossier/
+
+# Comparer une archive à l'arborescence d'origine sans extraire
+tar dzf archive.tgz -C /chemin/origine
+```
+
+Le contrôle des chemins avant extraction est la seule parade générique à la
+traversée de répertoire. `tar` refuse par défaut les chemins absolus et les
+remontées, mais les options `-P` et `--absolute-names` lèvent cette protection,
+et certains outils tiers ne l'ont jamais eue. Le test coûte une commande.
+
+---
+
+## Sources amont
+
+À ouvrir quand une commande de vérification révèle un écart avec ce qui est
+relevé plus haut.
+
+```
+GNU tar               https://savannah.gnu.org/projects/tar/
+libarchive et bsdtar  https://github.com/libarchive/libarchive/releases
+zstd                  https://github.com/facebook/zstd/releases
+```
+
+---
 
 ## Points clés à retenir
 
