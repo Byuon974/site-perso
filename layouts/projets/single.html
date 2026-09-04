@@ -1,0 +1,31 @@
+{{ define "main" }}
+<article class="projet-single prose">
+  {{ partial "page-header.html" (dict
+      "ctx" .
+      "wrapperClass" "projet-single-header"
+      "metaClass" "projet-single-meta"
+      "descClass" "projet-single-description"
+      "tagsWrapperClass" "projet-single-tags"
+      "tagClass" "projet-tag"
+      "showBreadcrumbs" true
+      "dateFormat" "janvier 2006"
+      "dateSource" "date"
+      "showReadingTime" true
+  ) }}
+
+  <div class="projet-single-links">
+    {{ with .Params.demo }}
+      <a href="{{ . }}" class="projet-link" rel="noopener" target="_blank">Demo</a>
+    {{ end }}
+    {{ with .Params.repo }}
+      <a href="{{ . }}" class="projet-link" rel="noopener" target="_blank">Code</a>
+    {{ end }}
+  </div>
+
+  <section class="projet-single-body prose-content" id="post-body">
+    {{ .Content }}
+  </section>
+
+  {{ partial "related.html" . }}
+</article>
+{{ end }}

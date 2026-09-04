@@ -1,0 +1,8 @@
+littlefoot 4.0.1
+Source : https://registry.npmjs.org/littlefoot/-/littlefoot-4.0.1.tgz
+Rapatrié le 2026-09-04, fichiers dist/littlefoot.css et dist/littlefoot.js.
+Licence MIT.
+
+Mise à jour :
+  curl -sL https://registry.npmjs.org/littlefoot/-/littlefoot-<version>.tgz | tar xz
+  cp package/dist/littlefoot.{css,js} static/vendor/littlefoot/

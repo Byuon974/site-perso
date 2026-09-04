@@ -1,0 +1,62 @@
+{{ define "main" }}
+<div class="projets-container">
+  <header class="projets-header">
+    <h1>Projets</h1>
+    <p>Une sélection de mes réalisations.</p>
+  </header>
+
+  {{ $pages := .Pages }}
+  {{ $total := len $pages }}
+
+  {{ if gt $total 0 }}
+  <ul class="projets-grid">
+    {{ range $i, $page := $pages }}
+    <li class="projet-cell">
+
+      {{/* La vignette est masquée aux lecteurs d'écran : le titre juste en
+           dessous porte le même lien, donc une seule annonce et un seul
+           arrêt de tabulation par carte. */}}
+      {{/* La première vignette est candidate au plus grand élément affiché :
+           elle se charge sans différé et en priorité haute. Les suivantes
+           restent différées. */}}
+      {{ $prio := cond (eq $i 0) "high" "auto" }}
+      {{ $lazy := cond (eq $i 0) "eager" "lazy" }}
+      <div class="projet-cell-thumb">
+        {{ with .Params.videoPoster }}
+        <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        {{ else }}
+        {{ with $page.Params.image }}
+        <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        {{ else }}
+        <span class="projet-cell-placeholder">{{ substr .Title 0 1 }}</span>
+        {{ end }}
+        {{ end }}
+        {{ with .Params.video }}<span class="projet-cell-video">&#9654;</span>{{ end }}
+      </div>
+
+      <div class="projet-cell-body">
+        <h2 class="projet-cell-title">
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+        </h2>
+
+        {{ with .Description }}
+        <p class="projet-cell-desc">{{ . }}</p>
+        {{ end }}
+
+        {{ with .Params.tags }}
+        {{/* Ligne unique, jamais de retour a la ligne : c'est ce qui garde
+             toutes les cartes a la meme hauteur. */}}
+        <p class="projet-cell-tags">
+          {{ range $i, $t := . }}{{ if $i }} &middot; {{ end }}{{ $t }}{{ end }}
+        </p>
+        {{ end }}
+      </div>
+
+    </li>
+    {{ end }}
+  </ul>
+  {{ else }}
+  <p class="projets-empty">Aucun projet pour le moment.</p>
+  {{ end }}
+</div>
+{{ end }}

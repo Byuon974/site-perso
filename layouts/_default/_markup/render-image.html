@@ -1,0 +1,13 @@
+{{- $src := .Destination | safeURL -}}
+{{- $alt := .Text | default "" -}}
+{{- $title := .Title -}}
+
+{{- if hasPrefix $src "/" -}}
+  {{- $src = strings.TrimPrefix "/" $src | relURL -}}
+{{- end -}}
+
+<img src="{{ $src }}"
+     alt="{{ $alt }}"
+     {{ with $title }}title="{{ . }}"{{ end }}
+     loading="lazy"
+     decoding="async" />

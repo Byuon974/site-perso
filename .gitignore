@@ -1,0 +1,23 @@
+# Hugo
+/resources/_gen/
+hugo_stats.json
+.hugo_build.lock
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node (pour decap-server)
+node_modules/
+
+# Logs
+*.log
+
+public/
+docs/

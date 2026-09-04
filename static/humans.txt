@@ -1,0 +1,11 @@
+/* TEAM */
+Auteur : Thomas VINH-SAN
+Site : https://nexus-tvs.xyz
+Localisation : La Réunion, France
+Contact : thomasvs974@proton.me
+
+/* SITE */
+Générateur : Hugo
+Hébergement : GitHub Pages
+Langages : HTML, CSS, JavaScript
+Fonts : Instrument Serif, JetBrains Mono

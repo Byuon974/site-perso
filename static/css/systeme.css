@@ -1,0 +1,93 @@
+/* ══════════════════════════════════════════════════════════════════════
+   SYSTÈME DE DESIGN
+   ══════════════════════════════════════════════════════════════════════
+
+   Chaque échelle est dérivée des valeurs déjà majoritaires dans le site,
+   arrondie sur un pas régulier. Une valeur hors échelle dans une feuille
+   signale soit un besoin réel à documenter ici, soit un oubli.
+
+   Ordre de lecture : couleur, typographie, espace, forme, mouvement.
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root {
+
+  /* ── TYPOGRAPHIE ────────────────────────────────────────────────────
+     Deux familles, une frontière : la sans porte la prose, la mono porte
+     la donnée (dates, chemins, tags, états, code), la display porte les
+     titres. */
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  --font-display: "Instrument Serif", Georgia, serif;
+
+  /* Six pas, rapport voisin de 1,18. Les 27 tailles trouvées dans les
+     feuilles se ramènent toutes à l'un d'eux. */
+  --t-xs:   0.75rem;   /* métadonnée : date, tag, mention légale        */
+  --t-sm:   0.85rem;   /* texte secondaire, légende                     */
+  --t-base: 1rem;      /* corps                                         */
+  --t-md:   1.1rem;    /* intertitre de carte, mise en avant            */
+  --t-lg:   1.35rem;   /* titre de section                              */
+  --t-xl:   1.6rem;    /* titre de page                                 */
+  --t-2xl:  2.25rem;   /* titre d'article long                          */
+
+  /* Deux pas d'affichage, hors échelle de lecture : ils ne servent qu'à
+     des caractères employés comme image, jamais à du texte à lire. */
+  --t-affiche: 3rem;   /* initiale de vignette sans image                */
+  --t-geant:   6rem;   /* code 404                                       */
+
+  /* La prose respire plus que l'interface : deux hauteurs suffisent. */
+  --lh-serre: 1.3;     /* titres, étiquettes                            */
+  --lh-prose: 1.6;     /* paragraphes                                   */
+
+  /* Mesure de lecture. En `ch`, donc calée sur la chasse de la mono :
+     la colonne garde sa largeur quelle que soit la taille choisie par le
+     visiteur dans son navigateur. */
+  --measure: 72ch;
+  --col-date: 7ch;
+  --gap-col: 2ch;
+
+  /* ── ESPACE ─────────────────────────────────────────────────────────
+     Base 0,25rem, doublement progressif. Les valeurs 1rem, 1.5rem et
+     2rem représentaient déjà les deux tiers des usages. */
+
+  --e-1: 0.25rem;   /*  4px  interstice                                 */
+  --e-2: 0.5rem;    /*  8px  entre éléments liés                        */
+  --e-3: 0.75rem;   /* 12px                                             */
+  --e-4: 1rem;      /* 16px  espacement courant                         */
+  --e-6: 1.5rem;    /* 24px  entre blocs                                */
+  --e-8: 2rem;      /* 32px  entre sections                             */
+  --e-12: 3rem;     /* 48px                                             */
+  --e-16: 4rem;     /* 64px  respiration de page                        */
+
+  /* ── FORME ──────────────────────────────────────────────────────────
+     Trois rayons, chacun avec un emploi distinct. Un quatrième
+     signalerait une hiérarchie qui n'existe pas. */
+
+  --r-sm: 3px;      /* étiquette, code en ligne                         */
+  --r-md: 6px;      /* carte, bouton, champ                             */
+  --r-full: 999px;  /* pastille, bouton circulaire                      */
+
+  /* Ombre sans flou : décalage franc, aucun rayon. L'objet se lit comme
+     une découpe imprimée et non comme un objet qui flotte, ce qui évite
+     l'ombre grise diffuse qu'on trouve sur toutes les cartes du web. */
+  --ombre: 0 2px 0 rgba(31, 39, 56, 0.85);
+  --ombre-forte: 0 3px 0 rgba(31, 39, 56, 0.9);
+
+  --trait: 1px solid var(--color-accent-border);
+
+  /* ── MOUVEMENT ──────────────────────────────────────────────────────
+     Une seule durée d'interface : 0,2s représentait déjà 23 usages sur
+     36. Les animations décoratives longues gardent leurs propres durées,
+     elles relèvent d'un autre registre. */
+
+  --duree: 0.2s;
+  --courbe: ease;
+}
+
+/* Le mouvement d'interface se coupe intégralement quand le système le
+   demande. Une seule règle, puisqu'une seule durée pilote tout. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duree: 0.01ms;
+  }
+}

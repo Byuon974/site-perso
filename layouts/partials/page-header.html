@@ -1,0 +1,67 @@
+{{/*
+Reusable page header for single pages.
+Usage:
+  {{ partial "page-header.html" (dict
+      "ctx" .
+      "wrapperClass" "blog-single-header"
+      "metaClass" "blog-single-meta"
+      "titleClass" ""
+      "descClass" "blog-single-description"
+      "tagsWrapperClass" "blog-single-tags"
+      "tagClass" "blog-tag"
+      "showBreadcrumbs" true
+      "dateFormat" "02 janvier 2006"
+      "dateSource" "date"  // "date" | "updated"
+      "updatedLabel" "Mis à jour : "
+      "showReadingTime" true
+  ) }}
+*/}}
+
+{{- $ctx := .ctx -}}
+{{- $wrapperClass := .wrapperClass | default "page-header" -}}
+{{- $metaClass := .metaClass | default "page-meta" -}}
+{{- $descClass := .descClass | default "page-description" -}}
+{{- $tagsWrapperClass := .tagsWrapperClass | default "page-tags" -}}
+{{- $tagClass := .tagClass | default "page-tag" -}}
+{{- $showBreadcrumbs := .showBreadcrumbs | default false -}}
+{{- $dateFormat := .dateFormat | default "02 janvier 2006" -}}
+{{- $dateSource := .dateSource | default "date" -}}
+{{- $updatedLabel := .updatedLabel | default "Mis à jour : " -}}
+{{- $showReadingTime := .showReadingTime | default false -}}
+
+{{- if $showBreadcrumbs -}}
+  {{ partial "breadcrumbs.html" $ctx }}
+{{- end -}}
+
+<header class="{{ $wrapperClass }}">
+  <div class="{{ $metaClass }}">
+    {{- if eq $dateSource "updated" -}}
+      {{- with $ctx.Params.updated -}}
+        <span>{{ $updatedLabel }}{{ dateFormat $dateFormat . }}</span>
+      {{- end -}}
+    {{- else -}}
+      {{- with $ctx.Date -}}
+        <time datetime="{{ .Format "2006-01-02" }}">{{ .Format $dateFormat }}</time>
+      {{- end -}}
+    {{- end -}}
+
+    {{- if $showReadingTime -}}
+      <span class="meta-sep">·</span>
+      {{ partial "reading-time.html" $ctx }}
+    {{- end -}}
+  </div>
+
+  <h1>{{ $ctx.Title }}</h1>
+
+  {{ with $ctx.Params.description }}
+    <p class="{{ $descClass }}">{{ . }}</p>
+  {{ end }}
+
+  {{ with $ctx.Params.tags }}
+    <ul class="{{ $tagsWrapperClass }}" aria-label="Tags">
+      {{ range . }}
+        <li><span class="{{ $tagClass }}">#{{ . }}</span></li>
+      {{ end }}
+    </ul>
+  {{ end }}
+</header>
