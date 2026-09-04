@@ -1,0 +1,44 @@
+{{/*
+  Chapô métadonnées projet : statut, rôle, période.
+  N'affiche que ce qui est renseigné dans le frontmatter.
+  Si aucun des trois champs n'est présent, ne rend rien.
+*/}}
+{{ $status := .Params.status }}
+{{ $role := .Params.role }}
+{{ $period := .Params.period }}
+
+{{ if or $status $role $period }}
+<dl class="projet-meta-cartouche">
+  {{ with $status }}
+    <div class="projet-meta-item">
+      <dt>Statut</dt>
+      <dd>
+        {{ $s := lower . }}
+        {{ $class := "meta-status-neutral" }}
+        {{ if or (eq $s "en production") (eq $s "livré") (eq $s "terminé") }}
+          {{ $class = "meta-status-done" }}
+        {{ else if or (eq $s "en développement") (eq $s "en cours") (eq $s "actif") }}
+          {{ $class = "meta-status-active" }}
+        {{ else if or (eq $s "archivé") (eq $s "gelé") (eq $s "abandonné") }}
+          {{ $class = "meta-status-archived" }}
+        {{ end }}
+        <span class="meta-status {{ $class }}">{{ . }}</span>
+      </dd>
+    </div>
+  {{ end }}
+
+  {{ with $role }}
+    <div class="projet-meta-item">
+      <dt>Rôle</dt>
+      <dd>{{ . }}</dd>
+    </div>
+  {{ end }}
+
+  {{ with $period }}
+    <div class="projet-meta-item">
+      <dt>Période</dt>
+      <dd>{{ . }}</dd>
+    </div>
+  {{ end }}
+</dl>
+{{ end }}
