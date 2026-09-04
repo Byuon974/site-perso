@@ -17,23 +17,18 @@ La Réunion.
 
 ## Ce qui fait tourner le site
 
-Hugo pour la génération statique, HTML, CSS et JavaScript sans bibliothèque ni
-étape de construction, publication par GitHub Actions.
+Hugo, HTML, CSS et JS sans bibliothèque. Publication par GitHub Actions.
 
-- **Aucune dépendance à un tiers.** Polices et bibliothèques sont servies
-  depuis la même origine : le site ne contacte aucun domaine extérieur.
-- **Un système de design dans un fichier unique.** `static/css/systeme.css`
-  définit les échelles de typographie, d'espace, de forme et de mouvement.
-  Une valeur littérale dans une feuille signale un oubli.
-- **Le contenu commande la forme.** Les archives s'alignent sur une grille de
-  caractères, en unités `ch`, ce qui garde les colonnes stables quelle que soit
-  la taille de police choisie par le visiteur.
+- Aucun domaine tiers : polices et bibliothèques servies depuis le site.
+- Système de design dans `static/css/systeme.css`.
+- Archives alignées sur une grille de caractères, en `ch`.
 
 ## Développement
 
 ```bash
 hugo server -D          # serveur local avec brouillons
 hugo --minify           # construction de production
+./mk-repo.sh -n         # prépare le dépôt, essai à blanc
 ```
 
 ## Licence
