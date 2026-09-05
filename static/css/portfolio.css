@@ -366,48 +366,33 @@ html[data-theme="dark"] .sun-avatar {
   margin: var(--e-12) 0;
 }
 
-.timeline {
-  position: relative;
-  padding-left: var(--e-6);
-  list-style: none;
-}
+/* Timeline pattern deux colonnes : dates à gauche en petite colonne
+   dédiée, contenu à droite. Pas de pastille, pas de trait vertical,
+   juste un fond au survol qui met en valeur l'entrée pointée. Pattern
+   emprunté à Brittany Chiang. */
 
-/* Trait vertical continu de la timeline, du haut de la première pastille
-   au bas de la dernière. Positionné au bord gauche du parent. */
-.timeline::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.75rem;
-  bottom: 0.75rem;
-  width: 1px;
-  background: linear-gradient(to bottom, var(--color-dust-grey), transparent);
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .timeline-item {
-  position: relative;
-  padding-bottom: var(--e-8);
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  gap: var(--e-6);
+  padding: var(--e-4) var(--e-4);
+  margin: 0 calc(-1 * var(--e-4));
+  border-radius: 6px;
+  transition: background var(--duree);
 }
 
-/* Pastille centrée sur le trait vertical. Le trait est à left: 0 du parent
-   (width 1px, centre à 0.5px). La pastille fait 9px, son centre doit tomber
-   au même endroit. Calc : décalage horizontal = padding parent + demi-largeur
-   pastille = -(1.5rem + 4px). Position verticale calée sur la ligne du time. */
-.timeline-item::before {
-  content: "";
-  position: absolute;
-  left: calc(-1 * var(--e-6) - 4px);
-  top: 0.55rem;
-  width: 9px;
-  height: 9px;
-  background: var(--color-accent);
-  border-radius: 50%;
-  border: 2px solid var(--bg-light);
-  box-sizing: content-box;
+.timeline-item:hover {
+  background: var(--color-accent-bg);
 }
 
-html[data-theme="dark"] .timeline-item::before {
-  border-color: var(--bg-dark);
+.timeline-item + .timeline-item {
+  margin-top: var(--e-2);
 }
 
 .timeline-item time {
@@ -415,17 +400,33 @@ html[data-theme="dark"] .timeline-item::before {
   font-size: var(--t-xs);
   letter-spacing: 0.05em;
   color: var(--text-secondary);
+  padding-top: 0.2rem;
+  line-height: 1.4;
 }
 
 .timeline-item h3 {
   font-size: var(--t-base);
   font-weight: 600;
-  margin: var(--e-1) 0;
+  margin: 0 0 var(--e-1);
+  line-height: 1.35;
 }
 
 .timeline-item p {
   font-size: var(--t-sm);
-  opacity: 0.75;
+  color: var(--text-secondary);
+  margin: var(--e-1) 0 0;
+  line-height: 1.55;
+}
+
+/* Sur mobile, les dates passent au-dessus du contenu pour rester lisibles. */
+@media (max-width: 640px) {
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: var(--e-1);
+  }
+  .timeline-item time {
+    padding-top: 0;
+  }
 }
 
 /* Contact section */
