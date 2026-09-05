@@ -380,8 +380,9 @@ html[data-theme="dark"] .sun-avatar {
 .timeline-item {
   display: grid;
   grid-template-columns: 8rem 1fr;
-  gap: var(--e-6);
-  padding: var(--e-4) var(--e-4);
+  column-gap: var(--e-6);
+  row-gap: 0;
+  padding: var(--e-2) var(--e-4);
   margin: 0 calc(-1 * var(--e-4));
   border-radius: 6px;
   transition: background var(--duree);
@@ -404,7 +405,7 @@ html[data-theme="dark"] .sun-avatar {
 }
 
 .timeline-item + .timeline-item {
-  margin-top: var(--e-2);
+  margin-top: 0;
 }
 
 .timeline-item time {
@@ -419,7 +420,7 @@ html[data-theme="dark"] .sun-avatar {
 .timeline-item h3 {
   font-size: var(--t-base);
   font-weight: 600;
-  margin: 0 0 var(--e-1);
+  margin: 0;
   line-height: 1.35;
 }
 
@@ -427,7 +428,12 @@ html[data-theme="dark"] .sun-avatar {
   font-size: var(--t-sm);
   color: var(--text-secondary);
   margin: 0.35rem 0 0;
-  line-height: 1.55;
+  line-height: 1.5;
+}
+
+/* Écraser tout margin-bottom hérité de .prose sur les <p>. */
+.timeline-item p:last-child {
+  margin-bottom: 0;
 }
 
 /* Sur mobile, les dates passent au-dessus du contenu pour rester lisibles. */
@@ -1739,7 +1745,6 @@ html[data-theme="dark"] .meta-status-done {
 
 
 /* ── Page 404 : phrase de guidage ────────────────────────────────── */
-
 .page-404 .error-hint {
   font-size: var(--t-sm);
   color: var(--text-secondary);
