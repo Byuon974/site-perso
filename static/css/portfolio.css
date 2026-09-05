@@ -387,6 +387,18 @@ html[data-theme="dark"] .sun-avatar {
   transition: background var(--duree);
 }
 
+/* Le <time> occupe la colonne dates. Tous les autres enfants (h3, p...)
+   s'empilent dans la colonne contenu à droite, sans avoir besoin d'un
+   wrapper <div> autour d'eux. */
+.timeline-item > time {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.timeline-item > *:not(time) {
+  grid-column: 2;
+}
+
 .timeline-item:hover {
   background: var(--color-accent-bg);
 }
@@ -414,7 +426,7 @@ html[data-theme="dark"] .sun-avatar {
 .timeline-item p {
   font-size: var(--t-sm);
   color: var(--text-secondary);
-  margin: var(--e-1) 0 0;
+  margin: 0.35rem 0 0;
   line-height: 1.55;
 }
 
@@ -423,6 +435,10 @@ html[data-theme="dark"] .sun-avatar {
   .timeline-item {
     grid-template-columns: 1fr;
     gap: var(--e-1);
+  }
+  .timeline-item > time,
+  .timeline-item > *:not(time) {
+    grid-column: 1;
   }
   .timeline-item time {
     padding-top: 0;
