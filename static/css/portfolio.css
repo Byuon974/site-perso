@@ -372,12 +372,14 @@ html[data-theme="dark"] .sun-avatar {
   list-style: none;
 }
 
+/* Trait vertical continu de la timeline, du haut de la première pastille
+   au bas de la dernière. Positionné au bord gauche du parent. */
 .timeline::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 0;
-  bottom: 0;
+  top: 0.75rem;
+  bottom: 0.75rem;
   width: 1px;
   background: linear-gradient(to bottom, var(--color-dust-grey), transparent);
 }
@@ -387,15 +389,25 @@ html[data-theme="dark"] .sun-avatar {
   padding-bottom: var(--e-8);
 }
 
+/* Pastille centrée sur le trait vertical. Le trait est à left: 0 du parent
+   (width 1px, centre à 0.5px). La pastille fait 9px, son centre doit tomber
+   au même endroit. Calc : décalage horizontal = padding parent + demi-largeur
+   pastille = -(1.5rem + 4px). Position verticale calée sur la ligne du time. */
 .timeline-item::before {
   content: "";
   position: absolute;
-  left: -1.5rem;
-  top: 0.4rem;
-  width: 7px;
-  height: 7px;
+  left: calc(-1 * var(--e-6) - 4px);
+  top: 0.55rem;
+  width: 9px;
+  height: 9px;
   background: var(--color-accent);
   border-radius: 50%;
+  border: 2px solid var(--bg-light);
+  box-sizing: content-box;
+}
+
+html[data-theme="dark"] .timeline-item::before {
+  border-color: var(--bg-dark);
 }
 
 .timeline-item time {
@@ -1593,57 +1605,43 @@ html[data-theme="dark"] .related-section {
   }
 }
 
-/* ── Cartouche métadonnées projet ─────────────────────────────────────
-   Statut, rôle et période, affichés en tête de chaque page projet.
-   Rendu inspiré des cartouches d'ouvrages : trois cellules alignées,
-   étiquette petite en JetBrains Mono, valeur en corps de lecture. */
+/* ── Chapô métadonnées projet ─────────────────────────────────────────
+   Ligne unique compacte : statut · période · rôle, avec le badge de statut
+   comme seul point coloré. Discret, cohérent avec les métadonnées de date
+   et de temps de lecture qui apparaissent au même endroit. */
 
-.projet-meta-cartouche {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: var(--s-4);
-  padding: var(--s-4) var(--s-5);
-  margin: var(--s-5) 0 var(--s-6);
-  border-top: 1px solid var(--color-dust-grey);
-  border-bottom: 1px solid var(--color-dust-grey);
-}
-
-.projet-meta-item {
+.projet-meta-ligne {
   display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.projet-meta-item dt {
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--e-2);
+  margin: var(--e-4) 0 var(--e-6);
   font-family: var(--font-mono);
   font-size: var(--t-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
   color: var(--text-secondary);
-  font-weight: 500;
+  line-height: 1.8;
 }
 
-.projet-meta-item dd {
-  font-size: var(--t-sm);
-  margin: 0;
-  color: var(--text-dark);
-  line-height: 1.4;
+.meta-sep {
+  color: var(--text-secondary);
+  padding: 0 var(--e-1);
+  opacity: 0.5;
 }
 
-html[data-theme="dark"] .projet-meta-item dd {
-  color: var(--text-light);
+.meta-period,
+.meta-role {
+  color: var(--text-secondary);
 }
 
-/* Badges de statut : couleur porteuse de sens.
-   Contrastes calculés pour AA sur ivory-mist et sur bg-dark. */
+/* Badge de statut : petit, coloré, informatif. Contrastes AA garantis. */
 .meta-status {
   display: inline-block;
-  padding: 0.15rem 0.5rem;
+  padding: 0.1rem 0.5rem;
   border-radius: 3px;
-  font-family: var(--font-mono);
   font-size: var(--t-xs);
   font-weight: 500;
   border: 1px solid transparent;
+  line-height: 1.4;
 }
 
 .meta-status-active {

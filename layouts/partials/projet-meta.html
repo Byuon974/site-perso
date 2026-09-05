@@ -1,44 +1,35 @@
 {{/*
-  Chapô métadonnées projet : statut, rôle, période.
-  N'affiche que ce qui est renseigné dans le frontmatter.
-  Si aucun des trois champs n'est présent, ne rend rien.
+  Chapô métadonnées projet : statut, période, rôle.
+  Rendu en ligne unique avec séparateurs point médian, discret et compact.
+  N'affiche que ce qui est renseigné. Si rien, ne rend rien.
 */}}
 {{ $status := .Params.status }}
 {{ $role := .Params.role }}
 {{ $period := .Params.period }}
 
 {{ if or $status $role $period }}
-<dl class="projet-meta-cartouche">
+<p class="projet-meta-ligne">
   {{ with $status }}
-    <div class="projet-meta-item">
-      <dt>Statut</dt>
-      <dd>
-        {{ $s := lower . }}
-        {{ $class := "meta-status-neutral" }}
-        {{ if or (eq $s "en production") (eq $s "livré") (eq $s "terminé") }}
-          {{ $class = "meta-status-done" }}
-        {{ else if or (eq $s "en développement") (eq $s "en cours") (eq $s "actif") }}
-          {{ $class = "meta-status-active" }}
-        {{ else if or (eq $s "archivé") (eq $s "gelé") (eq $s "abandonné") }}
-          {{ $class = "meta-status-archived" }}
-        {{ end }}
-        <span class="meta-status {{ $class }}">{{ . }}</span>
-      </dd>
-    </div>
-  {{ end }}
-
-  {{ with $role }}
-    <div class="projet-meta-item">
-      <dt>Rôle</dt>
-      <dd>{{ . }}</dd>
-    </div>
+    {{ $s := lower . }}
+    {{ $class := "meta-status-neutral" }}
+    {{ if or (eq $s "en production") (eq $s "livré") (eq $s "terminé") (in $s "livré") }}
+      {{ $class = "meta-status-done" }}
+    {{ else if or (eq $s "en développement") (eq $s "en cours") (eq $s "actif") }}
+      {{ $class = "meta-status-active" }}
+    {{ else if or (eq $s "archivé") (eq $s "gelé") (eq $s "abandonné") }}
+      {{ $class = "meta-status-archived" }}
+    {{ end }}
+    <span class="meta-status {{ $class }}">{{ . }}</span>
   {{ end }}
 
   {{ with $period }}
-    <div class="projet-meta-item">
-      <dt>Période</dt>
-      <dd>{{ . }}</dd>
-    </div>
+    {{ if $status }}<span class="meta-sep" aria-hidden="true">·</span>{{ end }}
+    <span class="meta-period">{{ . }}</span>
   {{ end }}
-</dl>
+
+  {{ with $role }}
+    {{ if or $status $period }}<span class="meta-sep" aria-hidden="true">·</span>{{ end }}
+    <span class="meta-role">{{ . }}</span>
+  {{ end }}
+</p>
 {{ end }}
