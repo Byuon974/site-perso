@@ -327,11 +327,6 @@ html[data-theme="dark"] .sun-avatar {
   color: var(--color-accent);
 }
 
-.home-skills h2::before {
-  content: "§ ";
-  color: var(--text-secondary);
-}
-
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
