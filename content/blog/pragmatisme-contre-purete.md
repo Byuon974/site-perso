@@ -1,6 +1,6 @@
 ---
 title: "Chercher la solution là où elle se trouve, pas là où je sais chercher"
-date: 2026-09-08T16:00:00+04:00
+date: 2026-09-07
 draft: false
 description: "Un projet SaaS livré en alternance, un démarrage laborieux, et deux conversations qui m'ont fait changer de méthode. Ce que je retire d'avoir avancé lentement avant de comprendre."
 tags: ["saas", "backend", "methode", "alternance", "apprentissage"]

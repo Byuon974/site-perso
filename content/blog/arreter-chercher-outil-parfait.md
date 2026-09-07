@@ -1,6 +1,6 @@
 ---
 title: "Comment j'ai arrêté de chercher l'outil parfait"
-date: 2026-09-08T14:00:00+04:00
+date: 2026-09-07
 draft: false
 description: "Comment j'ai fini par écrire mes runbooks Linux comme des pages de manuel, après avoir essayé Obsidian, Logseq et Joplin. Un retour au texte plat comme choix de conception."
 tags: ["linux", "documentation", "runbook", "workflow", "cli", "neovim"]

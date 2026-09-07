@@ -1,6 +1,6 @@
 ---
 title: "La philosophie Unix : ce que j'en comprends, pour l'instant"
-date: 2026-07-14T09:00:00+04:00
+date: 2026-07-14
 draft: false
 description: "Ce que j'ai compris, petit à petit, de la philosophie Unix : son histoire, ses principes, pourquoi « Worse is Better » a gagné, et pourquoi je m'en sers pour mes propres scripts."
 tags: ["unix", "linux", "philosophie", "scripts", "systemd"]
