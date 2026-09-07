@@ -7,8 +7,6 @@ tags: ["unix", "linux", "philosophie", "scripts", "systemd"]
 categories: ["système"]
 ---
 
-# La philosophie Unix : ce que j'en comprends
-
 Pendant longtemps, j'ai pris la « philosophie Unix » pour une légende urbaine. Un truc que les sysadmins ressortent pour te faire sentir un peu coupable d'utiliser systemd, sans qu'on sache jamais très bien ce qu'il y a derrière. En ligne, il sert d'argument d'autorité pratique ou d'un label qu'on colle pour défendre ou attaquer un programme sans avoir à argumenter davantage.
 
 Je suis donc allé voir d'un peu plus près. J'ai découvert que ce n'est pas une légende : c'est codifié, ça a une histoire précise, née dans les laboratoires Bell dans les années 1970. Plus je lis à ce sujet, moins ça ressemble à une nostalgie de de vieux de la vieille.

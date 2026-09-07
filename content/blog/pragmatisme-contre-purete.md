@@ -7,8 +7,6 @@ tags: ["saas", "backend", "methode", "alternance", "apprentissage"]
 categories: ["méthode"]
 ---
 
-# Chercher la solution là où elle se trouve, pas là où je sais chercher
-
 Quand mon tuteur m'a demandé de concevoir une plateforme SaaS, je m'y suis mis avec sérieux et avec la mauvaise méthode. J'ai cherché mes solutions dans les endroits que je connaissais déjà. Le résultat n'a pas été un blocage, il a été plus insidieux : j'avançais trop lentement pour l'échéance qu'on m'avait donnée.
 
 ## Le tâtonnement

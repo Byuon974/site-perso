@@ -7,8 +7,6 @@ tags: ["linux", "documentation", "runbook", "workflow", "cli", "neovim"]
 categories: ["méthode"]
 ---
 
-# Comment j'ai arrêté de chercher l'outil parfait
-
 Il m'a fallu essayer plusieurs outils avant de comprendre que je m'étais trompé de question. Je cherchais l'application idéale pour ranger mes notes techniques. Ce qu'il me fallait, c'était une méthode pour les écrire.
 
 ## L'enthousiasme, puis l'abandon

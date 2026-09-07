@@ -11,7 +11,7 @@
     <ul class="archive-list">
       {{ range .Pages.ByDate.Reverse }}
       <li class="archive-item">
-        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Date.Format "02 janvier" }}</time>
+        <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format "2 January" .Date }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         <span class="archive-arrow">»</span>
       </li>
