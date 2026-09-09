@@ -672,6 +672,13 @@ html[data-theme="dark"] .sun-avatar {
   margin-block-start: var(--e-6);
 }
 
+/* Dans la section « Me contacter », dont le titre est centré, les
+   boutons suivent le même axe. Le hero garde son alignement à gauche,
+   calé sur le texte qui le précède. */
+.home-contact .contact-links {
+  justify-content: center;
+}
+
 .contact-link {
   display: inline-flex;
   align-items: center;
