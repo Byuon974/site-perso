@@ -1,0 +1,26 @@
+/* Classes utilitaires. Aucune n'est cosmétique : chaque utility résout
+   un besoin fonctionnel qu'un composant n'a pas à porter. */
+
+/* Rupture ANSI-hidden : hors flux mais présent pour lecteurs d'écran.
+   Utile pour légendes qui ne servent qu'à la synthèse vocale. */
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Truncate : coupe le texte trop long avec une ellipse. */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Cachetage de l'affichage. Un display: none via classe qu'un composant
+   parent contrôle depuis JS. */
+.hidden { display: none !important; }

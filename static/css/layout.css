@@ -1,0 +1,73 @@
+/* Primitives de composition. Six patterns qui portent 90% des mises en
+   page. Chaque composant se compose de ces primitives plutôt que de
+   redéfinir son propre grid ou son propre flex. */
+
+/* .stack : rythme vertical entre enfants directs. */
+.stack > * + * {
+  margin-block-start: var(--stack-space, var(--e-4));
+}
+
+.stack-s > * + * { margin-block-start: var(--e-2); }
+.stack-m > * + * { margin-block-start: var(--e-6); }
+.stack-l > * + * { margin-block-start: var(--e-8); }
+
+/* .cluster : groupe horizontal qui passe à la ligne quand ça déborde. */
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--cluster-space, var(--e-2));
+  align-items: var(--cluster-align, center);
+}
+
+/* .center : conteneur centré à largeur de lecture. */
+.center {
+  box-sizing: content-box;
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+  padding-inline: var(--e-4);
+}
+
+.center-wide {
+  box-sizing: content-box;
+  max-inline-size: 80ch;
+  margin-inline: auto;
+  padding-inline: var(--e-4);
+}
+
+/* .with-sidebar : deux colonnes qui repassent en pile sans breakpoint.
+   La sidebar prend --sidebar-width, le contenu prend le reste, et si le
+   contenu descend sous 50% de sa largeur, tout passe en pile. */
+.with-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-8);
+}
+
+.with-sidebar > :first-child {
+  flex-basis: var(--sidebar-width, 15rem);
+  flex-grow: 1;
+}
+
+.with-sidebar > :last-child {
+  flex-basis: 0;
+  flex-grow: 999;
+  min-inline-size: 55%;
+}
+
+/* .auto-grid : autant de colonnes que ça rentre, jamais de breakpoint.
+   Le min() empêche le débordement sur écran étroit. */
+.auto-grid {
+  display: grid;
+  gap: var(--e-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(var(--min-col, 16rem), 100%), 1fr));
+}
+
+/* .visually-hidden : caché à l'œil, présent pour lecteurs d'écran. */
+.visually-hidden:not(:focus):not(:active) {
+  clip-path: inset(50%);
+  block-size: 1px;
+  inline-size: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+}

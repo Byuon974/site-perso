@@ -1,0 +1,1767 @@
+/* ══════════════════════════════════════════════════════════════════════
+   COMPONENTS
+   ══════════════════════════════════════════════════════════════════════
+
+   Un composant par section, chacun bâti sur les tokens et les primitives
+   de layout. Aucune valeur hex, aucune taille en pixels arbitraire :
+   toute valeur passe par un token.
+
+   Table des matières :
+     · Layout de page (sidebar fixe + main)
+     · Sidebar de navigation
+     · Skip link
+     · Hero (accueil)
+     · Sun-avatar
+     · Timeline (parcours)
+     · Contact links (CV / LinkedIn / Email)
+     · Table de projets
+     · Archive (blog + notes, groupé par année)
+     · Article single (blog, note, projet)
+     · Prose
+     · Footer
+     · 404
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+/* ── LAYOUT DE PAGE ──────────────────────────────────────────────────
+   Sidebar fixe à gauche, main à droite. La sidebar repasse en top-bar
+   sur écran étroit via une media query minimale : Every Layout ne peut
+   pas gérer un positionnement fixed.
+
+   Le baseof injecte 4 enfants dans .layout : sidebar, sidebar-overlay,
+   sidebar-toggle et main-content. Les deux du milieu ne servent qu'en
+   mobile ; on les sort du flux grid pour que la grille reste à 2
+   colonnes propres. */
+
+.layout {
+  display: grid;
+  grid-template-columns: 17rem 1fr;
+  min-block-size: 100svb;
+}
+
+.main-content {
+  min-inline-size: 0;
+  padding: var(--sp-l);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-4);
+}
+
+/* Le contenu principal prend la largeur disponible (jusqu'à --w-page)
+   pour les pages liste (projets, blog, notes) et le contenu paginé.
+   Les pages de lecture (blog single, note single, projet single, about)
+   contraignent leur largeur elles-mêmes via leur propre container. */
+.main-content > * {
+  inline-size: 100%;
+  max-inline-size: var(--w-page, 68rem);
+  margin-inline: auto;
+}
+
+/* Sidebar-overlay et sidebar-toggle : décoratifs mobile, hors flux. */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--duree) var(--courbe);
+  z-index: 40;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.sidebar-toggle {
+  position: fixed;
+  top: var(--e-4);
+  right: var(--e-4);
+  z-index: 50;
+  background: var(--surface);
+  border: var(--trait);
+  border-radius: var(--r-md);
+  padding: var(--e-2);
+  cursor: pointer;
+  display: none;
+}
+
+.sidebar-toggle svg {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  color: var(--ink);
+}
+
+/* Header de main : logo en haut à gauche de la zone contenu. */
+.main-header {
+  padding-block-end: var(--e-6);
+  margin-block-end: var(--e-4);
+  border-block-end: var(--trait);
+}
+
+.main-header-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  text-decoration: none;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  transition: color var(--duree) var(--courbe);
+}
+
+.main-header-logo:hover {
+  color: var(--accent);
+}
+
+.main-header-logo img {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  border-radius: var(--r-sm);
+}
+
+.main-header-logo .sep {
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+/* Responsive : la sidebar bascule en drawer à gauche sur mobile. */
+@media (max-width: 48rem) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: fixed;
+    inset-block-start: 0;
+    inset-inline-start: 0;
+    block-size: 100svb;
+    inline-size: min(85%, 20rem);
+    transform: translateX(-100%);
+    transition: transform var(--duree) var(--courbe);
+    z-index: 45;
+    box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .main-content {
+    padding: var(--sp-m);
+    padding-block-start: var(--e-16);
+  }
+}
+
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────
+   Colonne étroite, fixe. Contient : identité, contexte courant, TOC
+   éventuelle, navigation, thème.
+
+   Les liens de navigation sont en mono, comme des chemins de fichiers,
+   pour renforcer la lecture "IDE / terminal". */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  block-size: 100svb;
+  padding: var(--e-6) var(--e-4);
+  border-inline-end: var(--trait);
+  background: var(--surface);
+  overflow-y: auto;
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-6);
+  block-size: 100%;
+}
+
+.sidebar-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  text-transform: lowercase;
+  letter-spacing: 0.05em;
+  margin-block-end: var(--e-3);
+}
+
+.sidebar-current {
+  padding-block-end: var(--e-4);
+  border-block-end: var(--trait);
+}
+
+.sidebar-current-title {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  color: var(--ink);
+  display: block;
+}
+
+.sidebar-toc {
+  padding-block-end: var(--e-4);
+  border-block-end: var(--trait);
+  font-size: var(--t-base);
+}
+
+.sidebar-toc ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-1);
+}
+
+/* Comme la navigation : cible d'au moins 40px de haut. Le sommaire
+   peut être long, on reste un cran sous les liens principaux. */
+.sidebar-toc a {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.5rem;
+  color: var(--ink-muted);
+  text-decoration: none;
+  padding-inline-start: var(--e-3);
+  padding-block: var(--e-1);
+  border-inline-start: 2px solid transparent;
+  transition: all var(--duree) var(--courbe);
+}
+
+.sidebar-toc a:hover {
+  color: var(--ink);
+  border-inline-start-color: var(--accent-border);
+}
+
+.sidebar-toc a.active,
+.sidebar-toc li.active > a {
+  color: var(--accent);
+  border-inline-start-color: var(--accent);
+  font-weight: 600;
+}
+
+.sidebar-nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-1);
+}
+
+/* Les liens de navigation sont des cibles de pointeur : le padding
+   vertical et la taille de police les portent au-delà des 44px de haut
+   recommandés pour un clic confortable, souris comme doigt. */
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding: var(--e-2) var(--e-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-base);
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--r-sm);
+  transition: background var(--duree) var(--courbe);
+}
+
+.sidebar-nav a:hover {
+  background: var(--accent-bg);
+}
+
+.sidebar-nav a.active,
+.sidebar-nav a[aria-current="page"] {
+  color: var(--accent);
+  background: var(--accent-bg);
+  font-weight: 600;
+}
+
+.sidebar-footer {
+  margin-block-start: auto;
+  padding-block-start: var(--e-4);
+  border-block-start: var(--trait);
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  background: transparent;
+  border: var(--trait);
+  border-radius: var(--r-md);
+  padding: var(--e-2) var(--e-3);
+  font-size: var(--t-md);
+  cursor: pointer;
+  transition: background var(--duree) var(--courbe);
+}
+
+.theme-toggle:hover {
+  background: var(--accent-bg);
+}
+
+
+/* ── SKIP LINK ───────────────────────────────────────────────────────
+   Invisible jusqu'au focus clavier, apparaît en haut à gauche. */
+
+.skip-link {
+  position: absolute;
+  inset-block-start: var(--e-2);
+  inset-inline-start: var(--e-2);
+  padding: var(--e-2) var(--e-3);
+  background: var(--accent);
+  color: var(--surface);
+  border-radius: var(--r-sm);
+  z-index: 100;
+  transform: translateY(-200%);
+  transition: transform var(--duree) var(--courbe);
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+
+/* ── HERO (ACCUEIL) ──────────────────────────────────────────────────
+   Bloc d'introduction : nom, tagline, boutons de contact.
+
+   Layout flex : texte à gauche qui prend la place, soleil à droite en
+   largeur fixe, aligné verticalement au centre du bloc texte. Sur
+   mobile, tout passe en pile avec le soleil au-dessus, réduit. */
+
+.home-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-l);
+  padding-block: var(--sp-l);
+}
+
+.home-hero-text {
+  flex: 1 1 auto;
+  min-inline-size: 0;
+}
+
+.home-hero h1 {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  color: var(--ink);
+  margin-block-end: var(--e-4);
+}
+
+.home-hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.tagline {
+  font-size: var(--t-md);
+  color: var(--ink-muted);
+  line-height: var(--lh-prose);
+  margin-block-end: var(--e-3);
+}
+
+.tagline:last-child {
+  margin-block-end: 0;
+}
+
+.tagline strong {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.home-hero-visual {
+  flex: 0 0 auto;
+  inline-size: 14rem;
+  block-size: 14rem;
+  align-self: center;
+}
+
+@media (max-width: 48rem) {
+  .home-hero {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: var(--e-4);
+  }
+  .home-hero-visual {
+    inline-size: 8rem;
+    block-size: 8rem;
+    align-self: flex-end;
+  }
+}
+
+
+/* ── SUN-AVATAR ──────────────────────────────────────────────────────
+   Signature graphique. Trois couches de rayons gris chauds autour d'un
+   noyau au dégradé radial.
+
+   Les couleurs sont posées en dur dans le SVG (stroke sur les <line>
+   sources, stop-color sur les <stop>) : le CSS externe ne cible pas de
+   façon fiable les instances <use> ni les <stop> selon les moteurs.
+   Le CSS ne pilote donc que le mouvement.
+
+   Animations reprises du motif d'origine :
+   · chaque couche combine rotation et respiration d'échelle, ce qui
+     donne le battement organique plutôt qu'un simple tour mécanique
+   · la couche médiane tourne en sens inverse
+   · l'anneau pulse en rayon et opacité
+   · le noyau respire lentement en rayon
+
+   Toutes se coupent via le reset prefers-reduced-motion. */
+
+.sun-avatar {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  filter: drop-shadow(0 4px 20px rgba(154, 153, 140, 0.3));
+  transition: transform 0.5s ease;
+}
+
+.sun-avatar:hover {
+  transform: scale(1.05);
+}
+
+html[data-theme="dark"] .sun-avatar {
+  filter: drop-shadow(0 4px 30px rgba(212, 205, 195, 0.25));
+}
+
+/* Trois couches, trois rythmes de rotation. */
+.rays-outer {
+  transform-origin: 100px 100px;
+  animation: rotate-and-breathe 25s linear infinite;
+}
+
+.rays-middle {
+  transform-origin: 100px 100px;
+  animation: rotate-and-breathe-reverse 40s linear infinite;
+}
+
+.rays-inner {
+  transform-origin: 100px 100px;
+  animation: rotate-and-breathe-fast 18s linear infinite;
+}
+
+/* Chaque rayon s'étire et se rétracte pour son propre compte. Le
+   décalage de départ est posé en style inline sur chaque <use> par le
+   partial, ce qui évite d'écrire 24 règles de delay ici.
+
+   L'origine de transformation est le centre du SVG : le rayon
+   s'allonge vers l'extérieur en gardant son pied ancré au noyau. */
+.ray {
+  transform-origin: 100px 100px;
+}
+
+.ray-long  { animation: ray-extend       3s   ease-in-out infinite; }
+.ray-med   { animation: ray-extend-alt   4s   ease-in-out infinite; }
+.ray-small { animation: ray-extend-small 2.5s ease-in-out infinite; }
+
+.pulse-ring {
+  transform-origin: 100px 100px;
+  animation: ring-pulse 6s ease-in-out infinite;
+}
+
+.sun-core {
+  animation: core-breathe 8s ease-in-out infinite;
+}
+
+/* Rotation et respiration combinées : l'échelle varie pendant le tour,
+   ce qui évite l'aspect mécanique d'une rotation pure. */
+@keyframes rotate-and-breathe {
+  0%   { transform: rotate(0deg)   scale(0.92); }
+  25%  { transform: rotate(90deg)  scale(1.05); }
+  50%  { transform: rotate(180deg) scale(0.92); }
+  75%  { transform: rotate(270deg) scale(1.05); }
+  100% { transform: rotate(360deg) scale(0.92); }
+}
+
+@keyframes rotate-and-breathe-reverse {
+  0%   { transform: rotate(0deg)    scale(1);    }
+  25%  { transform: rotate(-90deg)  scale(1.08); }
+  50%  { transform: rotate(-180deg) scale(1);    }
+  75%  { transform: rotate(-270deg) scale(1.08); }
+  100% { transform: rotate(-360deg) scale(1);    }
+}
+
+@keyframes rotate-and-breathe-fast {
+  0%   { transform: rotate(0deg)   scale(0.88); }
+  25%  { transform: rotate(90deg)  scale(1.1);  }
+  50%  { transform: rotate(180deg) scale(0.88); }
+  75%  { transform: rotate(270deg) scale(1.1);  }
+  100% { transform: rotate(360deg) scale(0.88); }
+}
+
+/* Étirement des rayons : scaleY autour du centre du SVG, combiné à une
+   variation d'opacité qui accompagne l'allongement. */
+@keyframes ray-extend {
+  0%, 100% { transform: scaleY(0.7); opacity: 0.4; }
+  50%      { transform: scaleY(1.2); opacity: 1;   }
+}
+
+@keyframes ray-extend-alt {
+  0%, 100% { transform: scaleY(0.75); opacity: 0.35; }
+  50%      { transform: scaleY(1.15); opacity: 0.9;  }
+}
+
+@keyframes ray-extend-small {
+  0%, 100% { transform: scaleY(0.8);  opacity: 0.3; }
+  50%      { transform: scaleY(1.25); opacity: 0.7; }
+}
+
+@keyframes ring-pulse {
+  0%, 100% { r: 55; opacity: 0.4;  }
+  50%      { r: 68; opacity: 0.15; }
+}
+
+@keyframes core-breathe {
+  0%, 100% { r: 36; }
+  50%      { r: 40; }
+}
+
+
+/* ── SECTIONS DE HOME ────────────────────────────────────────────────
+   Compétences et timeline. Chaque section porte un H2 en accent,
+   contenu en dessous. Espacement inter-section généreux. */
+
+.home-skills,
+.home-timeline {
+  padding-block: var(--sp-l);
+  border-block-start: var(--trait);
+}
+
+.home-skills h2,
+.home-timeline h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  color: var(--accent);
+  margin-block-end: var(--e-6);
+}
+
+
+/* ── SKILLS ──────────────────────────────────────────────────────────
+   Grille de catégories de compétences. Chaque colonne porte un titre
+   en mono capitalisé souligné d'une hairline, puis une liste où chaque
+   entrée est préfixée d'une flèche en accent.
+
+   auto-fit plutôt qu'un nombre de colonnes fixe : la grille se
+   réorganise seule quand la largeur change, sans breakpoint. */
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: var(--e-8);
+  align-items: start;
+}
+
+.skill-category h3 {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin-block-end: var(--e-3);
+  padding-block-end: var(--e-2);
+  border-block-end: var(--trait);
+}
+
+.skill-category ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.skill-category li {
+  padding-block: var(--e-1);
+  font-size: var(--t-base);
+  line-height: 1.5;
+}
+
+.skill-category li::before {
+  content: "→ ";
+  color: var(--accent);
+  font-weight: 600;
+}
+
+
+/* ── TIMELINE ────────────────────────────────────────────────────────
+   Deux colonnes : dates à gauche en mono, contenu à droite en prose.
+   Column-gap et row-gap séparés pour éviter les trous verticaux entre
+   paragraphes internes. */
+
+.timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 8rem 1fr;
+  column-gap: var(--e-6);
+  row-gap: 0;
+  padding: var(--e-2) var(--e-4);
+  margin-inline: calc(-1 * var(--e-4));
+  border-radius: var(--r-md);
+  transition: background var(--duree) var(--courbe);
+}
+
+.timeline-item > time {
+  grid-column: 1;
+  grid-row: 1;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  padding-block-start: 0.35rem;
+}
+
+.timeline-item > *:not(time) {
+  grid-column: 2;
+}
+
+.timeline-item h3 {
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.timeline-item p {
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  margin: 0.35rem 0 0;
+  line-height: 1.5;
+}
+
+.timeline-item p:last-child {
+  margin-block-end: 0;
+}
+
+.timeline-item:hover {
+  background: var(--accent-bg);
+}
+
+@media (max-width: 40rem) {
+  .timeline-item {
+    grid-template-columns: 1fr;
+    gap: var(--e-1);
+  }
+  .timeline-item > time,
+  .timeline-item > *:not(time) {
+    grid-column: 1;
+  }
+  .timeline-item > time {
+    padding-block-start: 0;
+  }
+}
+
+
+/* ── CONTACT LINKS ───────────────────────────────────────────────────
+   Ligne de trois boutons : CV, LinkedIn, Email. Style discret, hover
+   accent. Pas d'ombre : imprimé, plat. */
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  margin-block-start: var(--e-6);
+}
+
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  padding: var(--e-2) var(--e-4);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  text-decoration: none;
+  background: var(--surface);
+  border: var(--trait);
+  border-radius: var(--r-md);
+  transition: all var(--duree) var(--courbe);
+}
+
+.contact-link:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+.contact-link svg {
+  inline-size: 18px;
+  block-size: 18px;
+  flex-shrink: 0;
+}
+
+
+/* ── GRILLE DE PROJETS ───────────────────────────────────────────────
+   Cartes avec vignette (image ou vidéo poster), titre, description,
+   cartouche méta (statut + période), tags. Auto-grid : autant de
+   colonnes que ça rentre, jamais de breakpoint.
+
+   Chaque carte est composée d'une vignette à ratio fixe (5/4) et d'un
+   corps texte. Ratio fixe : sans lui, une image plus haute décale toute
+   sa rangée. */
+
+.projets-container {
+  padding-block: var(--sp-l);
+}
+
+.projets-header {
+  margin-block-end: var(--sp-l);
+}
+
+.projets-header h1 {
+  margin-block-end: var(--e-4);
+}
+
+.projets-header p {
+  color: var(--ink-muted);
+}
+
+.projets-grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: var(--e-6);
+  grid-template-columns: repeat(auto-fit, minmax(min(18rem, 100%), 1fr));
+}
+
+.projet-cell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border: var(--trait);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background: var(--surface);
+  transition: border-color var(--duree) var(--courbe), transform var(--duree) var(--courbe);
+}
+
+.projet-cell:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.projet-cell-thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 5 / 4;
+  background: var(--surface-muted);
+  overflow: hidden;
+}
+
+.projet-cell-thumb img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.projet-cell-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: var(--t-affiche);
+  color: var(--ink-muted);
+  opacity: 0.4;
+}
+
+.projet-cell-video {
+  position: absolute;
+  right: var(--e-2);
+  bottom: var(--e-2);
+  inline-size: 2rem;
+  block-size: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border-radius: 50%;
+  font-size: 0.8rem;
+}
+
+.projet-cell-body {
+  padding: var(--e-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--e-2);
+  flex-grow: 1;
+}
+
+.projet-cell-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--t-md);
+  line-height: 1.3;
+}
+
+.projet-cell-title a {
+  text-decoration: none;
+  color: var(--ink);
+  transition: color var(--duree) var(--courbe);
+}
+
+.projet-cell-title a:hover {
+  color: var(--accent);
+}
+
+.projet-cell-desc {
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Cartouche méta : ligne compacte statut + période. */
+.projet-cell-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+  margin: 0;
+  font-size: var(--t-xs);
+  line-height: 1.4;
+}
+
+.projet-cell-status {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--r-sm);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+}
+
+.projet-cell-status--livré,
+.projet-cell-status--terminé {
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.projet-cell-status--actif,
+.projet-cell-status--en_cours {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  border-color: var(--accent);
+}
+
+.projet-cell-period {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.projet-cell-tags {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  margin: 0;
+  margin-block-start: auto;
+  padding-block-start: var(--e-2);
+  border-block-start: var(--trait);
+}
+
+
+/* ── ARCHIVE (blog + notes groupé par année) ─────────────────────────
+   Colonne date en mono, colonne titre en display. Une hairline par
+   ligne, un H2 par année pour l'ancrage visuel. */
+
+.archive-container {
+  padding-block: var(--sp-l);
+}
+
+.archive-header h1 {
+  margin-block-end: var(--e-8);
+}
+
+.archive-year {
+  margin-block-end: var(--sp-l);
+}
+
+.archive-year-title {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  color: var(--ink-muted);
+  padding-block-end: var(--e-3);
+  border-block-end: var(--trait);
+  margin-block-end: var(--e-4);
+}
+
+.archive-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archive-item {
+  display: grid;
+  grid-template-columns: var(--col-date) 1fr auto auto;
+  column-gap: var(--gap-col);
+  align-items: baseline;
+  padding-block: var(--e-3);
+  transition: background var(--duree) var(--courbe);
+}
+
+.archive-item time {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.archive-item a {
+  color: var(--ink);
+  text-decoration: none;
+  transition: color var(--duree) var(--courbe);
+}
+
+.archive-item a:hover {
+  color: var(--accent);
+}
+
+.archive-arrow {
+  color: var(--ink-muted);
+  font-family: var(--font-mono);
+}
+
+.archive-empty {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+/* Filtres de la page notes : trois onglets textuels. */
+.notes-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+  margin-block-end: var(--e-6);
+}
+
+.notes-filter-btn {
+  padding: var(--e-2) var(--e-3);
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  background: transparent;
+  border: var(--trait);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all var(--duree) var(--courbe);
+}
+
+.notes-filter-btn:hover {
+  color: var(--ink);
+  border-color: var(--accent-border);
+}
+
+.notes-filter-btn.is-active,
+.notes-filter-btn[aria-selected="true"] {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-bg);
+}
+
+/* Badge de type dans la liste : "runbook" à droite du titre. */
+.archive-badge {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  padding: 0.1em 0.4em;
+  background: var(--surface-muted);
+  border-radius: var(--r-sm);
+}
+
+
+/* ── ARTICLE SINGLE (blog, note, projet) ─────────────────────────────
+   En-tête : titre, métadonnées (date, temps de lecture), tags.
+   Corps : max-inline-size lecture, prose fluide.
+
+   La contrainte 65ch est portée ici plutôt que sur main-content : les
+   pages liste et grille (projets, blog, notes) peuvent respirer. */
+
+.blog-single,
+.note-single,
+.projet-single,
+.default-single,
+.about-simple {
+  padding-block: var(--sp-l);
+  max-inline-size: var(--measure);
+  margin-inline: auto;
+}
+
+.blog-single-header,
+.note-single-header,
+.projet-single-header,
+.default-single-header {
+  margin-block-end: var(--e-8);
+  padding-block-end: var(--e-6);
+  border-block-end: var(--trait);
+}
+
+.blog-single-header h1,
+.note-single-header h1,
+.projet-single-header h1 {
+  font-family: var(--font-display);
+  font-size: var(--t-2xl);
+  color: var(--ink);
+  margin-block-end: var(--e-4);
+}
+
+.blog-single-meta,
+.note-single-meta,
+.projet-single-meta,
+.default-single-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  margin-block-end: var(--e-4);
+}
+
+.meta-sep {
+  color: var(--ink-muted);
+  opacity: 0.5;
+}
+
+.reading-time {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-1);
+}
+
+.reading-time svg {
+  inline-size: 0.9em;
+  block-size: 0.9em;
+  opacity: 0.7;
+}
+
+.blog-single-description,
+.note-single-description,
+.projet-single-description,
+.default-single-description {
+  font-size: var(--t-md);
+  color: var(--ink-muted);
+  line-height: var(--lh-prose);
+  margin-block-end: var(--e-4);
+}
+
+.blog-single-tags,
+.note-single-tags,
+.projet-single-tags,
+.default-single-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-2);
+}
+
+.blog-tag,
+.note-tag,
+.projet-tag,
+.default-tag {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  padding: 0.15em 0.4em;
+  background: var(--surface-muted);
+  border-radius: var(--r-sm);
+}
+
+.projet-single-links {
+  display: flex;
+  gap: var(--e-3);
+  margin-block-end: var(--e-6);
+}
+
+.projet-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  padding: var(--e-2) var(--e-4);
+  font-size: var(--t-sm);
+  color: var(--ink);
+  text-decoration: none;
+  border: var(--trait);
+  border-radius: var(--r-md);
+  transition: all var(--duree) var(--courbe);
+}
+
+.projet-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-bg);
+}
+
+
+/* ── PROSE ────────────────────────────────────────────────────────────
+   Typographie du corps d'article. Rythme vertical serré et généreux,
+   listes propres, blocs de code lisibles, blockquote sobre.
+
+   La contrainte de largeur (65ch) est portée par le conteneur, pas ici :
+   .prose n'ajoute que du rythme et des styles de bloc. */
+
+.prose {
+  font-family: var(--font-sans);
+  font-size: var(--t-base);
+  line-height: var(--lh-prose);
+  color: var(--ink);
+}
+
+.prose p {
+  margin-block: 0 var(--e-4);
+}
+.prose p:last-child { margin-block-end: 0; }
+
+.prose h2,
+.prose h3,
+.prose h4 {
+  margin-block: var(--e-8) var(--e-4);
+}
+
+.prose h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  color: var(--accent);
+}
+
+.prose h3 {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  color: var(--ink);
+}
+
+.prose h4 {
+  font-family: var(--font-sans);
+  font-size: var(--t-md);
+  font-weight: 600;
+}
+
+.prose ul,
+.prose ol {
+  padding-inline-start: var(--e-6);
+  margin-block: 0 var(--e-4);
+}
+
+.prose li {
+  margin-block-end: var(--e-2);
+}
+
+.prose li:last-child {
+  margin-block-end: 0;
+}
+
+.prose strong { color: var(--ink); font-weight: 600; }
+.prose em { font-style: italic; }
+
+.prose a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.prose a:hover {
+  color: var(--accent-hover);
+}
+
+/* Images de prose : cadre discret. */
+.prose img {
+  border-radius: var(--r-md);
+  margin-block: var(--e-6);
+}
+
+
+/* ── BREADCRUMBS ─────────────────────────────────────────────────────
+   Petit chemin de navigation, discret, en mono. */
+
+.breadcrumbs {
+  margin-block-end: var(--e-6);
+}
+
+.breadcrumbs ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--e-2);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: var(--e-2);
+}
+
+.breadcrumbs li:not(:last-child)::after {
+  content: "/";
+  color: var(--ink-muted);
+  opacity: 0.5;
+}
+
+.breadcrumbs a {
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  color: var(--accent);
+}
+
+
+/* ── RELATED ─────────────────────────────────────────────────────────
+   Articles liés en fin de page. Cartes compactes, deux colonnes max. */
+
+.related-posts {
+  margin-block-start: var(--sp-xl);
+  padding-block-start: var(--e-6);
+  border-block-start: var(--trait);
+}
+
+.related-posts h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  color: var(--ink);
+  margin-block-end: var(--e-4);
+}
+
+.related-section {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+
+/* ── FOOTER ──────────────────────────────────────────────────────────
+   Ligne unique : copyright à gauche, liens à droite. */
+
+.site-footer {
+  padding: var(--e-6) var(--sp-l);
+  border-block-start: var(--trait);
+  margin-block-start: var(--sp-xl);
+}
+
+.site-footer-inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--e-4);
+  max-inline-size: 65ch;
+  margin-inline: auto;
+}
+
+.site-footer-copy {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+}
+
+.site-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-4);
+}
+
+.site-footer-links a {
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+  text-decoration: none;
+  transition: color var(--duree) var(--courbe);
+}
+
+.site-footer-links a:hover {
+  color: var(--accent);
+}
+
+
+/* ── 404 ─────────────────────────────────────────────────────────────
+   Page d'erreur : code géant, message, actions. */
+
+.page-404 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--e-6);
+  padding-block: var(--sp-xl);
+  text-align: center;
+}
+
+.error-visual {
+  font-family: var(--font-display);
+  font-size: var(--t-geant);
+  color: var(--accent);
+  line-height: 1;
+}
+
+.error-icon {
+  inline-size: 4rem;
+  block-size: 4rem;
+  color: var(--ink-muted);
+}
+
+.error-hint {
+  color: var(--ink-muted);
+  max-inline-size: 40ch;
+}
+
+.error-actions {
+  display: flex;
+  gap: var(--e-4);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+
+/* ── BOUTONS ─────────────────────────────────────────────────────────
+   Deux variantes : primary (accent plein), secondary (bordure accent).
+   Sur le hover : léger déplacement vers le haut, ombre imprimée. */
+
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  padding: var(--e-3) var(--e-4);
+  font-family: var(--font-sans);
+  font-size: var(--t-sm);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--r-md);
+  border: 2px solid var(--accent);
+  transition: all var(--duree) var(--courbe);
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--accent);
+}
+
+.btn-secondary:hover {
+  background: var(--accent-bg);
+}
+
+
+/* ── PATH PREFIX (H1 des pages liste) ────────────────────────────────
+   "~/" en mono devant le titre, comme un chemin de dossier. */
+
+.path-prefix {
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+  color: var(--ink-muted);
+  margin-inline-end: 0.2em;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════
+   COMPOSANTS REPRIS DE L'ANCIENNE FEUILLE
+   ══════════════════════════════════════════════════════════════════════
+   Ces composants existent dans les layouts du site et n'avaient pas été
+   portés lors de la refonte. Repris ici, traduits aux tokens du nouveau
+   système (--ink, --accent, --trait plutôt que --color-* et --text-*).
+   ══════════════════════════════════════════════════════════════════════ */
+
+
+/* ── CONTENEURS DE PAGE ──────────────────────────────────────────────
+   Conteneur de l'accueil et sections de liste. Le max-inline-size est
+   porté ici et non par main-content, qui laisse les pages respirer. */
+
+.home-container {
+  max-inline-size: 56rem;
+  margin-inline: auto;
+  padding-block-end: var(--e-16);
+}
+
+.home-contact {
+  margin-block: var(--e-12) var(--e-16);
+  text-align: center;
+}
+
+.home-contact h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  color: var(--accent);
+  margin-block-end: var(--e-6);
+}
+
+.page-list,
+.default-list,
+.notes-list-wrapper {
+  padding-block: var(--sp-l);
+}
+
+.list-intro {
+  color: var(--ink-muted);
+  margin-block-end: var(--e-8);
+}
+
+.projets-empty {
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+
+/* ── NAVIGATION ENTRE ARTICLES ───────────────────────────────────────
+   Deux cartes en bas d'article : précédent à gauche, suivant à droite.
+   Le suivant est aligné à droite pour signaler la direction. */
+
+.blog-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
+  gap: var(--e-4);
+  margin-block-end: var(--e-8);
+}
+
+.blog-nav-link {
+  padding: var(--e-4);
+  border: var(--trait);
+  border-radius: var(--r-md);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe);
+}
+
+.blog-nav-link:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.blog-nav-prev {
+  text-align: start;
+}
+
+.blog-nav-next {
+  text-align: end;
+}
+
+.blog-nav-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  margin-block-end: var(--e-1);
+}
+
+.blog-nav-title {
+  font-size: var(--t-base);
+  font-weight: 500;
+}
+
+/* Lien de retour vers la liste, discret jusqu'au survol. */
+.blog-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--e-2);
+  min-block-size: 2.5rem;
+  text-decoration: none;
+  color: var(--ink-muted);
+  transition: color var(--duree) var(--courbe);
+}
+
+.blog-back:hover {
+  color: var(--accent);
+}
+
+
+/* ── CORPS D'ARTICLE ─────────────────────────────────────────────────
+   Les quatre types d'article partagent la même mise en page de corps.
+   La classe .prose-content porte la typographie détaillée. */
+
+.blog-single-body,
+.note-single-body,
+.projet-single-body {
+  margin-block-start: var(--e-6);
+}
+
+.blog-single-footer {
+  margin-block-start: var(--sp-xl);
+  padding-block-start: var(--e-6);
+  border-block-start: var(--trait);
+}
+
+/* Typographie de lecture longue : interligne large, largeur contrainte,
+   respiration généreuse entre les blocs. */
+.prose-content {
+  font-size: var(--t-md);
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+}
+
+.prose-content p,
+.prose-content ul,
+.prose-content ol,
+.prose-content blockquote,
+.prose-content dl {
+  margin-block-end: 1.5em;
+  max-inline-size: var(--measure);
+}
+
+.prose-content h2,
+.prose-content h3,
+.prose-content h4 {
+  max-inline-size: var(--measure);
+  margin-block: 2em 0.75em;
+  line-height: 1.3;
+}
+
+.prose-content h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-xl);
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.prose-content h3 {
+  font-family: var(--font-display);
+  font-size: var(--t-lg);
+  font-weight: 400;
+}
+
+.prose-content h4 {
+  font-size: var(--t-md);
+  font-weight: 600;
+}
+
+.prose-content ul,
+.prose-content ol {
+  padding-inline-start: 1.5em;
+}
+
+.prose-content li {
+  margin-block-end: 0.5em;
+  padding-inline-start: 0.5em;
+}
+
+.prose-content li::marker {
+  color: var(--ink-muted);
+}
+
+.prose-content blockquote {
+  border-inline-start: 3px solid var(--border);
+  padding-inline-start: 1.5em;
+  margin-inline-start: 0;
+  font-style: italic;
+  color: var(--ink-muted);
+}
+
+/* Les blocs de code débordent volontairement de la colonne de lecture :
+   une ligne de code tolère mal la césure. */
+.prose-content pre {
+  max-inline-size: calc(var(--measure) + 10ch);
+  margin-inline: -5ch;
+  margin-block-end: 1.5em;
+}
+
+.prose-content img,
+.prose-content video,
+.prose-content iframe,
+.prose-content figure {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  margin-block: 2em;
+  margin-inline: auto;
+  border-radius: var(--r-md);
+}
+
+.prose-content figure img {
+  margin-inline: auto;
+  margin-block: 0;
+}
+
+.prose-content figcaption {
+  margin-block-start: 0.75em;
+  font-size: var(--t-sm);
+  text-align: center;
+  color: var(--ink-muted);
+  font-style: italic;
+}
+
+.prose-content table {
+  inline-size: 100%;
+  margin-block: 2em;
+  border-collapse: collapse;
+  font-size: var(--t-sm);
+}
+
+.prose-content th,
+.prose-content td {
+  padding: 0.75em 1em;
+  border: var(--trait);
+  text-align: start;
+}
+
+.prose-content th {
+  background: var(--surface-muted);
+  font-weight: 600;
+}
+
+/* Séparateur de section : court, centré, discret. */
+.prose-content hr {
+  border: none;
+  block-size: 1px;
+  background: var(--border);
+  margin-block: 3em;
+  margin-inline: auto;
+  max-inline-size: 8rem;
+}
+
+
+/* ── CHAPÔ MÉTADONNÉES PROJET ────────────────────────────────────────
+   Ligne compacte statut · période · rôle en tête de page projet. Le
+   badge de statut est le seul point coloré. */
+
+.projet-meta-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--e-2);
+  margin-block: var(--e-4) var(--e-6);
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  line-height: 1.8;
+}
+
+.meta-period,
+.meta-role {
+  color: var(--ink-muted);
+}
+
+.meta-status {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: var(--r-sm);
+  font-size: var(--t-xs);
+  font-weight: 500;
+  border: 1px solid transparent;
+  line-height: 1.4;
+}
+
+.meta-status-active {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-color: var(--accent-border);
+}
+
+.meta-status-done,
+.meta-status-archived {
+  background: color-mix(in srgb, var(--ink-muted) 10%, transparent);
+  color: var(--ink-muted);
+  border-color: color-mix(in srgb, var(--ink-muted) 30%, transparent);
+}
+
+
+/* ── LECTEUR VIDÉO LÉGER ─────────────────────────────────────────────
+   Vignette cliquable qui remplace l'iframe tant que l'utilisateur n'a
+   pas lancé la lecture : la page ne charge le lecteur qu'à la demande. */
+
+.video-lite {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: var(--r-md);
+  background: var(--surface-muted);
+  margin-block: var(--e-8);
+}
+
+.video-lite__poster {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.video-lite__overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--e-3);
+  background: rgba(0, 0, 0, 0.35);
+  transition: background var(--duree) var(--courbe);
+}
+
+.video-lite__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 4rem;
+  block-size: 4rem;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  cursor: pointer;
+  transition: transform var(--duree) var(--courbe);
+}
+
+.video-lite__button:hover {
+  transform: scale(1.08);
+}
+
+.video-lite__icon {
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  color: #1e1e1e;
+}
+
+.video-lite__title {
+  color: #fff;
+  font-size: var(--t-sm);
+  text-align: center;
+  padding-inline: var(--e-4);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.video-lite__badge {
+  position: absolute;
+  inset-block-start: var(--e-2);
+  inset-inline-end: var(--e-2);
+  padding: 0.15rem 0.5rem;
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  border-radius: var(--r-sm);
+}
+
+.video-lite__play {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}

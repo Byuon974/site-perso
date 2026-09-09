@@ -6,9 +6,13 @@
     <nav class="site-footer-links">
       <a href="{{ "about/" | relURL }}">À propos</a>
       <a href="{{ "uses/" | relURL }}">Ce que j'utilise</a>
+      {{ with .Site.Params.linkedin }}
+      <a href="{{ . }}" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      {{ end }}
       {{ with .Site.Params.email }}
       <a href="mailto:{{ . }}">Contact</a>
       {{ end }}
+      <a href="{{ "blog/index.xml" | relURL }}" title="Flux RSS du blog">RSS</a>
     </nav>
   </div>
 </footer>

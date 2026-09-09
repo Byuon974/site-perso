@@ -17,8 +17,9 @@ taxonomies:
 # Paramètres personnalisés
 params:
   author: "Thomas"
-  description: "Développeur à La Réunion. Je conçois des applications métier de bout en bout, avec une culture d'infrastructure Linux. En recherche d'alternance, MSc IA & Big Data à Epitech."
-  email: "thomasvs974@proton.me"
+  description: "Développeur à La Réunion. Je conçois des applications métier de bout en bout, avec une culture d'infrastructure Linux. En recherche d'alternance en IA ou data engineering, MSc IA & Big Data à Epitech."
+  email: "thomasvs974.ent@gmail.com"
+  linkedin: "https://www.linkedin.com/in/thomas-vinh-san-756037434"
   cv: "cv/cv-thomas.pdf"
 
 # Menus (URLs RELATIVES – IMPORTANT pour GitHub Pages /site-perso/)

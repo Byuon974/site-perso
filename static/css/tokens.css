@@ -1,0 +1,139 @@
+/* ══════════════════════════════════════════════════════════════════════
+   TOKENS
+   ══════════════════════════════════════════════════════════════════════
+
+   Une valeur, un rôle, une justification. Toute valeur hors échelle dans
+   un composant signale soit un besoin réel à documenter ici, soit un
+   oubli.
+
+   Ordre de lecture : schéma, couleur, typographie, espace, forme,
+   mouvement.
+   ══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Déclarer les deux schémas : les contrôles natifs, la barre de
+     défilement et le fond par défaut suivent immédiatement le réglage
+     système, sans une ligne de plus. */
+  color-scheme: light dark;
+  /* ── COULEURS ───────────────────────────────────────────────────────
+     Palette réduite à quatre rôles : surface (fond), texte (encre),
+     accent (unique point d'accroche), bordure. Chaque rôle porte sa
+     variante claire et sombre via light-dark(), qui évite la
+     duplication de blocs sous une règle html[data-theme="dark"].
+
+     Contrastes WCAG AA vérifiés dans les deux schémas :
+     · texte encre sur fond ivoire      → 12.6:1
+     · texte discret sur fond ivoire    → 6.64:1
+     · accent olive sur fond ivoire     → 5.26:1  (AA)
+     · texte encre clair sur fond nuit  → 12.1:1
+     · texte discret sur fond nuit      → 6.86:1
+     · accent olive clair sur fond nuit → 6.76:1  (AA) */
+
+  --surface:        light-dark(#f8f4e3, #1f2738);
+  --surface-muted:  light-dark(#efe9d3, #26304a);
+  --ink:            light-dark(#1e1e1e, #d5d0cd);
+  --ink-muted:      light-dark(#585747, #b0b19f);
+  --accent:         light-dark(#5e6b30, #a5b756);
+  --accent-hover:   light-dark(#4a5626, #b8ca6a);
+  --accent-bg:      light-dark(rgba(94, 107, 48, 0.10), rgba(165, 183, 86, 0.14));
+  --accent-border:  light-dark(rgba(94, 107, 48, 0.35), rgba(165, 183, 86, 0.40));
+  --border:         light-dark(#d4cdc3, #3a4258);
+
+  /* Code : un contraste doux pour ne pas trouer la lecture. */
+  --code-bg:        light-dark(#efe9d3, #232136);
+  --code-ink:       light-dark(#575279, #e0def4);
+
+  /* ── TYPOGRAPHIE ────────────────────────────────────────────────────
+     Trois familles, chacune avec un rôle exclusif.
+     · display : titres de page et section
+     · sans    : prose et interface
+     · mono    : donnée (dates, tags, chemins, code) */
+
+  --font-display: "Instrument Serif", Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Échelle fluide. clamp(min, ref + facteur vi, max).
+     La part rem reste dominante pour que la taille suive toujours le
+     réglage utilisateur du navigateur (accessibilité, WCAG 1.4.4). */
+  --t-xs:   clamp(0.75rem, 0.72rem + 0.15vi, 0.85rem);
+  --t-sm:   clamp(0.85rem, 0.82rem + 0.15vi, 0.94rem);
+  --t-base: clamp(1rem,    0.96rem + 0.22vi, 1.13rem);
+  --t-md:   clamp(1.1rem,  1.05rem + 0.30vi, 1.25rem);
+  --t-lg:   clamp(1.35rem, 1.25rem + 0.48vi, 1.62rem);
+  --t-xl:   clamp(1.6rem,  1.47rem + 0.65vi, 1.94rem);
+  --t-2xl:  clamp(2.25rem, 2.05rem + 1vi,    2.75rem);
+
+  /* Deux tailles d'affichage, hors échelle de lecture : elles ne servent
+     qu'à des glyphes employés comme image (initiale, 404). */
+  --t-affiche: clamp(2.5rem, 2rem + 2.5vi, 3.5rem);
+  --t-geant: clamp(4rem, 3rem + 5vi, 7rem);
+
+  --lh-serre: 1.3;
+  --lh-prose: 1.6;
+
+  --measure: 65ch;
+  --w-page: 68rem;
+  --col-date: 13ch;
+  --gap-col: 2ch;
+
+  /* ── ESPACE ─────────────────────────────────────────────────────────
+     Base 0.25rem, doublement progressif. Les valeurs sont volontairement
+     fixes en rem : l'espace ne fluctue pas avec la largeur d'écran, il
+     suit uniquement le réglage utilisateur.
+
+     Pour un vrai espace fluide (marges de section), la variante --sp-*
+     ajoute une composante viewport. */
+
+  --e-1: 0.25rem;   /*  4px  interstice                                 */
+  --e-2: 0.5rem;    /*  8px  entre éléments liés                        */
+  --e-3: 0.75rem;   /* 12px                                             */
+  --e-4: 1rem;      /* 16px  espacement courant                         */
+  --e-6: 1.5rem;    /* 24px  entre blocs                                */
+  --e-8: 2rem;      /* 32px  entre sections                             */
+  --e-12: 3rem;     /* 48px                                             */
+  --e-16: 4rem;     /* 64px  respiration de page                        */
+
+  /* Espace fluide pour les marges de section : respire avec la largeur. */
+  --sp-s: clamp(1rem, 0.91rem + 0.43vi, 1.25rem);
+  --sp-m: clamp(1.5rem, 1.37rem + 0.65vi, 1.88rem);
+  --sp-l: clamp(2rem, 1.83rem + 0.87vi, 2.5rem);
+  --sp-xl: clamp(3rem, 2.74rem + 1.3vi, 3.75rem);
+
+  /* ── FORME ──────────────────────────────────────────────────────────
+     Deux rayons seulement : petit pour code inline et pastille, moyen
+     pour composant. Le retrait de --r-full (999px) est volontaire : on
+     n'a plus de composant qui l'utilisait après nettoyage. */
+
+  --r-sm: 3px;
+  --r-md: 4px;
+
+  /* Une seule ombre : décalage franc, aucun flou. L'objet se lit comme
+     une découpe imprimée et non comme un objet qui flotte. */
+  --ombre: 0 2px 0 rgba(31, 39, 56, 0.85);
+  --trait: 1px solid var(--border);
+  --trait-accent: 1px solid var(--accent-border);
+
+  /* ── MOUVEMENT ──────────────────────────────────────────────────────
+     Une durée d'interface, une courbe. Toute animation décorative gère
+     sa propre durée dans son propre bloc. */
+
+  --duree: 0.2s;
+  --courbe: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Le mouvement d'interface se coupe intégralement quand le système le
+   demande. Le reset gère les *:not, cette ligne coupe aussi les
+   variables auteur pour les composants qui les lisent. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duree: 0.01ms;
+  }
+}
+
+/* Pont data-theme → color-scheme. Le script FOUC applique data-theme
+   sur <html> selon le réglage utilisateur mémorisé en localStorage.
+   Ces deux règles font suivre color-scheme, ce qui pilote light-dark()
+   utilisée dans toutes les variables couleur ci-dessus. */
+html[data-theme="light"] { color-scheme: light; }
+html[data-theme="dark"]  { color-scheme: dark; }

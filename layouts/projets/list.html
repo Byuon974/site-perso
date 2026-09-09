@@ -43,6 +43,15 @@
         <p class="projet-cell-desc">{{ . }}</p>
         {{ end }}
 
+        {{/* Cartouche méta : statut + période, remontés du frontmatter pour
+             scan rapide sans avoir à ouvrir chaque projet. */}}
+        {{ if or .Params.status .Params.period }}
+        <p class="projet-cell-meta">
+          {{ with .Params.status }}<span class="projet-cell-status projet-cell-status--{{ . | lower }}">{{ . }}</span>{{ end }}
+          {{ with .Params.period }}<span class="projet-cell-period">{{ . }}</span>{{ end }}
+        </p>
+        {{ end }}
+
         {{ with .Params.tags }}
         {{/* Ligne unique, jamais de retour a la ligne : c'est ce qui garde
              toutes les cartes a la meme hauteur. */}}

@@ -43,7 +43,7 @@
       {{ end }}
 
       <li class="archive-item" data-category="{{ $cat }}">
-        <time datetime="{{ $d.Format "2006-01-02" }}">{{ $d.Format "Jan 02" }}</time>
+        <time datetime="{{ $d.Format "2006-01-02" }}">{{ time.Format "2 January" $d }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         {{ if eq $cat "runbook" }}
           <span class="archive-badge">runbook</span>

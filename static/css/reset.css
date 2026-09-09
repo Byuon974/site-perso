@@ -1,0 +1,46 @@
+/* Reset minimal. Ce que les navigateurs font mal ou ne font pas encore.
+   Rien de plus. */
+
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd { margin-block: 0; }
+
+html {
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
+}
+html:focus-within { scroll-behavior: smooth; }
+
+body {
+  min-block-size: 100svb;
+  line-height: var(--lh-prose, 1.6);
+}
+
+h1, h2, h3, h4, h5, h6,
+button, input, label { line-height: var(--lh-serre, 1.2); }
+
+h1, h2, h3, h4 { text-wrap: balance; }
+p, li { text-wrap: pretty; }
+
+/* Retirer les puces d'une liste tue son rôle sémantique dans Safari/VoiceOver.
+   Toute liste non-marquée doit porter role="list" pour rester perceptible. */
+ul[role="list"], ol[role="list"] { list-style: none; margin: 0; padding: 0; }
+
+img, picture, svg, video { max-inline-size: 100%; display: block; }
+input, button, textarea, select { font: inherit; color: inherit; }
+textarea:not([rows]) { min-block-size: 10em; }
+
+:target { scroll-margin-block-start: var(--e-8, 2rem); }
+
+/* Le mouvement doit se couper intégralement quand le système le demande.
+   !important est ici volontaire : cette règle doit battre toute animation
+   auteur, quel que soit son ordre d'apparition. */
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
