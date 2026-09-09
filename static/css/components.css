@@ -1007,6 +1007,15 @@ html[data-theme="dark"] .sun-avatar {
   margin-inline: auto;
 }
 
+/* Le header de la page à propos porte la même respiration que celui
+   des articles : sans cette marge, le titre colle au premier
+   paragraphe puisqu'aucune classe de header ne s'applique ici. */
+.about-simple > header {
+  margin-block-end: var(--e-8);
+  padding-block-end: var(--e-6);
+  border-block-end: var(--trait);
+}
+
 .blog-single-header,
 .note-single-header,
 .projet-single-header,
