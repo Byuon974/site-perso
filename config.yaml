@@ -1,6 +1,6 @@
 # baseURL: "https://byuon974.github.io/site-perso/"
 baseURL: "https://nexus-tvs.xyz/"
-languageCode: "fr-FR"
+locale: "fr-FR"
 defaultContentLanguage: "fr"
 title: "Thomas | Développeur en formation"
 publishDir: "docs"

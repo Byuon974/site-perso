@@ -12,7 +12,7 @@
           {{/* Section courante */}}
           {{ if .Title }}
           <div class="sidebar-current">
-            <span class="sidebar-label">current</span>
+            <span class="sidebar-label">Page courante</span>
             <span class="sidebar-current-title">{{ .Title }}</span>
           </div>
           {{ end }}
@@ -22,7 +22,7 @@
           {{ $toc := .TableOfContents }}
           {{ if $toc }}
           <nav class="sidebar-toc">
-            <span class="sidebar-label">contents</span>
+            <span class="sidebar-label">Sommaire</span>
             {{ $toc }}
           </nav>
           {{ end }}
@@ -30,7 +30,7 @@
 
           {{/* Navigation */}}
           <nav class="sidebar-nav">
-            <span class="sidebar-label">explore</span>
+            <span class="sidebar-label">Navigation</span>
             <ul>
               <li><a href="{{ "" | relURL }}"{{ if .IsHome }} class="active" aria-current="page"{{ end }}>Accueil</a></li>
               <li><a href="{{ "projets/" | relURL }}"{{ if eq .Section "projets" }} class="active" aria-current="page"{{ end }}>Projets</a></li>

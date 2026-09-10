@@ -181,12 +181,14 @@
   block-size: 100%;
 }
 
+/* Étiquettes de section. Le mono et l'interlettrage les distinguent
+   des liens sans recourir aux capitales, qui poseraient la question de
+   l'accentuation des majuscules et alourdiraient la colonne. */
 .sidebar-label {
   display: block;
   font-family: var(--font-mono);
   font-size: var(--t-sm);
   color: var(--ink-muted);
-  text-transform: lowercase;
   letter-spacing: 0.05em;
   margin-block-end: var(--e-3);
 }
@@ -255,13 +257,17 @@
 
 /* Les liens de navigation sont des cibles de pointeur : le padding
    vertical et la taille de police les portent au-delà des 44px de haut
-   recommandés pour un clic confortable, souris comme doigt. */
+   recommandés pour un clic confortable, souris comme doigt.
+
+   Police sans plutôt que mono : la chasse fixe du mono déforme
+   l'espacement des libellés accentués (« À propos ») et fragilise le
+   rendu des capitales accentuées selon les substitutions de police.
+   Le mono reste réservé aux données : dates, chemins, tags. */
 .sidebar-nav a {
   display: flex;
   align-items: center;
   min-block-size: 2.75rem;
   padding: var(--e-2) var(--e-3);
-  font-family: var(--font-mono);
   font-size: var(--t-base);
   color: var(--ink);
   text-decoration: none;
@@ -556,6 +562,9 @@ html[data-theme="dark"] .sun-avatar {
   align-items: start;
 }
 
+/* Capitales avec interlettrage pour marquer la catégorie sans peser.
+   text-transform accentue correctement les capitales en français
+   (DÉVELOPPEMENT, SYSTÈMES), conformément à l'usage typographique. */
 .skill-category h3 {
   font-family: var(--font-mono);
   font-size: var(--t-sm);
@@ -751,6 +760,32 @@ html[data-theme="dark"] .sun-avatar {
   transition: border-color var(--duree) var(--courbe), transform var(--duree) var(--courbe);
 }
 
+/* Toute la carte est cliquable, sans dupliquer le lien pour autant.
+   Le pseudo-élément du lien de titre s'étire sur la carte entière :
+   un seul lien dans l'arbre d'accessibilité, une cible de la taille
+   de la vignette pour le pointeur.
+
+   Conséquence à connaître : le texte de la carte n'est plus
+   sélectionnable à la souris, puisque le calque du lien le recouvre.
+   Acceptable ici, ces libellés courts n'ont pas vocation à être copiés. */
+.projet-cell-title a::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* L'anneau de focus doit entourer la carte, pas les seuls mots du
+   titre, sinon la navigation clavier devient illisible. */
+.projet-cell:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.projet-cell-title a:focus-visible {
+  outline: none;
+}
+
 .projet-cell:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
@@ -819,7 +854,8 @@ html[data-theme="dark"] .sun-avatar {
   transition: color var(--duree) var(--courbe);
 }
 
-.projet-cell-title a:hover {
+.projet-cell-title a:hover,
+.projet-cell:hover .projet-cell-title a {
   color: var(--accent);
 }
 
