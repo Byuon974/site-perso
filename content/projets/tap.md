@@ -33,22 +33,34 @@ Pendant des années, ces sociétés ont fonctionné ainsi, et la productivité e
 Les données affichées (patients, courses, montants) sont des données de démonstration fictives, générées pour les besoins de ces captures et clairement identifiées comme telles dans l'interface (badge « DÉMO »).
 
 <figure>
-  <img src="/images/uploads/tap-cockpit.png" alt="Cockpit TAP, vue de la journée en cours avec carte des chauffeurs et alertes" loading="lazy">
+  <picture>
+    <source srcset="/images/uploads/tap-cockpit.webp" type="image/webp">
+    <img src="/images/uploads/tap-cockpit.png" alt="Cockpit TAP, vue de la journée en cours avec carte des chauffeurs et alertes" width="1793" height="1093" loading="lazy">
+  </picture>
   <figcaption>Le cockpit : vue temps réel de la journée d'une régulatrice, courses non affectées, brouillons en attente, carte des chauffeurs, échéances réglementaires.</figcaption>
 </figure>
 
 <figure>
-  <img src="/images/uploads/tap-dashboard.png" alt="Tableau de bord TAP avec chiffre d'affaires, encours impayé, no-show et top prescripteurs" loading="lazy">
+  <picture>
+    <source srcset="/images/uploads/tap-dashboard.webp" type="image/webp">
+    <img src="/images/uploads/tap-dashboard.png" alt="Tableau de bord TAP avec chiffre d'affaires, encours impayé, no-show et top prescripteurs" width="1803" height="1095" loading="lazy">
+  </picture>
   <figcaption>Le tableau de bord : activité du mois, facturation à traiter, taux de no-show, top des prescripteurs.</figcaption>
 </figure>
 
 <figure>
-  <img src="/images/uploads/tap-patients.png" alt="Liste des patients TAP avec canal de contact préféré et actions d'archivage" loading="lazy">
+  <picture>
+    <source srcset="/images/uploads/tap-patients.webp" type="image/webp">
+    <img src="/images/uploads/tap-patients.png" alt="Liste des patients TAP avec canal de contact préféré et actions d'archivage" width="1806" height="1054" loading="lazy">
+  </picture>
   <figcaption>La liste des patients, avec canal de contact préféré par patient (appel, SMS) et dernière course.</figcaption>
 </figure>
 
 <figure>
-  <img src="/images/uploads/tap-patients-creation.png" alt="Formulaire de création d'un nouveau patient avec NIR, adresse et référent légal" loading="lazy">
+  <picture>
+    <source srcset="/images/uploads/tap-patients-creation.webp" type="image/webp">
+    <img src="/images/uploads/tap-patients-creation.png" alt="Formulaire de création d'un nouveau patient avec NIR, adresse et référent légal" width="1799" height="1097" loading="lazy">
+  </picture>
   <figcaption>La création d'un patient : identité, NIR chiffré, adresse, référent légal pour les mineurs ou personnes sous tutelle.</figcaption>
 </figure>
 

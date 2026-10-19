@@ -1,3 +1,4 @@
+@layer reset {
 /* Reset minimal. Ce que les navigateurs font mal ou ne font pas encore.
    Rien de plus. */
 
@@ -43,4 +44,6 @@ textarea:not([rows]) { min-block-size: 10em; }
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
 }

@@ -4,7 +4,9 @@
 
   const setTheme = (theme) => {
     docEl.setAttribute("data-theme", theme);
-    localStorage.setItem(STORAGE_KEY, theme);
+    // Même garde que le script FOUC : en navigation privée l'écriture lève,
+    // et sans try le bouton cesserait de basculer après le premier clic.
+    try { localStorage.setItem(STORAGE_KEY, theme); } catch (e) {}
   };
 
   // Le thème initial est déjà appliqué par le script inline dans <head>.

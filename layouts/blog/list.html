@@ -8,12 +8,13 @@
   {{ range .Pages.GroupByDate "2006" }}
   <section class="archive-year">
     <h2 class="archive-year-title">{{ .Key }}</h2>
-    <ul class="archive-list">
+    <ul class="archive-list" role="list">
       {{ range .Pages.ByDate.Reverse }}
       <li class="archive-item">
         <time datetime="{{ .Date.Format "2006-01-02" }}">{{ time.Format "2 January" .Date }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
         <span class="archive-arrow">»</span>
+        {{ with .Params.description }}<span class="archive-desc">{{ . }}</span>{{ end }}
       </li>
       {{ end }}
     </ul>

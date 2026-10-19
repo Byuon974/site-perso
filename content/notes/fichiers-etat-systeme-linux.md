@@ -1,6 +1,6 @@
 ---
 title: "Fichiers d'état du système sous /etc"
-description: "Référence d'exploitation des fichiers que les commandes d'administration écrivent : bases de comptes (passwd, shadow, group, gshadow), outils d'édition et de validation dédiés, résolution par NSS, et la règle générale qui associe à chaque fichier de `/etc` son éditeur sûr et son ..."
+description: "Référence d'exploitation des fichiers que les commandes d'administration écrivent : bases de comptes (passwd, shadow, group, gshadow), outils d'édition et de validation dédiés, résolution par NSS, et la règle qui associe à chaque fichier de `/etc` son éditeur sûr."
 tags: ["linux", "cli", "passwd", "shadow", "nss", "runbook", "etc", "securite"]
 updated: 2026-08-18
 validated: 2026-08-18

@@ -1,0 +1,32 @@
+{{ define "main" }}
+{{/* Une seule page qui liste tout. Sur un site de cette taille elle tient
+     l'office d'une recherche : chercher dans la page avec Ctrl+F couvre les
+     titres et les descriptions, sans index à construire ni JavaScript.
+     Pas de pagination, pas de filtre : il n'y a rien à paginer. */}}
+<article class="prose">
+  {{ partial "page-header.html" (dict "ctx" . "wrapperClass" "page-header"
+      "descClass" "page-header-desc" "showBreadcrumbs" true) }}
+
+  <section class="prose-content" id="post-body">
+    {{ $ordre := slice "blog" "notes" "projets" }}
+    {{ $titres := dict "blog" "Articles" "notes" "Notes techniques" "projets" "Projets" }}
+    {{ range $ordre }}
+      {{ $sec := . }}
+      {{ $pages := where site.RegularPages "Section" $sec }}
+      {{ with $pages }}
+      <h2 id="{{ $sec }}">{{ index $titres $sec }} <span class="tout-compte">({{ len . }})</span></h2>
+      <ul class="tout-liste" role="list">
+        {{ range .ByDate.Reverse }}
+        {{ $d := .Date }}{{ with .Params.updated }}{{ $d = time . }}{{ end }}
+        <li>
+          <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+          <time datetime="{{ $d.Format "2006-01-02" }}">{{ time.Format "2 January 2006" $d }}</time>
+          {{ with .Params.description }}<span class="tout-desc">{{ . }}</span>{{ end }}
+        </li>
+        {{ end }}
+      </ul>
+      {{ end }}
+    {{ end }}
+  </section>
+</article>
+{{ end }}

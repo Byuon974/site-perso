@@ -1,6 +1,6 @@
 ---
 title: "Shell interactif et environnement Bash"
-description: "Référence d'exploitation des shells interactifs Bash et Zsh sous Linux : édition de ligne et historique, résolution des noms de commandes, expansions, alias et fonctions, variables et PATH, élévation de privilèges. Couvre les opérations courantes dans les 2 shells, leurs divergen..."
+description: "Référence d'exploitation des shells interactifs Bash et Zsh sous Linux : édition de ligne et historique, résolution des noms de commandes, expansions, alias et fonctions, variables et PATH, élévation de privilèges."
 tags: ["linux", "cli", "bash", "sudo", "shell", "runbook"]
 updated: 2026-08-18
 validated: 2026-08-18

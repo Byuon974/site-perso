@@ -1,3 +1,4 @@
+@layer utilities {
 /* Classes utilitaires. Aucune n'est cosmétique : chaque utility résout
    un besoin fonctionnel qu'un composant n'a pas à porter. */
 
@@ -24,3 +25,5 @@
 /* Cachetage de l'affichage. Un display: none via classe qu'un composant
    parent contrôle depuis JS. */
 .hidden { display: none !important; }
+
+}

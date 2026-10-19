@@ -1,6 +1,6 @@
 ---
 title: "Copie, déplacement et synchronisation"
-description: "Référence d'exploitation des outils de copie et de transfert d'arborescences sous Linux : duplication (cp), déplacement et renommage (mv), synchronisation incrémentale (rsync), transfert d'arborescence en flux (tar). Couvre les opérations courantes, le choix d'outil, le dépannage..."
+description: "Référence d'exploitation des outils de copie et de transfert d'arborescences sous Linux : duplication (cp), déplacement et renommage (mv), synchronisation incrémentale (rsync), transfert d'arborescence en flux (tar)."
 tags: ["linux", "cli", "cp", "mv", "rsync", "tar", "runbook", "fichiers"]
 updated: 2026-08-25
 validated: 2026-08-18

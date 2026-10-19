@@ -1,0 +1,38 @@
+{{ define "main" }}
+{{/* Les sections n'ont pas la même cadence : 4 articles par an d'un côté,
+     des fiches révisées de l'autre. S'abonner à l'une sans l'autre doit
+     être possible, d'où un flux par section plutôt qu'un seul. */}}
+<article class="prose">
+  {{ partial "page-header.html" (dict "ctx" . "wrapperClass" "page-header"
+      "descClass" "page-header-desc" "showBreadcrumbs" true) }}
+
+  <section class="prose-content" id="post-body">
+    <p>Chaque flux porte le contenu entier des pages, pas un extrait&#8239;: un
+    lecteur hors ligne reçoit le texte complet.</p>
+
+    <ul class="tout-liste" role="list">
+      <li>
+        <a href="{{ "index.xml" | relURL }}">Tout le site</a>
+        <time>le plus bavard</time>
+        <span class="tout-desc">Articles, notes et projets réunis.</span>
+      </li>
+      {{ $cadences := dict
+          "blog"    "quelques articles par an"
+          "notes"   "révisions régulières"
+          "projets" "au fil des projets" }}
+      {{ range site.Sections }}
+        {{ if and .RegularPages (in (slice "blog" "notes" "projets") .Section) }}
+        <li>
+          <a href="{{ .RelPermalink }}index.xml">{{ .Title }}</a>
+          <time>{{ index $cadences .Section }}</time>
+          <span class="tout-desc">{{ len .RegularPages }} page{{ if gt (len .RegularPages) 1 }}s{{ end }}.{{ with .Params.description }} {{ . }}{{ end }}</span>
+        </li>
+        {{ end }}
+      {{ end }}
+    </ul>
+
+    <p>Ces adresses se collent dans n'importe quel lecteur de flux. Le site
+    n'a ni infolettre ni compte à suivre&#8239;: le flux est le seul abonnement.</p>
+  </section>
+</article>
+{{ end }}

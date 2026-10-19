@@ -1,6 +1,6 @@
 ---
 title: "Médias et affichage graphique sous Linux"
-description: "Référence d'exploitation des outils multimédias et d'affichage sous Linux/X11 : transcodage et filtrage audio-vidéo (ffmpeg), visionneuse d'images légère (feh), miroir et contrôle d'appareils Android (scrcpy), configuration dynamique des écrans (xrandr). Couvre les opérations cou..."
+description: "Référence d'exploitation des outils multimédias et d'affichage sous Linux/X11 : transcodage et filtrage audio-vidéo (ffmpeg), visionneuse d'images légère (feh), miroir et contrôle d'appareils Android (scrcpy), configuration dynamique des écrans (xrandr)."
 tags: ["linux", "cli", "ffmpeg", "scrcpy", "xrandr", "x11", "runbook", "medias"]
 updated: 2026-06-18
 validated: 2026-08-18

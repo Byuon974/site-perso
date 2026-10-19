@@ -1,0 +1,61 @@
+/* ══════════════════════════════════════════════════════════════════════
+   IMPRESSION
+   ══════════════════════════════════════════════════════════════════════
+   Le site sert surtout des notes techniques et des articles longs, qui
+   sont imprimés ou exportés en PDF. Sans cette feuille, la barre
+   latérale, le bouton de thème et le fil d'Ariane occupent la première
+   page et le texte sort en colonne étroite.
+
+   Les URL des liens externes sont imprimées après le libellé : sur
+   papier un lien sans adresse est perdu. Les liens internes ne le sont
+   pas, leur chemin relatif n'apprenant rien au lecteur. */
+
+@media print {
+  .sidebar,
+  .sidebar-overlay,
+  .sidebar-toggle,
+  [data-theme-toggle],
+  .breadcrumbs,
+  .site-footer-links,
+  .blog-nav,
+  .related {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+
+  .main-content {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  a[href^="http"]::after {
+    content: " (" attr(href) ")";
+    font-size: 0.85em;
+    word-break: break-all;
+  }
+
+  /* Rien ne doit se couper entre un titre et ce qu'il annonce, ni au
+     milieu d'un bloc de code ou d'une figure. */
+  h1, h2, h3, h4 {
+    break-after: avoid;
+  }
+
+  pre, figure, table, blockquote {
+    break-inside: avoid;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    border: 1px solid #ccc;
+  }
+
+  img {
+    max-width: 100% !important;
+  }
+}

@@ -58,61 +58,71 @@
     <ul class="timeline">
       <li class="timeline-item">
         <time>2026 — 2027</time>
-        <h3>MSc IA &amp; Big Data</h3>
-        <p>
-          <strong>Epitech</strong>
-          <span aria-hidden="true">•</span>
-          <em>en recherche d'alternance</em>
-        </p>
+        <div class="timeline-body">
+          <h3>MSc IA &amp; Big Data</h3>
+          <p>
+            <strong>Epitech</strong>
+            <span aria-hidden="true">•</span>
+            <em>en recherche d'alternance</em>
+          </p>
+        </div>
       </li>
 
       <li class="timeline-item">
-        <time>2025 — 2026 · Entreprise</time>
-        <h3>Concepteur-développeur d'applications</h3>
-        <p>
-          <strong>Delivrex</strong>
-          <span aria-hidden="true">•</span>
-          <em>en alternance, contrat terminé</em>
-        </p>
-        <p>
-          Seul informaticien du service : conception et développement d'une
-          plateforme SaaS de régulation de transport médico-social, du besoin
-          métier à l'architecture applicative.
-        </p>
+        <time>2025 — 2026<span class="timeline-kind">Entreprise</span></time>
+        <div class="timeline-body">
+          <h3>Concepteur-développeur d'applications</h3>
+          <p>
+            <strong>Delivrex</strong>
+            <span aria-hidden="true">•</span>
+            <em>en alternance, contrat terminé</em>
+          </p>
+          <p>
+            Seul informaticien du service : conception et développement d'une
+            plateforme SaaS de régulation de transport médico-social, du besoin
+            métier à l'architecture applicative.
+          </p>
+        </div>
       </li>
 
       <li class="timeline-item">
-        <time>2025 — 2026 · Formation</time>
-        <h3>Expert en architecture et développement logiciel</h3>
-        <p>
-          <strong>CCI de la Réunion</strong>
-          <span aria-hidden="true">•</span>
-          <em>en alternance</em>
-        </p>
+        <time>2025 — 2026<span class="timeline-kind">Formation</span></time>
+        <div class="timeline-body">
+          <h3>Expert en architecture et développement logiciel</h3>
+          <p>
+            <strong>CCI de la Réunion</strong>
+            <span aria-hidden="true">•</span>
+            <em>en alternance</em>
+          </p>
+        </div>
       </li>
 
       <li class="timeline-item">
         <time>2022 — 2025</time>
-        <h3>
-          Alternant : systèmes puis développement au Département de La Réunion
-        </h3>
-        <p>
-          Administration Linux, réseau et sécurité, automatisation de
-          déploiements avec Ansible, puis modélisation de bases de données et
-          refonte applicative en PHP.
-        </p>
+        <div class="timeline-body">
+          <h3>
+            Alternant : systèmes puis développement au Département de La Réunion
+          </h3>
+          <p>
+            Administration Linux, réseau et sécurité, automatisation de
+            déploiements avec Ansible, puis modélisation de bases de données et
+            refonte applicative en PHP.
+          </p>
+        </div>
       </li>
 
       <li class="timeline-item">
         <time>2022 — 2024</time>
-        <h3>BTS CERT</h3>
-        <p>
-          <strong>CCI de la Réunion</strong>
-          <span aria-hidden="true">•</span>
-          <em>Cybersécurité, Informatique et Réseaux</em>
-          <span aria-hidden="true">•</span>
-          <em>en alternance</em>
-        </p>
+        <div class="timeline-body">
+          <h3>BTS CERT</h3>
+          <p>
+            <strong>CCI de la Réunion</strong>
+            <span aria-hidden="true">•</span>
+            <em>Cybersécurité, Informatique et Réseaux</em>
+            <span aria-hidden="true">•</span>
+            <em>en alternance</em>
+          </p>
+        </div>
       </li>
     </ul>
   </section>
@@ -121,9 +131,21 @@
     <h2>Me contacter</h2>
     <div class="contact-links">
       {{ with .Site.Params.cv }}
+      {{/* Le nom publié ne change jamais : une adresse de CV se retrouve
+           dans des candidatures envoyées, elle ne doit pas se casser d'une
+           année sur l'autre. Pour mettre le CV à jour, on remplace le
+           contenu de static/cv/cv-thomas.pdf sans renommer le fichier.
+           download porte le nom sous lequel le visiteur l'enregistre.
+
+           Revers du nom stable : le navigateur garde l'ancien PDF en
+           cache. Le paramètre v est une empreinte du contenu, donc il
+           change dès que le fichier change et force le rechargement.
+           L'adresse nue reste valide, les liens déjà envoyés aussi. */}}
+      {{ $cvRes := resources.Get . }}
       <a
-        href="{{ . | relURL }}"
+        href="{{ . | relURL }}{{ with $cvRes }}?v={{ hash.FNV32a .Content }}{{ end }}"
         class="contact-link"
+        download="CV-{{ now.Year }}-Thomas-VINH-SAN.pdf"
         target="_blank"
         rel="noopener"
       >

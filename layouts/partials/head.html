@@ -1,27 +1,87 @@
-<title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
-
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<title>{{ if .Title }}{{ .Title }} | {{ end }}{{ .Site.Title }}</title>
+
+{{/* Thème : placé avant les feuilles de style, et non après, pour 2 raisons.
+     Il doit s'exécuter avant le premier rendu, sinon la page clignote au
+     rechargement en mode sombre. Et un script en ligne placé après un
+     <link rel=stylesheet> attend le téléchargement de cette feuille avant
+     de s'exécuter : le mettre ici le libère de cette attente. */}}
+<script>
+(function(){
+  var t = null;
+  try { t = localStorage.getItem("theme"); } catch (e) {}
+  if (t !== "light" && t !== "dark") {
+    t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  }
+  document.documentElement.setAttribute("data-theme", t);
+})();
+</script>
+
+{{/* CSS et polices en tête : ce sont les seules ressources qui bloquent le
+     rendu, elles doivent être découvertes le plus tôt possible. Les balises
+     meta descriptives passent dessous, aucun robot n'en souffre.
+     Les 7 feuilles du site sont concaténées en un seul fichier au nom
+     empreinté. Avant, main.css les tirait par @import : le navigateur ne
+     les découvrait qu'après l'avoir téléchargée et analysée, soit
+     2 allers-retours en série sur le chemin critique de chaque page, plus
+     6 requêtes spéculatives en 404 émises par le scanner de préchargement
+     de Chromium, qui résout ces @import contre l'URL du document.
+     L'empreinte dans le nom permet un cache long sans risque de version
+     périmée, et nourrit l'attribut integrity.
+     print.css reste à part, en media="print" : elle ne doit pas peser sur
+     le rendu écran. littlefoot aussi, pour rester remplaçable d'un bloc. */}}
+<link rel="preload" href="{{ "fonts/jetbrains-mono-latin.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="{{ "fonts/instrument-serif-latin.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{{ "vendor/littlefoot/littlefoot.css" | relURL }}" />
+{{ $feuilles := slice
+  (resources.Get "css/main.css")
+  (resources.Get "css/reset.css")
+  (resources.Get "css/tokens.css")
+  (resources.Get "css/base.css")
+  (resources.Get "css/layout.css")
+  (resources.Get "css/components.css")
+  (resources.Get "css/utilities.css")
+  (resources.Get "css/syntax.css") }}
+{{ $css := $feuilles | resources.Concat "css/site.css" | minify | fingerprint "sha256" }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}" />
+{{ $print := resources.Get "css/print.css" | minify | fingerprint "sha256" }}
+<link rel="stylesheet" href="{{ $print.RelPermalink }}" integrity="{{ $print.Data.Integrity }}" media="print" />
+
 <meta name="theme-color" content="#f8f4e3" media="(prefers-color-scheme: light)" />
 <meta name="theme-color" content="#1f2738" media="(prefers-color-scheme: dark)" />
 <meta name="author" content="{{ .Site.Params.author | default "Thomas VINH-SAN" }}" />
 
-{{/* Description pour SEO et mode lecture */}}
-{{ with .Params.description }}
-<meta name="description" content="{{ . }}" />
-{{ else }}
-{{ with .Summary }}
-<meta name="description" content="{{ . | plainify | truncate 160 }}" />
-{{ else }}
-<meta name="description" content="{{ .Site.Params.description }}" />
-{{ end }}
-{{ end }}
+{{/* Description pour SEO et mode lecture.
+     Tronquée à 150 caractères ici et ici seulement : la même valeur sert de
+     sous-titre affiché sur la page et de description dans le flux RSS, où
+     elle doit rester entière. Les moteurs coupent vers 160, autant couper
+     sur un mot plutôt que les laisser trancher n'importe où. */}}
+{{ $desc := "" }}
+{{ with .Params.description }}{{ $desc = . }}
+{{ else }}{{ with .Summary }}{{ $desc = . | plainify }}
+{{ else }}{{ $desc = .Site.Params.description }}{{ end }}{{ end }}
+<meta name="description" content="{{ $desc | truncate 150 }}" />
 
 {{/* Open Graph */}}
 <meta property="og:title" content="{{ .Title | default .Site.Title }}" />
 <meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}" />
 <meta property="og:url" content="{{ .Permalink }}" />
 {{ with .Params.description }}<meta property="og:description" content="{{ . }}" />{{ end }}
+
+{{/* Image de partage : la capture du projet si la page en déclare une,
+     sinon la carte de la section. 4 PNG fixes dans static/og, aucun
+     service externe : ni génération à l'exécution ni dépendance tierce,
+     ce que le choix « zéro build, tout auto-hébergé » exclut. */}}
+{{ $og := "" }}
+{{ with .Params.image }}{{ $og = . | absURL }}
+{{ else }}{{ $og = printf "/og/%s.png" (cond .IsHome "accueil" (or .Section "accueil")) | absURL }}{{ end }}
+<meta property="og:image" content="{{ $og }}" />
+<meta property="og:image:alt" content="{{ .Title | default .Site.Title }} — {{ .Site.Title }}" />
+<meta property="og:site_name" content="{{ .Site.Title }}" />
+<meta property="og:locale" content="fr_FR" />
+<meta name="twitter:card" content="summary_large_image" />
 
 {{/* Article meta pour mode lecture */}}
 {{ if .IsPage }}
@@ -36,21 +96,10 @@
 <link rel="icon" type="image/png" href="{{ "favicon.png" | relURL }}" sizes="32x32" />
 <link rel="icon" type="image/png" href="{{ "favicon-192.png" | relURL }}" sizes="192x192" />
 <link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}" />
-<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }}" href="{{ "index.xml" | relURL }}" />
-
-{{/* Thème : appliqué avant le CSS pour éviter le flash (FOUC) */}}
-<script>
-(function(){
-  var t = localStorage.getItem("theme");
-  if (t !== "light" && t !== "dark") {
-    t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-  }
-  document.documentElement.setAttribute("data-theme", t);
-})();
-</script>
-
-{{/* CSS */}}
-<link rel="preload" href="{{ "fonts/jetbrains-mono-latin.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="{{ "fonts/instrument-serif-latin.woff2" | relURL }}" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="{{ "vendor/littlefoot/littlefoot.css" | relURL }}" />
-<link rel="stylesheet" href="{{ "css/main.css" | relURL }}" />
+{{/* Autodécouverte du flux de la page courante : sur /notes le lecteur
+     se voit proposer le flux des notes, pas celui du site entier. Le flux
+     général reste proposé partout, en second. */}}
+{{ range .AlternativeOutputFormats -}}
+<link rel="{{ .Rel }}" type="{{ .MediaType.Type }}" href="{{ .Permalink }}" title="{{ $.Site.Title }}{{ if not $.IsHome }} — {{ $.Title }}{{ end }}" />
+{{ end -}}
+{{ if not .IsHome }}<link rel="alternate" type="application/rss+xml" title="{{ .Site.Title }} — tout le site" href="{{ "index.xml" | relURL }}" />{{ end }}

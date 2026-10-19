@@ -1,3 +1,4 @@
+@layer components {
 /* ══════════════════════════════════════════════════════════════════════
    COMPONENTS
    ══════════════════════════════════════════════════════════════════════
@@ -231,7 +232,15 @@
   padding-inline-start: var(--e-3);
   padding-block: var(--e-1);
   border-inline-start: 2px solid transparent;
-  transition: all var(--duree) var(--courbe);
+  /* Propriétés listées plutôt que « all » : « all » animait aussi
+     outline-width, et l'anneau de focus mettait 400 ms à atteindre
+     ses 2 px, mesuré au clavier. Un indicateur de focus doit être
+     immédiat. Ajouter ici toute propriété qui doit transiter. */
+  transition: color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              transform var(--duree) var(--courbe),
+              box-shadow var(--duree) var(--courbe);
 }
 
 .sidebar-toc a:hover {
@@ -612,24 +621,32 @@ html[data-theme="dark"] .sun-avatar {
   display: grid;
   grid-template-columns: 8rem 1fr;
   column-gap: var(--e-6);
-  row-gap: 0;
+  align-items: start;
   padding: var(--e-2) var(--e-4);
   margin-inline: calc(-1 * var(--e-4));
   border-radius: var(--r-md);
   transition: background var(--duree) var(--courbe);
 }
 
+/* La date occupe une cellule à elle seule, et le contenu une autre.
+   Auparavant chaque enfant était placé en colonne 2 avec <time> épinglé
+   en grid-row 1 : le titre partageait donc sa rangée avec la date, et
+   une date repliée sur 2 lignes creusait un écart sous le titre, visible
+   sur les seules entrées « · Entreprise » et « · Formation ».
+   Rejeté : élargir la colonne pour empêcher le repli, qui ne fait que
+   repousser le défaut aux fenêtres étroites. */
 .timeline-item > time {
-  grid-column: 1;
-  grid-row: 1;
   font-family: var(--font-mono);
   font-size: var(--t-xs);
   color: var(--ink-muted);
   padding-block-start: 0.35rem;
+  line-height: 1.5;
 }
 
-.timeline-item > *:not(time) {
-  grid-column: 2;
+/* Le qualificatif passe à la ligne volontairement plutôt que par repli :
+   le point médian se retrouvait seul en fin de première ligne. */
+.timeline-kind {
+  display: block;
 }
 
 .timeline-item h3 {
@@ -699,7 +716,15 @@ html[data-theme="dark"] .sun-avatar {
   background: var(--surface);
   border: var(--trait);
   border-radius: var(--r-md);
-  transition: all var(--duree) var(--courbe);
+  /* Propriétés listées plutôt que « all » : « all » animait aussi
+     outline-width, et l'anneau de focus mettait 400 ms à atteindre
+     ses 2 px, mesuré au clavier. Un indicateur de focus doit être
+     immédiat. Ajouter ici toute propriété qui doit transiter. */
+  transition: color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              transform var(--duree) var(--courbe),
+              box-shadow var(--duree) var(--courbe);
 }
 
 .contact-link:hover {
@@ -950,7 +975,9 @@ html[data-theme="dark"] .sun-avatar {
 
 .archive-item {
   display: grid;
-  grid-template-columns: var(--col-date) 1fr auto auto;
+  /* minmax(0, 1fr) et non 1fr : sans la borne basse la colonne refuse de
+     rétrécir sous son contenu, et la page défile horizontalement. */
+  grid-template-columns: var(--col-date) minmax(0, 1fr) auto auto;
   column-gap: var(--gap-col);
   align-items: baseline;
   padding-block: var(--e-3);
@@ -1000,7 +1027,15 @@ html[data-theme="dark"] .sun-avatar {
   border: var(--trait);
   border-radius: var(--r-sm);
   cursor: pointer;
-  transition: all var(--duree) var(--courbe);
+  /* Propriétés listées plutôt que « all » : « all » animait aussi
+     outline-width, et l'anneau de focus mettait 400 ms à atteindre
+     ses 2 px, mesuré au clavier. Un indicateur de focus doit être
+     immédiat. Ajouter ici toute propriété qui doit transiter. */
+  transition: color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              transform var(--duree) var(--courbe),
+              box-shadow var(--duree) var(--courbe);
 }
 
 .notes-filter-btn:hover {
@@ -1148,7 +1183,15 @@ html[data-theme="dark"] .sun-avatar {
   text-decoration: none;
   border: var(--trait);
   border-radius: var(--r-md);
-  transition: all var(--duree) var(--courbe);
+  /* Propriétés listées plutôt que « all » : « all » animait aussi
+     outline-width, et l'anneau de focus mettait 400 ms à atteindre
+     ses 2 px, mesuré au clavier. Un indicateur de focus doit être
+     immédiat. Ajouter ici toute propriété qui doit transiter. */
+  transition: color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              transform var(--duree) var(--courbe),
+              box-shadow var(--duree) var(--courbe);
 }
 
 .projet-link:hover {
@@ -1398,7 +1441,15 @@ html[data-theme="dark"] .sun-avatar {
   text-decoration: none;
   border-radius: var(--r-md);
   border: 2px solid var(--accent);
-  transition: all var(--duree) var(--courbe);
+  /* Propriétés listées plutôt que « all » : « all » animait aussi
+     outline-width, et l'anneau de focus mettait 400 ms à atteindre
+     ses 2 px, mesuré au clavier. Un indicateur de focus doit être
+     immédiat. Ajouter ici toute propriété qui doit transiter. */
+  transition: color var(--duree) var(--courbe),
+              background-color var(--duree) var(--courbe),
+              border-color var(--duree) var(--courbe),
+              transform var(--duree) var(--courbe),
+              box-shadow var(--duree) var(--courbe);
 }
 
 .btn-primary {
@@ -1637,9 +1688,17 @@ html[data-theme="dark"] .sun-avatar {
 /* Les blocs de code débordent volontairement de la colonne de lecture :
    une ligne de code tolère mal la césure. */
 .prose-content pre {
-  max-inline-size: calc(var(--measure) + 10ch);
-  margin-inline: -5ch;
   margin-block-end: 1.5em;
+}
+
+/* Le débordement ne vaut qu'une fois la place disponible : sous 60rem les
+   -5ch de chaque côté poussaient le bloc hors de l'écran, mesuré à 320 px
+   sur les fiches Linux. */
+@media (min-width: 60rem) {
+  .prose-content pre {
+    max-inline-size: calc(var(--measure) + 10ch);
+    margin-inline: -5ch;
+  }
 }
 
 .prose-content img,
@@ -1825,4 +1884,130 @@ html[data-theme="dark"] .sun-avatar {
   border: none;
   background: transparent;
   cursor: pointer;
+}
+
+}
+
+
+/* ── AJOUTS DE LA PASSE WEB-PRODUCTION ───────────────────────────────
+   Ancre de section, lien de correction, page « tout le contenu », et
+   débordement du code hors de la colonne de prose. */
+
+/* Ancre de section : masquée par opacité et non par display:none, qui la
+   sortirait du parcours clavier. Elle réapparaît au survol du titre et
+   dès qu'elle reçoit le focus. */
+/* Le conteneur porte les marges de bloc du titre : le titre lui-même est
+   devenu un élément flex, ses marges verticales ne collapseraient plus
+   avec le texte alentour. */
+.titre-ancre {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4ch;
+  margin-block: var(--e-8) var(--e-4);
+}
+
+.titre-ancre > :is(h2, h3, h4) {
+  margin-block: 0;
+}
+
+.ancre-titre {
+  color: var(--ink-muted);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--duree) var(--courbe);
+}
+
+.titre-ancre:hover > .ancre-titre,
+.ancre-titre:focus-visible {
+  opacity: 1;
+}
+
+/* La section visée après un saut d'ancre : un repère discret le temps que
+   l'œil retrouve où il a atterri. */
+.prose :target {
+  scroll-margin-block-start: var(--e-8);
+}
+
+.tout-liste {
+  list-style: none;
+  padding: 0;
+  margin-block: 0 var(--e-8);
+}
+
+.tout-liste li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 var(--e-4);
+  align-items: baseline;
+  padding-block: var(--e-2);
+  border-block-end: var(--trait);
+}
+
+.tout-liste a { font-weight: 600; }
+
+.tout-liste time {
+  font-family: var(--font-mono);
+  font-size: var(--t-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+
+.tout-desc {
+  grid-column: 1 / -1;
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+.tout-compte {
+  font-family: var(--font-mono);
+  font-size: var(--t-sm);
+  color: var(--ink-muted);
+}
+
+/* Navigation d'une fiche à l'autre, dans la seule section où une
+   séquence existe. */
+.note-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--e-4);
+  margin-block-start: var(--e-8);
+  padding-block-start: var(--e-4);
+  border-block-start: var(--trait);
+  font-size: var(--t-sm);
+}
+
+.note-nav a { color: var(--ink-muted); text-decoration: none; }
+.note-nav a:hover { color: var(--accent); }
+.note-nav .note-nav-suivant { margin-inline-start: auto; text-align: end; }
+
+/* Description sous l'entrée d'index : la ligne de titre reste scannable,
+   la description tient la deuxième ligne de la grille. */
+.archive-desc {
+  grid-column: 2 / -1;
+  font-size: var(--t-sm);
+  line-height: 1.5;
+  color: var(--ink-muted);
+}
+
+/* La description d'index est bornée à 2 lignes : l'index reste scannable
+   et chaque entrée garde une hauteur comparable, quelle que soit la
+   longueur du texte. Le texte entier reste dans le DOM, donc lisible par
+   un lecteur d'écran et trouvable au Ctrl+F. */
+.archive-desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+}
+
+
+@media (max-width: 40rem) {
+  .archive-item {
+    grid-template-columns: 1fr auto;
+    row-gap: var(--e-1);
+  }
+  .archive-item time { grid-column: 1 / -1; }
+  .archive-desc { grid-column: 1 / -1; }
 }

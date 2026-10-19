@@ -1,6 +1,6 @@
 ---
 title: "Disques, partitions et systèmes de fichiers"
-description: "Référence d'exploitation des opérations sur les disques sous Linux : écriture sectorielle et imagerie (dd), partitionnement GPT/MBR (parted), création de systèmes de fichiers (mkfs), analyse de l'espace (ncdu, du, df). Ces opérations sont parmi les plus destructrices du système :..."
+description: "Référence d'exploitation des opérations sur les disques sous Linux : écriture sectorielle et imagerie (dd), partitionnement GPT/MBR (parted), création de systèmes de fichiers (mkfs), analyse de l'espace (ncdu, du, df)."
 tags: ["linux", "cli", "dd", "parted", "mkfs", "ncdu", "runbook", "disques"]
 updated: 2026-08-18
 validated: 2026-08-18

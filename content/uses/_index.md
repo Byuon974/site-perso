@@ -1,6 +1,8 @@
 ---
 title: "Ce que j'utilise"
 description: "Mon environnement de travail au quotidien : distributions Linux, terminal, éditeur, outils CLI, matériel. Page mise à jour quand quelque chose change vraiment."
+# Page unique : pas de flux à proposer, il serait vide.
+outputs: ["HTML"]
 ---
 
 _Mon environnement de travail au quotidien. Mise à jour quand quelque chose change vraiment, pas à chaque nouveauté qui passe._

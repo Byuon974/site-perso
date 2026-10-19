@@ -1,6 +1,6 @@
 ---
 title: "Affichage et inspection de fichiers"
-description: "Référence d'exploitation des outils d'affichage et d'inspection de fichiers sous Linux : lecture et concaténation de flux (cat, bat), formatage tabulaire (column), identification de type (file), métadonnées (stat), listing enrichi (eza). Couvre les opérations courantes, le choix ..."
+description: "Référence d'exploitation des outils d'affichage et d'inspection de fichiers sous Linux : lecture et concaténation de flux (cat, bat), formatage tabulaire (column), identification de type (file), métadonnées (stat), listing enrichi (eza)."
 tags: ["linux", "cli", "cat", "bat", "column", "file", "stat", "eza", "runbook", "fichiers"]
 updated: 2026-06-18
 validated: 2026-08-18

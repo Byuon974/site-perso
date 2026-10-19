@@ -1,3 +1,4 @@
+@layer tokens {
 /* ══════════════════════════════════════════════════════════════════════
    TOKENS
    ══════════════════════════════════════════════════════════════════════
@@ -137,3 +138,5 @@
    utilisée dans toutes les variables couleur ci-dessus. */
 html[data-theme="light"] { color-scheme: light; }
 html[data-theme="dark"]  { color-scheme: dark; }
+
+}

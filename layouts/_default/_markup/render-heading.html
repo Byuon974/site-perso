@@ -1,0 +1,14 @@
+{{/* Ancre de section : le sommaire latéral sert à naviguer, l'ancre sert à
+     citer un passage précis à quelqu'un. Deux fonctions distinctes.
+
+     Le lien est le FRÈRE du titre, pas son enfant. Placé dedans, son nom
+     accessible s'ajoute à celui du titre : un lecteur d'écran annonçait
+     « Un droit peu connu se démocratise Lien permanent vers la section Un
+     droit peu connu se démocratise », mesuré dans l'arbre d'accessibilité
+     de Chromium. Le conteneur rétablit l'alignement visuel.
+
+     L'id reste celui que Hugo calcule, le sommaire continue de marcher. */}}
+<div class="titre-ancre">
+  <h{{ .Level }} id="{{ .Anchor }}">{{ .Text | safeHTML }}</h{{ .Level }}>
+  <a class="ancre-titre" href="#{{ .Anchor }}" aria-label="Lien permanent vers cette section">#</a>
+</div>

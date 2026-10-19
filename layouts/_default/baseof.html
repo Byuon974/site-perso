@@ -21,7 +21,7 @@
           {{ if and .IsPage .TableOfContents }}
           {{ $toc := .TableOfContents }}
           {{ if $toc }}
-          <nav class="sidebar-toc">
+          <nav class="sidebar-toc" aria-label="Sommaire de la page">
             <span class="sidebar-label">Sommaire</span>
             {{ $toc }}
           </nav>
@@ -29,7 +29,7 @@
           {{ end }}
 
           {{/* Navigation */}}
-          <nav class="sidebar-nav">
+          <nav class="sidebar-nav" aria-label="Navigation principale">
             <span class="sidebar-label">Navigation</span>
             <ul>
               <li><a href="{{ "" | relURL }}"{{ if .IsHome }} class="active" aria-current="page"{{ end }}>Accueil</a></li>

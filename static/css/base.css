@@ -1,3 +1,4 @@
+@layer base {
 /* Base : éléments HTML sans classe. Toute règle ici s'applique sans
    spécificité et peut se surcharger par n'importe quel composant. */
 
@@ -50,6 +51,11 @@ h5, h6 { font-size: var(--t-base); font-weight: 600; }
 
 /* Code en ligne : pastille discrète. */
 :not(pre) > code {
+  /* Un identifiant long et sans espace (NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY)
+     poussait la page hors de l'écran à 320 et 375 px : sans point de
+     coupure naturel, il faut autoriser la césure n'importe où. Le bloc
+     <pre> n'est pas concerné, il défile. */
+  overflow-wrap: anywhere;
   font-family: var(--font-mono);
   font-size: 0.9em;
   padding: 0.15em 0.4em;
@@ -98,4 +104,6 @@ hr {
 ::selection {
   background: var(--accent-bg);
   color: var(--ink);
+}
+
 }

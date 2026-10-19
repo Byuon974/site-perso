@@ -10,7 +10,7 @@ Usage:
       "tagsWrapperClass" "blog-single-tags"
       "tagClass" "blog-tag"
       "showBreadcrumbs" true
-      "dateFormat" "02 janvier 2006"
+      "dateFormat" "2 January 2006"
       "dateSource" "date"  // "date" | "updated"
       "updatedLabel" "Mis à jour : "
       "showReadingTime" true
@@ -24,7 +24,10 @@ Usage:
 {{- $tagsWrapperClass := .tagsWrapperClass | default "page-tags" -}}
 {{- $tagClass := .tagClass | default "page-tag" -}}
 {{- $showBreadcrumbs := .showBreadcrumbs | default false -}}
-{{- $dateFormat := .dateFormat | default "02 janvier 2006" -}}
+{{/* Gabarit de date Go : seul « January » est un jeton traduit par la
+     locale via time.Format. Écrire « janvier » ici l'imprimerait
+     littéralement, quelle que soit la date réelle. */}}
+{{- $dateFormat := .dateFormat | default "2 January 2006" -}}
 {{- $dateSource := .dateSource | default "date" -}}
 {{- $updatedLabel := .updatedLabel | default "Mis à jour : " -}}
 {{- $showReadingTime := .showReadingTime | default false -}}
@@ -37,11 +40,11 @@ Usage:
   <div class="{{ $metaClass }}">
     {{- if eq $dateSource "updated" -}}
       {{- with $ctx.Params.updated -}}
-        <span>{{ $updatedLabel }}{{ dateFormat $dateFormat . }}</span>
+        <span>{{ $updatedLabel }}<time datetime="{{ (time .).Format "2006-01-02" }}">{{ time.Format $dateFormat . }}</time></span>
       {{- end -}}
     {{- else -}}
       {{- with $ctx.Date -}}
-        <time datetime="{{ .Format "2006-01-02" }}">{{ .Format $dateFormat }}</time>
+        <time datetime="{{ .Format "2006-01-02" }}">{{ time.Format $dateFormat . }}</time>
       {{- end -}}
     {{- end -}}
 
@@ -58,9 +61,13 @@ Usage:
   {{ end }}
 
   {{ with $ctx.Params.tags }}
-    <ul class="{{ $tagsWrapperClass }}" aria-label="Tags">
+    {{/* role="list" est requis : le reset ne retire les puces que des
+         listes qui le portent, parce que list-style:none seul fait perdre
+         à la liste son rôle sémantique dans Safari et VoiceOver. Sans lui,
+         les marqueurs restaient visibles et l'indentation aussi. */}}
+    <ul class="{{ $tagsWrapperClass }}" role="list" aria-label="Tags">
       {{ range . }}
-        <li><span class="{{ $tagClass }}">#{{ . }}</span></li>
+        <li><span class="{{ $tagClass }}">{{ . }}</span></li>
       {{ end }}
     </ul>
   {{ end }}

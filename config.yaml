@@ -17,7 +17,7 @@ taxonomies:
 # Paramètres personnalisés
 params:
   author: "Thomas"
-  description: "Développeur à La Réunion. Je conçois des applications métier de bout en bout, avec une culture d'infrastructure Linux. En recherche d'alternance en IA ou data engineering, MSc IA & Big Data à Epitech."
+  description: "Développeur à La Réunion : applications métier de bout en bout, avec une culture d'infrastructure Linux. MSc IA & Big Data à Epitech, en recherche d'alternance."
   email: "thomasvs974.ent@gmail.com"
   linkedin: "https://www.linkedin.com/in/thomas-vinh-san-756037434"
   cv: "cv/cv-thomas.pdf"
@@ -44,6 +44,7 @@ markup:
     renderer:
       unsafe: true
   highlight:
+    noClasses: false
     style: monokai
     lineNos: false
   tableOfContents:
@@ -56,3 +57,28 @@ outputs:
   home:
     - HTML
     - RSS
+  # Un flux par section : les 4 articles du blog et les 10 fiches techniques
+  # n'ont pas la même cadence, et on doit pouvoir s'abonner à l'une sans
+  # l'autre. Produit /blog/index.xml, /notes/index.xml, /projets/index.xml.
+  section:
+    - HTML
+    - RSS
+
+# Les feuilles de style restent dans static/css, où elles ont toujours été,
+# mais sont montées aussi dans assets/ pour que Hugo puisse les concaténer,
+# minifier et empreinter (voir head.html). Le montage de static exclut donc
+# /css/**, sinon chaque feuille serait publiée une seconde fois, telle
+# quelle et sans empreinte, à côté du paquet.
+module:
+  mounts:
+    - source: static
+      target: static
+      files:
+        - '! css/**'
+    - source: static/css
+      target: assets/css
+    # Le CV est monté dans assets uniquement pour que le gabarit puisse
+    # calculer une empreinte de son contenu. Le fichier reste publié par
+    # static/, à son adresse habituelle.
+    - source: static/cv
+      target: assets/cv

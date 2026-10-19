@@ -1,3 +1,4 @@
+@layer layout {
 /* Primitives de composition. Six patterns qui portent 90% des mises en
    page. Chaque composant se compose de ces primitives plutôt que de
    redéfinir son propre grid ou son propre flex. */
@@ -70,4 +71,6 @@
   overflow: hidden;
   position: absolute;
   white-space: nowrap;
+}
+
 }

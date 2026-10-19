@@ -9,7 +9,7 @@
   {{ $total := len $pages }}
 
   {{ if gt $total 0 }}
-  <ul class="projets-grid">
+  <ul class="projets-grid" role="list">
     {{ range $i, $page := $pages }}
     <li class="projet-cell">
 
@@ -23,10 +23,24 @@
       {{ $lazy := cond (eq $i 0) "eager" "lazy" }}
       <div class="projet-cell-thumb">
         {{ with .Params.videoPoster }}
-        <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        {{- $vignette := printf "%s/%s-vignette.webp" (path.Dir .) (path.BaseName .) -}}
+        {{- /* La source WebP n'est émise que si le fichier existe : un
+               <source> qui renvoie 404 casse le <picture> sans retomber
+               sur le <img>, contrairement à ce qu'on attend. */ -}}
+        <picture>
+          {{ if fileExists (printf "static%s" $vignette) }}<source srcset="{{ strings.TrimPrefix "/" $vignette | relURL }}" type="image/webp">{{ end }}
+          <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        </picture>
         {{ else }}
         {{ with $page.Params.image }}
-        <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        {{- $vignette := printf "%s/%s-vignette.webp" (path.Dir .) (path.BaseName .) -}}
+        {{- /* La source WebP n'est émise que si le fichier existe : un
+               <source> qui renvoie 404 casse le <picture> sans retomber
+               sur le <img>, contrairement à ce qu'on attend. */ -}}
+        <picture>
+          {{ if fileExists (printf "static%s" $vignette) }}<source srcset="{{ strings.TrimPrefix "/" $vignette | relURL }}" type="image/webp">{{ end }}
+          <img src="{{ strings.TrimPrefix "/" . | relURL }}" alt="" width="600" height="480" loading="{{ $lazy }}" fetchpriority="{{ $prio }}" decoding="async" />
+        </picture>
         {{ else }}
         <span class="projet-cell-placeholder">{{ substr .Title 0 1 }}</span>
         {{ end }}

@@ -12,11 +12,30 @@
 
   {{ $pages := .Pages }}
   {{ if $pages }}
-    <div class="notes-filter" role="tablist" aria-label="Filtrer les notes">
-      <button type="button" class="notes-filter-btn is-active" data-filter="all" role="tab" aria-selected="true">Tout</button>
-      <button type="button" class="notes-filter-btn" data-filter="fiche" role="tab" aria-selected="false">Fiches courtes</button>
-      <button type="button" class="notes-filter-btn" data-filter="runbook" role="tab" aria-selected="false">Runbooks</button>
+    {{/* Les boutons sont déduits des catégories réellement présentes, et la
+         barre n'apparaît qu'à partir de 2 catégories. Elle était écrite en
+         dur avec « Fiches courtes » et « Runbooks » alors que les 9 notes
+         portent toutes le tag runbook : 2 boutons sur 3 ne filtraient rien.
+         Un contrôle qui ne change rien est un défaut, pas un ornement.
+         role="group" et non "tablist" : le motif onglets impose la
+         navigation aux flèches et des panneaux liés par aria-controls, que
+         ces boutons n'ont pas. aria-pressed porte leur état.
+         hidden est retiré par le script : sans JavaScript rien ne filtre,
+         autant ne pas montrer les boutons, la liste restant complète. */}}
+    {{ $cats := slice }}
+    {{ range $pages }}
+      {{ $c := cond (in .Params.tags "runbook") "runbook" "fiche" }}
+      {{ if not (in $cats $c) }}{{ $cats = $cats | append $c }}{{ end }}
+    {{ end }}
+    {{ $libelles := dict "fiche" "Fiches courtes" "runbook" "Runbooks" }}
+    {{ if gt (len $cats) 1 }}
+    <div class="notes-filter" role="group" aria-label="Filtrer les notes" hidden data-filtre>
+      <button type="button" class="notes-filter-btn is-active" data-filter="all" aria-pressed="true">Tout</button>
+      {{ range $cats }}
+      <button type="button" class="notes-filter-btn" data-filter="{{ . }}" aria-pressed="false">{{ index $libelles . | default (humanize .) }}</button>
+      {{ end }}
     </div>
+    {{ end }}
 
     {{ $sorted := sort $pages ".Params.updated" "desc" }}
     {{ $scratch := newScratch }}
@@ -38,17 +57,23 @@
 
         <section class="archive-year">
           <h2 class="archive-year-title">{{ $y }}</h2>
-          <ul class="archive-list">
+          <ul class="archive-list" role="list">
         {{ $scratch.Set "year" $y }}
       {{ end }}
 
       <li class="archive-item" data-category="{{ $cat }}">
         <time datetime="{{ $d.Format "2006-01-02" }}">{{ time.Format "2 January" $d }}</time>
         <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-        {{ if eq $cat "runbook" }}
+        {{/* Le badge ne distingue rien quand toutes les fiches portent la
+             même catégorie : il n'apparaît qu'à partir de 2. */}}
+        {{ if and (gt (len $cats) 1) (eq $cat "runbook") }}
           <span class="archive-badge">runbook</span>
         {{ end }}
         <span class="archive-arrow">»</span>
+        {{/* La description écrite en front matter, et non un résumé
+             automatique : sur une fiche technique, les premiers mots du
+             corps ne décrivent rien. */}}
+        {{ with .Params.description }}<span class="archive-desc">{{ . }}</span>{{ end }}
       </li>
     {{ end }}
 
@@ -63,35 +88,55 @@
 <script>
 (function () {
   "use strict";
+  const barre = document.querySelector("[data-filtre]");
   const buttons = document.querySelectorAll(".notes-filter-btn");
   const items = document.querySelectorAll(".notes-list-wrapper .archive-item");
   const sections = document.querySelectorAll(".notes-list-wrapper .archive-year");
+  if (!barre || buttons.length === 0) return;
 
-  if (buttons.length === 0) return;
+  // La barre n'existe que si le script tourne.
+  barre.hidden = false;
 
-  function applyFilter(filter) {
+  const connus = new Set([...buttons].map((b) => b.dataset.filter));
+
+  function appliquer(filtre) {
     items.forEach((li) => {
-      const cat = li.dataset.category;
-      const visible = filter === "all" || filter === cat;
-      li.hidden = !visible;
+      li.hidden = !(filtre === "all" || filtre === li.dataset.category);
     });
     sections.forEach((section) => {
-      const visibleInside = section.querySelectorAll(".archive-item:not([hidden])").length;
-      section.hidden = visibleInside === 0;
+      section.hidden =
+        section.querySelectorAll(".archive-item:not([hidden])").length === 0;
+    });
+    buttons.forEach((b) => {
+      const actif = b.dataset.filter === filtre;
+      b.classList.toggle("is-active", actif);
+      b.setAttribute("aria-pressed", actif ? "true" : "false");
     });
   }
 
+  // L'état du filtre vit dans l'URL : une vue filtrée se partage, se met en
+  // favori, et le bouton Précédent la retrouve. replaceState à l'ouverture
+  // pour ne pas empiler d'entrée, pushState au clic pour que le retour
+  // arrière défasse le filtre.
+  function depuisUrl() {
+    const v = new URLSearchParams(location.search).get("type");
+    return connus.has(v) ? v : "all";
+  }
+
+  appliquer(depuisUrl());
+
   buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      buttons.forEach((b) => {
-        b.classList.remove("is-active");
-        b.setAttribute("aria-selected", "false");
-      });
-      btn.classList.add("is-active");
-      btn.setAttribute("aria-selected", "true");
-      applyFilter(btn.dataset.filter);
+      const f = btn.dataset.filter;
+      const url = new URL(location.href);
+      if (f === "all") url.searchParams.delete("type");
+      else url.searchParams.set("type", f);
+      history.pushState({ type: f }, "", url);
+      appliquer(f);
     });
   });
+
+  window.addEventListener("popstate", () => appliquer(depuisUrl()));
 })();
 </script>
 {{ end }}

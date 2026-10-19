@@ -1,6 +1,6 @@
 ---
 title: "Permissions, comptes et groupes"
-description: "Référence d'exploitation de la gestion des droits et des identités sous Linux : permissions de fichiers (chmod), propriété (chown, chgrp), comptes utilisateurs (useradd), groupes (groupadd, groupmod, gpasswd), et surveillance des sessions (who, w). Couvre les opérations courantes..."
+description: "Référence d'exploitation de la gestion des droits et des identités sous Linux : permissions de fichiers (chmod), propriété (chown, chgrp), comptes utilisateurs (useradd), groupes (groupadd, groupmod, gpasswd), et surveillance des sessions (who, w)."
 tags: ["linux", "cli", "chmod", "chown", "useradd", "runbook", "permissions", "securite"]
 updated: 2026-08-18
 validated: 2026-08-18

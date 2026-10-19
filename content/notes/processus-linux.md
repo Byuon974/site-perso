@@ -1,6 +1,6 @@
 ---
 title: "Processus : observer, cibler, arrêter, contraindre"
-description: "Référence d'exploitation des processus sous Linux : lire l'état du système (ps, top, uptime, /proc), retrouver le bon PID avant d'agir, arrêter avec la bonne commande de la famille kill, régler priorité et limites, diagnostiquer une charge, une fuite de mémoire ou un processus qu..."
+description: "Référence d'exploitation des processus sous Linux : lire l'état du système (ps, top, uptime, /proc), retrouver le bon PID avant d'agir, arrêter avec la bonne commande de la famille kill, régler priorité et limites, diagnostiquer une charge ou une fuite de mémoire."
 tags: ["linux", "cli", "ps", "top", "kill", "runbook", "processus"]
 updated: 2026-08-18
 validated: 2026-08-18

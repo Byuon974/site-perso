@@ -12,7 +12,7 @@
 {{- end -}}
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <?xml-stylesheet type="text/xsl" href="{{ "rss.xsl" | absURL }}"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>{{ if eq .Title .Site.Title }}{{ .Site.Title }}{{ else }}{{ with .Title }}{{.}} — {{ end }}{{ .Site.Title }}{{ end }}</title>
     <link>{{ .Permalink }}</link>
@@ -32,7 +32,12 @@
       <link>{{ .Permalink }}</link>
       <pubDate>{{ .PublishDate.Format "Mon, 02 Jan 2006 15:04:05 -0700" | safeHTML }}</pubDate>
       <guid>{{ .Permalink }}</guid>
-      <description>{{ with .Description }}{{ . }}{{ else }}{{ .Summary | html }}{{ end }}</description>
+      {{ with .Description }}<description>{{ . }}</description>{{ end }}
+      {{/* Le contenu entier, et non le résumé : c'est la pratique unanime
+           des flux examinés. Un lecteur hors ligne reçoit l'article, pas
+           une amorce qui l'oblige à rouvrir le site. */}}
+      <content:encoded>{{ .Content | transform.XMLEscape | safeHTML }}</content:encoded>
+      {{ if gt .Lastmod.Unix .Date.Unix }}<atom:updated>{{ .Lastmod.Format "2006-01-02T15:04:05-07:00" | safeHTML }}</atom:updated>{{ end }}
     </item>
     {{- end }}
   </channel>

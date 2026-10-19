@@ -1,6 +1,6 @@
 ---
 title: "Archivage et compression sous Linux"
-description: "Référence d'exploitation des 5 outils d'archivage et de compression courants sous Linux : création, extraction, inspection, mise à jour, chiffrement, transfert, sauvegarde, dépannage par symptôme, sécurité, urgence et récupération. Couvre tar (archivage Unix et streaming), zip/un..."
+description: "Référence d'exploitation des 5 outils d'archivage et de compression courants sous Linux : création, extraction, inspection, mise à jour, chiffrement, transfert, sauvegarde, dépannage par symptôme, sécurité, urgence et récupération."
 tags: ["linux", "cli", "tar", "zip", "gzip", "7z", "runbook", "archivage"]
 updated: 2026-06-18
 validated: 2026-08-18

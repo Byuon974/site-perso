@@ -40,17 +40,17 @@
 
   {{/* Couche externe : 8 rayons longs et clairs. */}}
   <g class="rays-outer">
-    {{ range $i, $a := seq 0 45 315 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-outer" class="ray ray-long" style="animation-delay: {{ mul $i 0.38 }}s" /></g>{{ end }}
+    {{ range $i, $a := seq 0 45 315 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-outer" class="ray ray-long" style="animation-delay: {{ printf "%.2f" (mul $i 0.38) }}s" /></g>{{ end }}
   </g>
 
   {{/* Couche médiane : 8 rayons intercalés, gris moyen. */}}
   <g class="rays-middle">
-    {{ range $i, $a := seq 22 45 337 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-middle" class="ray ray-med" style="animation-delay: {{ mul $i 0.29 }}s" /></g>{{ end }}
+    {{ range $i, $a := seq 22 45 337 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-middle" class="ray ray-med" style="animation-delay: {{ printf "%.2f" (mul $i 0.29) }}s" /></g>{{ end }}
   </g>
 
   {{/* Couche interne : 8 rayons courts et fins, gris foncé. */}}
   <g class="rays-inner">
-    {{ range $i, $a := seq 11 45 326 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-inner" class="ray ray-small" style="animation-delay: {{ mul $i 0.22 }}s" /></g>{{ end }}
+    {{ range $i, $a := seq 11 45 326 }}<g transform="rotate({{ $a }} 100 100)"><use href="#ray-inner" class="ray ray-small" style="animation-delay: {{ printf "%.2f" (mul $i 0.22) }}s" /></g>{{ end }}
   </g>
 
   {{/* Anneau qui pulse autour du noyau. */}}
