@@ -84,5 +84,7 @@
     <script defer src="{{ "js/theme-toggle.js" | relURL }}"></script>
     <script defer src="{{ "js/sidebar.js" | relURL }}"></script>
     <script defer src="{{ "js/scrollspy.js" | relURL }}"></script>
+    {{/* Chargé uniquement là où un lecteur différé existe. */}}
+    {{ if .HasShortcode "video-lite" }}<script defer src="{{ "js/video-lite.js" | relURL }}"></script>{{ end }}
   </body>
 </html>

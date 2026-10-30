@@ -107,3 +107,21 @@ hr {
 }
 
 }
+
+/* ── ÉQUILIBRE DES LIGNES ────────────────────────────────────────────
+   Un titre qui déborde sa ligne laissait un mot seul en seconde ligne.
+   balance répartit les mots sur les lignes au lieu de remplir la
+   première : le titre reste lisible d'un coup d'œil même sur 2 lignes.
+   Limité aux titres, où le navigateur plafonne l'algorithme à quelques
+   lignes et où le coût de calcul reste négligeable.
+
+   pretty s'applique au corps : il empêche le dernier mot d'un
+   paragraphe de se retrouver seul sur sa ligne. Les navigateurs qui
+   ignorent ces valeurs retombent sur le comportement habituel. */
+:is(h1, h2, h3, h4, .schema-titre, figcaption) {
+  text-wrap: balance;
+}
+
+.prose-content :is(p, li) {
+  text-wrap: pretty;
+}

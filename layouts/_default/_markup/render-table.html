@@ -1,0 +1,38 @@
+{{/* Les tableaux de la documentation dépassent la largeur de l'écran sur
+     mobile et poussaient la page entière : mesuré à 338 px pour une
+     fenêtre de 320 sur la page guide-dl. Ils défilent désormais dans leur
+     propre conteneur, sans toucher au balisage du tableau lui-même, qui
+     garde sa sémantique.
+
+     tabindex="0" est obligatoire : une zone défilante que la souris seule
+     peut atteindre est inutilisable au clavier. role="region" la rend
+     annonçable, mais exige alors un nom UNIQUE par page : 3 tableaux
+     portant le même libellé créaient autant de repères homonymes, relevé
+     par axe-core. Le nom reprend donc le premier en-tête du tableau. */}}
+{{ $nom := "" }}
+{{ with .THead }}{{ with index . 0 }}{{ with index . 0 }}
+  {{ $nom = .Text | plainify | chomp }}
+{{ end }}{{ end }}{{ end }}
+<div class="table-defilante" tabindex="0" role="region"
+     aria-label="{{ with $nom }}Tableau {{ . }}{{ else }}Tableau{{ end }}">
+  <table>
+    <thead>
+      {{ range .THead }}
+        <tr>
+          {{ range . }}
+            <th {{ with .Alignment }}style="text-align: {{ . }}"{{ end }}>{{ .Text }}</th>
+          {{ end }}
+        </tr>
+      {{ end }}
+    </thead>
+    <tbody>
+      {{ range .TBody }}
+        <tr>
+          {{ range . }}
+            <td {{ with .Alignment }}style="text-align: {{ . }}"{{ end }}>{{ .Text }}</td>
+          {{ end }}
+        </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>

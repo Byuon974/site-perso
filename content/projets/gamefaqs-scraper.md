@@ -1,251 +1,220 @@
 ---
 title: "guide-dl"
-description: "Outil en ligne de commande qui télécharge les guides de jeux depuis GameFAQs et LP Archive, les stocke dans un cache local et permet de les réexporter vers plusieurs formats sans re-solliciter le site."
+description: "Outil en ligne de commande qui archive un guide de jeu depuis GameFAQs ou LP Archive, le garde en cache local et le réexporte vers 5 formats sans re-solliciter le site."
 date: 2025-09-13
 video: "/videos/gamefaqs-scraper.webm"
 videoPoster: "/videos/gamefaqs-scraper.jpg"
-tags: ["Python", "CLI", "Web scraping", "Pandoc", "Documentation"]
+tags: ["Bash", "CLI", "Web scraping", "Pandoc", "lxml"]
 status: "Terminé"
 role: "Conception et développement solo"
 period: "2025"
 draft: false
 ---
 
-## Le projet en une phrase
+> `guide` est un script en ligne de commande qui archive un guide de jeu publié sur GameFAQs ou LP Archive, puis le rend lisible hors ligne. Il tient dans un fichier bash unique, qui porte son propre nettoyeur Python et son propre filtre Pandoc. Il dépend de curl, de pandoc et de python3-lxml, rien d'autre.
 
-`guide-dl` est un outil en ligne de commande qui télécharge les guides de jeux depuis GameFAQs et LP Archive, les stocke dans un cache local, et permet de les réexporter à volonté vers plusieurs formats sans avoir à re-télécharger la source.
+Ce qui suit décrit ce que le script fait d'une URL, dans l'ordre où il le fait. Chaque étape y reçoit la raison de sa forme. Les contraintes qui l'ont façonné viennent moins du code que des sites d'en face : ils se protègent, ils changent, ils vivent du travail bénévole de leurs auteurs.
 
-Concrètement, l'outil transforme une simple URL de guide en une archive locale complète, disponible hors ligne, dans le format qui convient au moment : Markdown pour la lecture rapide, DOCX ou ODT pour l'archivage propre. Il est fonctionnel et utilisé au quotidien ; le code reste privé, par respect pour les sites communautaires dont il exploite les pages.
+## L'outil en fonctionnement
 
-Cette dernière phrase est le fil de tout ce qui suit. Le respect des sites sources et de leurs auteurs a dicté l'architecture, bien au-delà d'une note en bas de page. Il explique 4 décisions :
+{{< video-lite
+    src="/videos/gamefaqs-scraper.webm"
+    poster="/videos/gamefaqs-scraper.jpg"
+    title="guide-dl : d'une URL de guide à un export DOCX" >}}
 
-- le cache local, qui évite de retélécharger ;
-- les 2 réserves de concurrence séparées, qui protègent les pages du guide ;
-- la métadonnée en tête de chaque export, qui garde le nom de l'auteur ;
-- le dépôt privé.
-
----
-
-## Ce qui a motivé ce projet
-
-Les guides de jeux publiés sur GameFAQs et LP Archive sont des ressources précieuses mais fragiles : un site peut fermer, une page peut être modifiée, un lien peut se briser. À cela s'ajoute qu'aucun outil existant ne fait proprement ce que je cherchais, à savoir télécharger une fois, stocker une version canonique, puis réexporter à volonté vers plusieurs formats en travaillant entièrement hors ligne une fois la source récupérée.
-
-L'idée de base est donc restée simple. Une commande `fetch` qui télécharge une fois, une commande `render` qui exporte autant de fois qu'on veut à partir du cache. Ce cache est un fichier `.render.json` qui contient le HTML canonique du guide et ses métadonnées ; les images sont téléchargées séparément et leurs URLs réécrites pour pointer vers les fichiers locaux. La conséquence est directe : une fois le guide récupéré, tester un nouveau format, corriger un rendu ou ajuster un template ne coûte plus une seule requête au site source.
+Une session complète, de la résolution de l'URL au fichier ouvrable. La vidéo montre une version antérieure, en paquet Python : le principe tient, les commandes ont changé.
 
 ---
 
-## Le choix de la stack
+## Ce que le script résout
 
-| Couche | Détail |
-|---|---|
-| **CLI** | Typer, avec commandes `fetch`, `render`, `batch`, `info`, `extractors` |
-| **HTTP** | httpx (asynchrone), retry exponentiel, rate limiting configurable |
-| **Parsing HTML** | BeautifulSoup4 + lxml |
-| **Affichage terminal** | Rich (mode interactif) avec fallback `--plain` et `--quiet` |
-| **Conversion** | Pandoc (binaire système) pour Markdown, DOCX, ODT |
-| **Post-traitement DOCX** | python-docx (bordures de tableaux, en-tête courant, styles) |
-| **Post-traitement ODT** | Patching XML direct via `lxml` + `zipfile` |
-| **Images** | Téléchargement parallèle, cache conditionnel (ETag, If-Modified-Since) |
-| **Extracteurs** | GameFAQs, LP Archive, interface commune extensible |
-| **Packaging** | setuptools + setuptools-scm, `pyproject.toml` |
+Un guide de jeu publié sur GameFAQs ou LP Archive représente parfois des semaines de travail d'un joueur, offertes à d'autres joueurs. Ces pages sont précieuses et fragiles : un site ferme, une page change, un lien casse.
 
----
+Les aspirer n'est pourtant pas le problème intéressant. Le problème, c'est qu'une page de guide arrive noyée dans le site qui l'héberge : menus, bandeaux, tables de mise en page, scripts, cadres YouTube, sommaire maison. Ce qu'on veut lire tient dans une fraction du HTML reçu. Le reste est du décor.
 
-## Une architecture en couches
+`guide` sépare donc 2 gestes qui n'ont pas le même coût. Prendre les pages sollicite le site : cela se fait une fois. Les rendre lisibles ne sollicite personne : cela se refait autant qu'on veut, à partir de ce qui est déjà sur le disque.
 
-La contrainte se lit d'abord dans la façon dont le code est découpé. Le projet est structuré en couches, chacune avec une responsabilité claire, ce qui permet d'ajouter un nouveau site (un nouvel extracteur) ou un nouveau format (un nouveau chemin dans le pipeline) sans avoir à toucher au reste.
+<figure class="schema" role="group" aria-labelledby="schema-pipeline-titre">
+  <p id="schema-pipeline-titre" class="schema-titre">D’une URL à un fichier ouvrable, en 3 étapes</p>
+  <ol class="schema-flux">
+    <li class="schema-etape">
+      <span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
+      <span class="schema-corps"><b>L’URL du guide</b><span class="schema-note">ce qu’on donne au script</span></span>
+    </li>
+    <li class="schema-operation"><span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></span><span>curl prend la page, puis celles qu’elle annonce</span></li>
+    <li class="schema-etape">
+      <span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/></svg></span>
+      <span class="schema-corps"><b><code>brut/pages/page-NNN.html</code></b><span class="schema-note">les pages telles que le site les sert, débris compris</span></span>
+    </li>
+    <li class="schema-operation"><span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/></svg></span><span>le nettoyeur Python, une seule passe sur le DOM</span></li>
+    <li class="schema-etape">
+      <span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span>
+      <span class="schema-corps"><b><code>brut/guide.html</code></b><span class="schema-note">le guide seul, ses images devenues locales</span></span>
+    </li>
+    <li class="schema-operation"><span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg></span><span>pandoc, guidé par le filtre Lua</span></li>
+    <li class="schema-etape schema-fin">
+      <span class="schema-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 21a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1"/><path d="M16 16a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1"/><path d="M21 6a2 2 0 0 0-.586-1.414l-2-2A2 2 0 0 0 17 2h-3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1z"/></svg></span>
+      <span class="schema-corps"><b>Le guide, ouvrable</b><span class="schema-note"><code>.txt</code> <code>.md</code> <code>.html</code> <code>.docx</code> <code>.odt</code></span></span>
+    </li>
+  </ol>
+  <figcaption>Seule la première étape sollicite le site. Les 2 suivantes travaillent sur le disque.</figcaption>
+</figure>
 
-### Extracteurs
-
-Chaque site est adapté à une interface commune, qui isole les particularités du parsing de tout le reste du pipeline.
-
-```python
-class Extractor(ABC):
-    @classmethod
-    def name(cls) -> str
-    def matches(cls, url: str) -> bool
-    async def inspect(url, client) -> dict
-    async def extract(url, client, max_size_mb, progress, ctx) -> RenderCache
-    def game_slug_from_url(url) -> str
-    def guide_id_from_url(url) -> str
-```
-
-2 extracteurs sont livrés à ce stade : `gamefaqs` pour les URLs de la forme `gamefaqs.gamespot.com/.../faqs/NNNNN`, et `lparchive` pour `lparchive.org/Game-Name/`. Ajouter un troisième site se résume à écrire une nouvelle classe qui implémente cette même interface.
-
-### Client HTTP
-
-Une enveloppe autour de `httpx.AsyncClient` centralise 3 mécanismes : la reprise exponentielle, le délai minimum entre requêtes, et 2 réserves de concurrence distinctes pour les pages HTML et pour les images. Cette séparation est ce qui compte. Elle permet de télécharger une centaine d'images en parallèle sans jamais dépasser 2 ou 3 requêtes par seconde sur les pages du guide.
-
-### Modèles
-
-Toutes les structures de données passent par un petit ensemble de dataclasses : `GuideMetadata`, `GuidePart`, `ImageInfo`, `ImageManifest`, `RenderCache`. Ces modèles servent à la fois de contrat entre les couches et de format de sérialisation JSON du cache.
-
-### Pipeline de rendu
-
-C'est le cœur du projet, et c'est là que se joue l'essentiel du travail. Le HTML brut du guide, tel que capté par l'extracteur, est loin d'être directement exportable : il traîne des menus, des tables de mise en page, des scripts, des iframes YouTube, des tables de matières parasites. Le pipeline le nettoie, l'assemble, le convertit via Pandoc, puis post-traite le résultat pour compenser les limites de Pandoc sur les formats bureautiques.
-
-Le traitement se fait en 4 étapes.
-
-- **Nettoyage HTML** dans `cleaner.py` : les scripts et les styles sautent, les tables de mise en page deviennent des listes lisibles.
-- **Rendu monolithique** : toutes les pages du guide se rassemblent en un document unique, avec métadonnées et sommaire.
-- **Conversion Pandoc** vers Markdown, DOCX ou ODT.
-- **Post-traitement** : styles de tableaux, en-tête courant, et correction des défauts connus de Pandoc.
-
-### Images et affichage
-
-Le téléchargement des images fonctionne en parallèle avec cache conditionnel (les images déjà téléchargées ne sont pas retéléchargées si elles n'ont pas changé côté serveur), reprise sur `Range` en cas d'interruption, et une politique explicite (`missing`, `refresh`, `reuse`) pour choisir le comportement. Un manifeste JSON garde trace de tout.
-
-Côté affichage, Rich est utilisé en terminal interactif avec progress bars ; en mode `--plain` (ou quand `NO_COLOR` est défini, ou quand la sortie est pipée), c'est du texte brut sur stderr, avec stdout réservé aux données pipeables (`--json` pour l'inspection).
+Une fois `brut/guide.html` écrit, `guide -R ./guides/un-titre` rejoue la seconde moitié sans toucher au réseau. Tester un format, corriger un rendu, ajuster une marge ne coûte plus une requête.
 
 ---
 
-## Le respect des auteurs comme contrainte de conception
+## Ce qu'un site sert, ce qu'on en garde
 
-Ce qui précède décrivait la mécanique. Reste à dire pourquoi elle a cette forme. Les guides publiés sur GameFAQs et LP Archive sont écrits par des joueurs qui y consacrent parfois des semaines, gratuitement, pour d'autres joueurs. Un outil qui les archive doit au minimum ne pas les effacer, et si possible les remettre en avant. Le rendu des métadonnées, aussi discret soit-il visuellement, occupe donc une part importante du code.
+Le nettoyeur fait une seule passe sur le DOM de chaque page, puis les recolle. Il retire les débris par une expression XPath unique : scripts, styles, `nav`, `header`, `footer`, `aside`, formulaires, blocs de pagination, sommaires du site, blocs publicitaires. Le sommaire maison part aussi, Pandoc en reconstruisant un avec `--toc`.
 
-La métadonnée du guide (titre, auteur, date de mise à jour, URL source) ouvre chaque format de sortie, sans exception.
+Les tableaux demandent plus qu'un filtre. Un guide de 2003 se met en page avec des `<table>` : l'outil doit distinguer une grille de données d'un échafaudage. La décision se prend sur la seule structure, sans regarder le texte :
 
-| Format | Métadonnée affichée |
-|---|---|
-| **Markdown** | Front matter YAML complet (`title`, `author`, `updated`, `source`) |
-| **HTML** | En-tête en `<pre>` en haut de page, avant le corps du guide |
-| **DOCX / ODT** | En-tête courant répété sur chaque page : titre / par auteur / mis à jour |
-| **TXT** | Bloc encadré ASCII en haut du fichier |
+- aucune cellule, ou aucun contenu ni image : le tableau est **vide**, il part ;
+- une cellule unique contenant 2 liens ou plus : c'est un **menu**, il devient une liste ;
+- aucune ligne n'a plus d'une cellule : c'est une **colonne** de mise en page, son contenu redevient des paragraphes ;
+- tout le reste est un vrai tableau, laissé intact.
 
-Peu visible côté utilisateur, cette couche est celle qui a demandé le plus d'itérations. Les fonctions `render_metadata()`, `apply_docx_header()` et `_patch_styles_xml()` ont été retravaillées à la main sur des dizaines de guides réels avant de produire un résultat systématiquement propre, quel que soit le format.
+Le script compte ces 3 catégories et les annonce en fin de course. Un guide typique en retire une dizaine. Aucun lecteur ne les regrette.
 
----
+Un cadre YouTube devient un lien en clair plutôt que de disparaître : hors ligne, l'adresse reste utile. Les autres `iframe`, `embed` et `object` partent sans remplacement. Les attributs `class`, `style` et `id` sont effacés partout, puisque plus rien en aval ne les lit.
 
-## Les limites de Pandoc, et comment le projet les contourne
-
-Pandoc est un outil remarquable, capable de convertir presque n'importe quoi vers presque n'importe quoi d'autre, mais il a des limites bien documentées sur les formats bureautiques. Une bonne partie du pipeline consiste précisément à travailler autour de ces limites.
-
-**Tables sans bordures ni en-tête répétée.** Pandoc génère des tableaux DOCX sans bordures, dont l'en-tête ne se répète pas sur les pages suivantes et dont les largeurs de colonnes sont souvent inégales. Le projet post-traite les fichiers avec `python-docx` pour ajouter les bordures, colorier l'en-tête, marquer la première ligne comme en-tête à répéter, et redistribuer les largeurs. Pour l'ODT, c'est plus radical : `odfpy` a des bugs sur les fichiers produits par Pandoc, donc le code patche directement le XML via `zipfile` et `lxml`.
-
-**Templates de référence limités.** L'option `--reference-doc` de Pandoc ne permet de personnaliser que les styles, pas le contenu, et Pandoc peut ajouter des entrées invalides dans `[Content_Types].xml` qui rendent le fichier corrompu à l'ouverture dans Word. Le projet utilise des templates de référence intégrés dans `guide_dl/templates/` pour les styles de base, et le post-traitement corrige les fichiers générés.
-
-**Style `TableCaption` absent en ODT.** Le template ODT par défaut de Pandoc ne le contient pas ; le post-traitement l'injecte.
-
-**Tableaux complexes.** Les `rowspan` et `colspan` ne sont pas entièrement supportés dans tous les formats. Les extracteurs simplifient les structures de tables complexes en amont lorsque c'est possible, et le nettoyage HTML réduit les tables de mise en page en listes.
+**Un piège d'encodage mérite sa ligne.** Sans déclaration de charset dans les 2 premiers kilo-octets, lxml décode en latin-1 et rend du mojibake sur tout un guide. Le nettoyeur cherche donc cette déclaration avant de parser et, à défaut, tente l'UTF-8 puis le CP1252.
 
 ---
 
-## Le rôle de l'IA sur ce projet
+## Prendre les pages sans se faire fermer la porte
 
-J'ai utilisé Claude Code sur `guide-dl`, mais pas partout, et pas de la même manière selon les couches.
+Le script parle à des sites qui filtrent. 3 réglages de curl viennent de là. Chacun a été payé par un échec.
 
-L'IA a servi sur les branchements techniques que je connaissais peu.
+- **`--http1.1`** : le HTTP/2 fait refuser la requête, le protocole fixant aussi les suites TLS et la négociation ALPN, qui trahissent le client ;
+- **les en-têtes d'un Chrome 130 complet** : GameFAQs vérifie les `Sec-Fetch-*`, pas seulement l'agent utilisateur, et un `User-Agent` seul ne suffit plus ;
+- **des en-têtes différents pour les images** : une image n'est pas un document, elle part avec un `Referer` et un `Sec-Fetch-Dest: image`. Sans cela, le site renvoie une page d'erreur à la place du fichier.
 
-- La concurrence asynchrone : réserve de travailleurs, limiteur de débit, coordination entre requêtes HTML et requêtes d'images.
-- La structure de l'interface en ligne de commande avec Typer et ses sous-commandes partagées.
-- Le squelette des extracteurs, des modèles et de la chaîne de traitement.
+2 réserves de parallélisme séparent les 2 natures de requête. Les pages du guide arrivent en série, les images par 4 au plus. Les sites bridant ce parallélisme, les images manquantes sont reprises une par une : elles passent alors presque toutes. Celles qui résistent sont nommées en fin de course.
 
-Le projet ne tient pas sur le terrain grâce à l'IA. Le reste s'est obtenu par ajustements successifs sur du contenu réel, pas par génération.
+L'énumération des pages dépend du site. GameFAQs publie ses guides sous 2 formes, que le script distingue :
 
-- Le gabarit et le rendu des métadonnées.
-- Les heuristiques de classification des tables : distinguer une table de données d'une table de mise en page dans un guide GameFAQs demande des règles écrites au cas par cas.
-- Le post-traitement ODT par manipulation directe du XML.
-- Les dizaines de guides réels téléchargés pour valider les cas particuliers.
-
-Ce dernier point a pris le plus de temps et n'apparaît nulle part dans le code.
+- **paginée** : il lit les numéros de la barre de pagination, plus le total annoncé par « Page 1 of N » ;
+- **découpée en sections** : il remonte la table des matières, puis tous les liens vers le même identifiant de guide.
+ LP Archive se contente d'un motif de lien. Un plafond à 400 pages empêche un énumérateur parti en boucle de remplir le disque.
 
 ---
 
-## L'observation terrain
+## Ne pas reprendre ce qui n'a pas bougé
 
-Le projet a été testé sur des guides réels, choisis pour couvrir les cas typiques et les cas limites.
+Le cache est la pièce qui protège le mieux le site d'en face. Chaque dossier garde dans `brut/cache.yaml` l'adresse d'origine et ses validateurs, ce qui permet de retrouver le dossier d'un guide à partir de son URL.
 
-| Type de guide | Nombre | Observations |
-|---|---|---|
-| GameFAQs, guides texte simples | 5 | Fonctionne sans intervention |
-| GameFAQs, guides avec tableaux de données | 8 | Classification des tables correcte, parfois trop agressive sur les cas ambigus |
-| GameFAQs, guides avec crédits ou menus | 4 | Menus bien reconvertis en listes propres |
-| LP Archive, guides avec images | 6 | Images téléchargées, URLs réécrites vers le local |
-| LP Archive, guides avec iframes YouTube | 3 | Iframes transformées en liens texte, plus lisibles à l'export |
+La première page part donc avec `--etag-compare` et une date de dernière modification. Un `304` met fin à la conversation. Rien n'est retéléchargé. Si le rendu manque, il se refait sur le cache ; sinon le script sort en annonçant que rien n'a changé.
 
-Les cas qui posent encore problème sont rares : guides avec des tableaux imbriqués, structures HTML non standard, ou guides d'un seul très long fichier qui saturent la mémoire au parsing.
+Le nommage du dossier a demandé 2 corrections successives, toutes deux venues de collisions réelles. Un même `<title>` couvre parfois 4 guides du même jeu, quand la troncature à 48 caractères effaçait ce qui les distinguait. Le nom de l'auteur passe donc devant et complète le slug. Reste le cas de 2 guides de même titre et de même auteur : le script refuse alors d'écrire dans un dossier dont le `cache.yaml` porte une autre source : il suffixe `-2`, `-3`.
+
+La plomberie est groupée sous `brut/` pour que le livrable reste seul en surface :
+
+<figure class="schema arbre" role="group" aria-labelledby="arbre-titre">
+  <p id="arbre-titre" class="schema-titre">Ce qu’un guide archivé laisse sur le disque</p>
+  <ul class="arbre-racine">
+    <li class="arbre-item arbre-racine-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg></span><span class="arbre-corps"><b><code>guides/un-titre/</code></b><span class="arbre-note">le dossier du guide, nommé d’après son titre et son auteur</span></span></li>
+    <li>
+      <ul class="arbre-enfants">
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg></span><span class="arbre-corps"><b><code>un-titre.txt</code></b><span class="arbre-note">le livrable : le guide, à 79 colonnes</span></span></li>
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="arbre-corps"><b><code>images/</code></b><span class="arbre-note">les illustrations rapatriées, renommées en 0001, 0002…</span></span></li>
+    <li class="arbre-item arbre-pliant"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"/></svg></span><span class="arbre-corps"><b><code>brut/</code></b><span class="arbre-note">la plomberie, groupée pour que le livrable reste seul en surface</span></span></li>
+        <li>
+          <ul class="arbre-enfants">
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/></svg></span><span class="arbre-corps"><b><code>pages/page-000.html …</code></b><span class="arbre-note">les pages telles que le site les a servies</span></span></li>
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 12.5 8 15l2 2.5"/><path d="m14 12.5 2 2.5-2 2.5"/></svg></span><span class="arbre-corps"><b><code>guide.html</code></b><span class="arbre-note">le guide nettoyé, source de tous les formats</span></span></li>
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></span><span class="arbre-corps"><b><code>meta.yaml</code></b><span class="arbre-note">l’œuvre : titre, auteur, date de parution, source</span></span></li>
+    <li class="arbre-item"><span class="arbre-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg></span><span class="arbre-corps"><b><code>cache.yaml</code></b><span class="arbre-note">la copie : source, date d’aspiration, etag</span></span></li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <figcaption>Seul <code>un-titre.txt</code> et le dossier <code>images/</code> intéressent le lecteur. Le reste sert à ne pas redemander au site ce qu’il a déjà donné.</figcaption>
+</figure>
+
+
+Cette séparation entre `meta.yaml` et `cache.yaml` n'est pas cosmétique : le premier décrit l'œuvre, le second décrit la copie. Une date de parution introuvable ne se remplace jamais par la date du jour : la fausseté serait invisible. Le script la cherche dans les métadonnées déclarées, puis dans une étiquette du texte du type « Updated: 03/15/23 ». Faute de la trouver, il renonce et le dit.
+
+---
+
+## Ce que Pandoc ne fait pas tout seul
+
+Pandoc convertit presque tout vers presque tout. À une condition : lui mâcher le travail. Un filtre Lua de 40 lignes corrige 4 comportements, chacun constaté sur un guide réel.
+
+- **une image distante fait échouer la conversion** vers les 3 formats qui incorporent les fichiers, docx, odt et html5 : le filtre retire les images non rapatriées pour ceux-là, et les garde ailleurs, où un lien suffit ;
+- **un `<hr>` ne devient pas un saut de page** : dans un guide, la barre horizontale sépare les chapitres, le filtre l'écrit donc en saut de page pour docx et odt ;
+- **un en-tête de tableau en gras passe inaperçu** : les guides en produisent beaucoup, et une première ligne dont chaque cellule est en gras devient l'en-tête, qui se répétera d'une page à l'autre ;
+- **un `<br>` dans une cellule gonfle la grille markdown** jusqu'à la rendre illisible : il devient un point-virgule.
+
+Le gabarit docx se fabrique au lancement, à partir de celui de Pandoc lui-même. Le script l'extrait avec `--print-default-data-file`, puis patche `styles.xml` : bordures de tableau, en-tête répété, fond alterné, police à chasse fixe. Les marges passent enfin à 2 cm. Ce dernier point vient d'une mesure : à 9 points, la largeur par défaut donne 89 colonnes là où un guide en demande 79. Le gabarit n'est jamais mis en cache, sinon il figerait une base Pandoc périmée.
+
+---
+
+## Les limites et leur coût
+
+Un garde-fou décide seul si l'extraction a réussi : sous 200 caractères utiles, le script considère qu'il a attrapé un bandeau plutôt qu'un guide. Il s'arrête alors en affichant ce qu'il a reçu et la taille de la page, parce que la cause est presque toujours un sélecteur de corps devenu faux.
+
+Les cas qui résistent encore :
+
+- les tableaux imbriqués, que le classement par structure range mal ;
+- les guides d'un seul très long fichier, dont le parsing pèse sur la mémoire ;
+- les sites inconnus, traités par un profil générique qui ne prend qu'une page et le dit.
+
+**Un sélecteur est une dépendance envers une page qu'on ne contrôle pas.** Le jour où GameFAQs renomme une classe, l'extraction tombe. Le garde-fou transforme cette panne silencieuse en message clair, ce qui est tout ce qu'un script de cette taille peut offrir. Ajouter un site se réduit à un cas dans la fonction `selecteurs()`, avec son XPath de corps, de pages, d'images, de titre et d'auteur.
+
+---
+
+## Le rôle de l'IA
+
+J'ai utilisé Claude Code sur ce projet. La frontière s'est révélée nette.
+
+L'IA a servi sur ce que je connaissais mal : la coordination des requêtes, la forme des XPath, la structure du filtre Lua. Elle m'a fait gagner les heures de documentation que coûte un domaine qu'on aborde.
+
+Elle n'a rien pu faire sur le reste. Les règles de classement des tables se sont écrites cas par cas, sur des guides réels. Le réglage des en-têtes curl s'est obtenu par échecs successifs contre un site qui refusait la connexion. La marge à 2 cm vient d'une page imprimée et comptée. Ce travail-là ne se génère pas. Il s'observe.
 
 ---
 
 ## Ce qui est délibérément absent
 
-La même contrainte explique ce que ce projet ne fait pas. Le projet n'est pas publié sur GitHub. GameFAQs et LP Archive sont des sites communautaires qui vivent de leur trafic direct et de leurs bénévoles, pas des fournisseurs d'API. Un outil clé en main qui télécharge un guide entier en une commande présente un risque net pour ces sites. Trop visible, il les pousserait à durcir leurs protections, au détriment des lecteurs qui viennent simplement consulter un guide. D'autres projets similaires ont été retirés ou gardés confidentiels pour la même raison.
+Le code n'est pas publié. GameFAQs et LP Archive sont des sites communautaires qui vivent de leur trafic et de leurs bénévoles, pas des fournisseurs d'API. Un outil clé en main qui aspire un guide entier en une commande les pousserait à durcir leurs protections, au détriment des lecteurs qui viennent simplement consulter une page.
 
-L'outil reste donc à usage personnel : je peux le montrer, en parler, en expliquer les choix, mais je n'en distribue pas le code. La cohérence avec ce que le projet dit du respect des auteurs et des ressources se joue précisément là.
+Cette position se tient dans le code autant que dans le discours. Le cache conditionnel évite les requêtes inutiles, le plafond de pages borne les dégâts d'une erreur, les auteurs sont crédités en tête de chaque fichier produit. Montrer l'outil et expliquer ses choix me paraît compatible avec ce respect ; en distribuer le binaire ne l'est pas.
 
 ---
 
-## Aperçu de l'interface
+## Ce qu'on tape
+
+L'en-tête du fichier sert d'aide : `guide -h` en imprime les 16 premières lignes. Une seule source de vérité, impossible à désynchroniser du code.
 
 ```bash
-# Télécharger un guide depuis GameFAQs (Markdown par défaut)
-guide-dl fetch "https://gamefaqs.gamespot.com/pc/206086-ys-viii/faqs/75520"
+# Un guide, en texte 79 colonnes dans ./guides/<titre>/
+guide "https://gamefaqs.gamespot.com/pc/206086-ys-viii/faqs/75520"
 
-# Depuis LP Archive, avec plusieurs formats en une passe
-guide-dl fetch "https://lparchive.org/Persona-4/" -f md,html,docx
+# Plusieurs formats en un seul passage
+guide -f md,docx,html "https://lparchive.org/Persona-4/"
 
-# Réexporter depuis le cache local, sans re-solliciter le site
-guide-dl render ./guides/ys-viii-lacrimosa-of-dana/75520 -f docx -O
+# Un lot d'URL, tous les formats
+guide -i urls.txt -f all
 
-# Inspecter un guide sans le télécharger
-guide-dl info "https://lparchive.org/Persona-4/" --json
+# Re-rendre depuis le cache, sans réseau
+guide -R ./guides/ys-viii-lacrimosa-of-dana -f docx -O
 
-# Traitement par lots
-guide-dl batch urls.txt -f md --no-images
+# Montrer ce qui serait fait, sans rien écrire
+guide -n "https://lparchive.org/Persona-4/"
 ```
 
-Chaque guide téléchargé produit une arborescence stable :
-
-```
-guides/
-└── game-slug/
-    └── guide-id/
-        ├── game-slug-guide-id.md         # Markdown
-        ├── game-slug-guide-id.html       # HTML autonome
-        ├── game-slug-guide-id.docx       # Word (si Pandoc installé)
-        ├── game-slug-guide-id.txt        # Texte brut
-        ├── metadata.json                 # Métadonnées du guide
-        ├── .render.json                  # Cache HTML interne
-        └── images/
-            ├── image1.jpg
-            └── image2.png
-```
+Stdout ne porte que les chemins des dossiers produits, le récit passe par stderr : `guide URL | xargs ...` fonctionne. Les codes de sortie suivent la convention : 0 fait, 1 échec, 2 usage, 127 outil absent, 130 interrompu.
 
 ---
 
-## Perspectives
+## Ce que le projet m'a appris
 
-Le socle est stable, les grands cas sont couverts. 3 axes d'évolution me semblent naturels.
+**Séparer selon le coût réel, pas selon les étapes.** Le découpage ne suit pas les phases du traitement : il suit ce qui coûte au site d'en face. Prendre les pages est cher et se fait une fois, les rendre est gratuit et se refait à volonté. Toute l'architecture tient dans cette asymétrie : elle seule rend un essai de format indolore.
 
-- Ajouter des extracteurs selon les besoins, StrategyWiki ou les wikis communautaires, tant que cela reste faisable proprement.
-- Améliorer le post-traitement DOCX et ODT sur les tableaux imbriqués, qui restent un cas limite.
-- Alléger le traitement sur les guides de plus de 100 pages, où l'analyse monolithique commence à peser.
+**Un script de cette taille doit échouer en parlant.** Sous 200 caractères extraits, le script nomme ce qu'il a reçu plutôt que de livrer un fichier vide. Une date introuvable ne devient pas la date du jour. Une image perdue est comptée et affichée. Chaque renoncement est annoncé, parce qu'une panne silencieuse coûte plus cher qu'un arrêt net.
 
-Le projet reste un outil personnel, et le restera.
+**Le travail est dans les cas particuliers.** Les en-têtes qui passent, les tableaux de 2003, les encodages non déclarés, le gabarit docx reconstruit à chaque lancement : aucune de ces corrections ne se déduisait d'une lecture de la documentation. Elles viennent d'un guide sorti de travers.
 
----
-
-## Compétences mobilisées
-
-**Concevoir une architecture qui protège la ressource source.**
-Défi : télécharger sans jamais retélécharger, permettre de tester n'importe quel format de sortie sans une seule requête supplémentaire au site source.
-Réponse : séparation `fetch` / `render` autour d'un cache HTML immuable (`.render.json`), 2 réserves de concurrence distincts (HTML et images), délai minimum entre requêtes configurable, cache d'images conditionnel via ETag et If-Modified-Since.
-Résultat : une fois un guide récupéré, ajuster un template ou tester un format supplémentaire coûte zéro requête au site.
-
-**Contourner les limites documentées d'un outil de conversion.**
-Défi : Pandoc produit des DOCX et ODT dont les tableaux n'ont ni bordures ni en-têtes répétées, des largeurs de colonnes inégales, et parfois un `[Content_Types].xml` corrompu à l'ouverture dans Word.
-Réponses : post-traitement `python-docx` pour les DOCX (styles de tableau, en-tête courant, colonnes équilibrées), manipulation directe du XML par `zipfile` et `lxml` pour les ODT (`odfpy` étant cassé sur les fichiers Pandoc), templates de référence intégrés au projet pour piloter les styles de base.
-Résultat : fichiers Office ouvrables sans warning, tableaux lisibles en impression, métadonnées d'auteur affichées en en-tête sur chaque page.
-
-**Étendre proprement un système à de nouvelles sources.**
-Défi : les guides ne vivent pas tous sur GameFAQs. Prévoir l'ajout de futures sources sans casser l'existant.
-Réponse : interface `Extractor` unique (`matches`, `inspect`, `extract`, `game_slug_from_url`, `guide_id_from_url`) que chaque site implémente, isolant les particularités de parsing du reste du pipeline.
-Résultat : 2 sites livrés (GameFAQs, LP Archive), l'ajout d'un troisième se réduit à écrire une nouvelle classe.
-
-**Distinguer ce que l'IA peut faire de ce qu'elle ne peut pas.**
-Réponse : Claude Code utilisé pour la concurrence asynchrone, le squelette CLI Typer et l'ossature des modèles ; heuristiques de classification des tables, templating des métadonnées et post-traitement ODT ajustés à la main sur des dizaines de guides réels, faute d'exemples génériques exploitables par l'IA.
-Résultat : le projet fonctionne sur les cas particuliers, pas seulement sur les cas d'école.
-
-**Assumer une posture publique.**
-Défi : un outil clé en main de téléchargement expose ses sites cibles à un renforcement des protections qui nuirait à toute la communauté qui les fréquente légitimement.
-Réponse : projet privé assumé, argumenté par le respect des ressources plutôt que par la peur d'un contentieux, cohérent avec le crédit systématique des auteurs affiché en tête de chaque fichier généré.
+**Une dépendance envers un site qu'on ne contrôle pas se borne, elle ne se supprime pas.** Les sélecteurs casseront, c'est entendu. Le plafond de pages, le garde-fou de taille et le profil générique ne l'empêchent pas : ils rendent la panne lisible et la réparation locale.
