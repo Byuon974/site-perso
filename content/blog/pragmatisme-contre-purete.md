@@ -9,15 +9,15 @@ categories: ["méthode"]
 
 Quand mon tuteur m'a demandé de concevoir une plateforme SaaS, je m'y suis mis avec sérieux et avec la mauvaise méthode. J'ai cherché mes solutions dans les endroits que je connaissais déjà. Le résultat a été plus insidieux qu'un blocage : j'avançais trop lentement pour l'échéance qu'on m'avait donnée.
 
-Il m'a fallu des mois pour nommer ce qui clochait. Trouver la bonne solution est moins un problème de manque d'options qu'un problème de carte mentale trop étroite.
+Il m'a fallu des mois pour nommer ce qui clochait. Le symptôme était pourtant net : devant chaque question neuve, je repartais vers le backend, mon terrain connu, et j'y cherchais une réponse qui était ailleurs. Trouver la bonne solution est moins un problème de manque d'options qu'un problème de carte mentale trop étroite.
 
-## Le tâtonnement
+## À quoi ressemble une carte trop étroite
 
-Mon terrain d'origine, c'était le backend pur. Bases de données, API, logique métier, systèmes. Devant un problème neuf, mon réflexe me ramenait vers ces territoires familiers. Je m'enlisais dans la comparaison d'ORM alors que le vrai arbitrage se jouait ailleurs. Je passais des heures sur une configuration de VPS pour finir sans décision. Chaque question méritait qu'on s'y penche. Aucune ne faisait avancer l'application, et je manquais de recul pour trancher vite. Je m'épuisais dans des demi-choix au lieu de construire.
+Concrètement, ça donnait ceci. Je m'enlisais dans la comparaison d'ORM alors que le vrai arbitrage se jouait ailleurs. Je passais des heures sur une configuration de VPS pour finir sans décision. Chaque question méritait qu'on s'y penche. Aucune ne faisait avancer l'application, et je manquais de recul pour trancher vite. Je m'épuisais dans des demi-choix au lieu de construire.
 
-Face à un besoin que je n'avais jamais rencontré, je continuais à chercher des réponses là où j'avais l'habitude d'en trouver, alors qu'elles étaient ailleurs. Ma carte mentale me limitait plus que mon niveau technique.
+Aucune de ces heures n'était du temps perdu en soi. Elles tombaient simplement toutes du même côté de la carte, celui que je connaissais déjà.
 
-## Le déclic
+## Ce qui l'a élargie
 
 2 conversations ont changé ma manière de voir.
 
