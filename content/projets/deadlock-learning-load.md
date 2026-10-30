@@ -39,7 +39,7 @@ L'intérêt du croisement se voit sur le tutoriel. Les fichiers disent que le tu
 <figure>
   <picture>
     <source srcset="/images/uploads/deadlock-overview.webp" type="image/webp">
-    <img src="/images/uploads/deadlock-overview.png" alt="Vue d’ensemble du tableau de bord : les 21 affirmations, leur verdict et le chiffre qui les décide" width="1440" height="900" loading="lazy">
+    <img src="/images/uploads/deadlock-overview.png" alt="Vue d’ensemble du tableau de bord : les 21 affirmations, leur verdict et le chiffre qui les décide" width="1440" height="900" loading="lazy">
   </picture>
   <figcaption>La vue d’ensemble. Chaque affirmation porte son verdict, le chiffre qui le décide et la limite de ce que ce chiffre prouve.</figcaption>
 </figure>
@@ -47,8 +47,8 @@ L'intérêt du croisement se voit sur le tutoriel. Les fichiers disent que le tu
 Chaque page répond à une question et une seule. Elle s'ouvre sur le verdict, pose le chiffre qui le porte, puis déroule les preuves. Quelques résultats parmi les 21 :
 
 - le jeu affiche **3 722 nombres**, dont 1 750 pour les seules capacités de héros ;
-- **953 mots** de texte dans le jeu servent à recopier une composition d'objets, contre 847 pour tout le tutoriel ;
-- **32 objets sur 156** font la moitié des achats, ce qui transforme la composition en routine plutôt qu'en décision ;
+- **953 mots** de texte dans le jeu servent à recopier un build, contre 847 pour tout le tutoriel ;
+- **32 objets sur 156** font la moitié des achats, ce qui transforme le build en routine plutôt qu'en décision ;
 - une partie dure **39,9 minutes** au rang le plus bas contre 31,8 au plus haut, et les débutants abandonnent 3,4 fois plus souvent ;
 - les nombres de couloirs ou d'objectifs ont été retouchés **56 jours distincts** depuis le 10 août 2024.
 
@@ -56,9 +56,9 @@ Chaque page répond à une question et une seule. Elle s'ouvre sur le verdict, p
 
 Une analyse qui confirme tout n'a rien examiné. Celle-ci retourne 3 reproches populaires.
 
-« Les compositions farfelues qu'on comprend gagnent à bas rang » : l'écart de taux de victoire est plus petit en bas qu'en haut, +0,6 point contre +1,9.
+« Les builds farfelus qu'on comprend gagnent à bas rang » : l'écart de taux de victoire est plus petit en bas qu'en haut, +0,6 point contre +1,9.
 
-« Standard, c'est 25 % d'écrasements et 25 % d'invendables » : la mesure donne environ 15 % de parties à sens unique. Dans les 2 files d'attente.
+« Standard, c'est 25 % de victoires écrasantes et 25 % de défaites cuisantes » : la mesure donne environ 15 % de parties à sens unique. Dans les 2 files d'attente.
 
 « Le jeu punit au lieu d'enseigner » : mesuré par rang, les débutants ne meurent pas davantage par minute jouée, et mourir leur coûte moins d'âmes qu'aux joueurs expérimentés. Leurs parties durent simplement plus longtemps.
 
@@ -70,7 +70,7 @@ Une moyenne cache une décision sur ce qu'on garde. Celles-ci sont écrites dans
 
 Les moyennes par rang sont pondérées par le nombre de parties : un palier qui pèse 5 000 parties ne vaut pas un palier qui en pèse 80 000. Les paliers sous 1 000 parties sortent du calcul, leur bruit dépassant leur signal. Le palier 0, celui des joueurs sans rang attribué, est traité à part. Il mélange des comptes neufs et des comptes inactifs : le fondre dans le premier palier le salirait.
 
-La corrélation entre taux de victoire d'un objet et moment de son achat est calculée en rang de Spearman, ex æquo compris. Le choix tient en une phrase. La relation attendue est monotone sans être linéaire, et les valeurs extrêmes d'un catalogue d'objets fausseraient un Pearson.
+Le lien entre le taux de victoire d'un objet et le moment où on l'achète est mesuré sur le classement des objets plutôt que sur leurs valeurs brutes, ce qu'on appelle une corrélation de Spearman. La raison tient en une phrase. On s'attend à ce que l'un monte quand l'autre monte, sans que ce soit une droite, et quelques objets extrêmes suffiraient à fausser la mesure classique.
 
 ## Ce que la page refuse de conclure
 
@@ -85,24 +85,28 @@ Chaque affirmation porte sa limite propre, affichée sous son verdict. Annoncer 
 <figure>
   <picture>
     <source srcset="/images/uploads/deadlock-sources.webp" type="image/webp">
-    <img src="/images/uploads/deadlock-sources.png" alt="Page Sources : le script de collecte, la zone de dépôt du dossier et le rapport des changements" width="1440" height="900" loading="lazy">
+    <img src="/images/uploads/deadlock-sources.png" alt="Page Sources : le script de collecte, la zone de dépôt du dossier et le rapport des changements" width="1440" height="900" loading="lazy">
   </picture>
   <figcaption>La page Sources. Le script de collecte, la zone où déposer le dossier, et le rapport de ce que le dépôt a changé.</figcaption>
 </figure>
 
 La page embarque une copie des données : elle se lit tout de suite. Elle sait aussi se nourrir à nouveau.
 
-La page Sources donne le script de collecte, 11 lignes de `curl` qui écrivent dans un dossier `deadlock-data`. On dépose ensuite ce dossier entier sur la page. Elle descend l'arborescence, ignore ce qui n'est pas du JSON, reconnaît chaque fichier à son contenu et recalcule.
+La page Sources donne le script de collecte, 11 lignes de `curl` qui écrivent dans un dossier `deadlock-data`. On dépose ensuite ce dossier entier sur la page. Elle ouvre les sous-dossiers, laisse de côté ce qui n'est pas une donnée, reconnaît chaque fichier à son contenu plutôt qu'à son nom, et recalcule.
 
 Le rapport qui suit le dépôt répond à la question qu'on se pose vraiment : qu'est-ce qui a bougé ? Il liste les verdicts qui ont changé de statut et les chiffres qui ont changé de valeur, l'avant et l'après côte à côte. Chaque ligne pointe vers la page concernée. Sans lui, recharger 11 fichiers oblige à relire 18 pages pour trouver la différence.
 
+Un garde-fou est venu d'un incident réel. L'API a cessé de répondre sur un des 11 fichiers, celui des joueurs expérimentés. Rien n'empêchait alors de rafraîchir les débutants seuls et de comparer des données du jour à des données figées, ce qui aurait mesuré un écart de dates autant qu'un écart d'expérience. La page refuse désormais la demi-paire : elle remet les 2 fichiers dans leur état précédent et explique pourquoi.
+
+Reste un dernier maillon. Un dépôt ne change les chiffres que dans l'onglet ouvert : la copie embarquée dans le fichier, elle, ne bouge pas. La page sait donc se réécrire. Elle relit sa propre source, remplace le bloc de données entre ses 2 bornes et rend un fichier à redéposer tel quel. Le cycle se referme ainsi : on collecte, on dépose, on lit ce qui a changé, on republie.
+
 ## Les choix techniques
 
-Un fichier HTML unique, sans dépendance ni étape de compilation. Les données voyagent avec la page et les calculs se font dans le navigateur. Aucune requête ne part vers un tiers.
+Une seule page, qui ne dépend de rien et ne se compile pas. Les données voyagent avec elle et tous les calculs se font sur la machine du lecteur. Rien n'est envoyé nulle part, et aucun service extérieur n'est appelé au passage.
 
-L'accessibilité a été traitée comme une contrainte de conception. La couleur ne porte jamais seule une information : un statut arrive toujours avec un mot et une icône. Chaque graphique SVG expose un tableau de données dépliable, pour que ce qui se lit à l'œil se lise aussi au lecteur d'écran. Les polices sont servies à côté de la page, ce qui conserve la typographie même hors ligne.
+L'accessibilité a été décidée en amont plutôt qu'ajoutée à la fin. La couleur ne porte jamais seule une information : un statut arrive toujours avec un mot et un pictogramme, lisible par quelqu'un qui distingue mal le rouge du vert. Sous chaque graphique, un tableau se déplie avec les mêmes chiffres, pour que ce qui se lit à l'œil se lise aussi à voix haute. Les polices accompagnent la page, qui garde donc son allure même ouverte sans connexion.
 
-Contrôle au navigateur : 0 violation axe-core sur les 18 pages, aucun débordement horizontal de 360 à 1440 pixels, aucune erreur JavaScript.
+Les 18 pages ont été vérifiées dans un vrai navigateur, du téléphone au grand écran. Rien ne déborde sur les côtés, rien ne casse, et un outil d'audit d'accessibilité ne relève aucun manquement.
 
 ## Pourquoi la page est en anglais
 
