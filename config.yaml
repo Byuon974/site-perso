@@ -74,9 +74,15 @@ module:
     - source: static
       target: static
       files:
+        # css/ et js/ sont servis par le pipeline Hugo, sous un nom qui porte
+        # l'empreinte du contenu. Les exclure d'ici supprime l'ancienne adresse
+        # fixe : un navigateur ne peut plus resservir une version périmée.
         - '! css/**'
+        - '! js/**'
     - source: static/css
       target: assets/css
+    - source: static/js
+      target: assets/js
     # Le CV est monté dans assets uniquement pour que le gabarit puisse
     # calculer une empreinte de son contenu. Le fichier reste publié par
     # static/, à son adresse habituelle.

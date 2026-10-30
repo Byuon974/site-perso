@@ -1,11 +1,23 @@
 /**
- * Scrollspy : met en surbrillance l'entrée de la table des matières
- * correspondant à la section actuellement lue dans la page.
+ * Scrollspy : met en surbrillance l'entrée du sommaire correspondant à la
+ * section en cours de lecture, dans <nav class="sidebar-toc">.
  *
- * Fonctionne avec le TOC généré par Hugo dans <nav class="sidebar-toc">.
- * Chaque lien du TOC pointe vers un #slug qui correspond à un id sur un heading.
+ * La version précédente reposait sur un IntersectionObserver réglé sur une
+ * bande étroite du haut de l'écran. Elle a 2 défauts, mesurés au navigateur :
  *
- * Si le TOC n'existe pas (pages sans .TableOfContents), le script ne fait rien.
+ *   1. l'observateur ne se déclenche qu'au changement d'intersection. Quand un
+ *      titre traverse la bande entre 2 images, au clic sur un lien du sommaire
+ *      ou à la molette rapide, l'état ne change pas et la surbrillance se fige
+ *      sur la section précédente, parfois pour plusieurs milliers de pixels ;
+ *   2. le repli qui devait rattraper ce cas vivait dans le corps de
+ *      l'observateur, donc il ne tournait jamais quand celui-ci se taisait.
+ *
+ * Le calcul direct supprime les 2 : la section active est toujours le dernier
+ * titre passé au-dessus de la ligne de lecture, quelle que soit la façon dont
+ * on est arrivé là. Il est limité à une image par requestAnimationFrame, et la
+ * position des titres n'est relue qu'au redimensionnement.
+ *
+ * Sans sommaire, le script ne fait rien.
  */
 (function () {
   "use strict";
@@ -13,62 +25,79 @@
   const toc = document.querySelector(".sidebar-toc");
   if (!toc) return;
 
-  const tocLinks = toc.querySelectorAll("a[href^='#']");
-  if (tocLinks.length === 0) return;
+  const liens = [...toc.querySelectorAll("a[href^='#']")];
+  if (liens.length === 0) return;
 
-  // Récupérer les cibles réellement présentes dans la page
-  const targets = [];
-  tocLinks.forEach((link) => {
-    const id = decodeURIComponent(link.getAttribute("href").slice(1));
+  const cibles = [];
+  liens.forEach((lien) => {
+    const id = decodeURIComponent(lien.getAttribute("href").slice(1));
     const el = document.getElementById(id);
-    if (el) targets.push({ id, el, link });
+    if (el) cibles.push({ el, lien, haut: 0 });
+  });
+  if (cibles.length === 0) return;
+
+  // La ligne de lecture : un titre compte comme atteint dès qu'il franchit le
+  // quart supérieur de la fenêtre, le point où l'œil reprend après un défilement.
+  const ligne = () => window.innerHeight * 0.25;
+
+  const mesurer = () => {
+    const origine = window.scrollY;
+    cibles.forEach((c) => {
+      c.haut = c.el.getBoundingClientRect().top + origine;
+    });
+  };
+
+  let actif = null;
+
+  const appliquer = () => {
+    const seuil = window.scrollY + ligne();
+    let courant = null;
+    for (const c of cibles) {
+      if (c.haut <= seuil) courant = c;
+      else break;
+    }
+
+    // Tout en bas de page, la dernière section est lue même si son titre
+    // n'a pas franchi la ligne : sans cela, un pied de page long laisserait
+    // la surbrillance deux sections en arrière.
+    const fin = document.documentElement.scrollHeight - window.innerHeight;
+    if (fin - window.scrollY < 4) courant = cibles[cibles.length - 1];
+
+    if (courant === actif) return;
+    actif = courant;
+    cibles.forEach((c) => {
+      const vise = c === courant;
+      c.lien.classList.toggle("active", vise);
+      c.lien.parentElement?.classList.toggle("active", vise);
+      if (vise) c.lien.setAttribute("aria-current", "true");
+      else c.lien.removeAttribute("aria-current");
+    });
+  };
+
+  let enAttente = false;
+  const planifier = () => {
+    if (enAttente) return;
+    enAttente = true;
+    requestAnimationFrame(() => {
+      enAttente = false;
+      appliquer();
+    });
+  };
+
+  mesurer();
+  appliquer();
+
+  window.addEventListener("scroll", planifier, { passive: true });
+  window.addEventListener("resize", () => {
+    mesurer();
+    actif = null;
+    appliquer();
   });
 
-  if (targets.length === 0) return;
-
-  // Utiliser IntersectionObserver pour repérer quelle section est visible
-  // La bande de 20% haut / 70% bas déclenche quand un heading entre dans
-  // le tiers supérieur du viewport (rythme de lecture naturel).
-  const observed = new Set();
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          observed.add(entry.target.id);
-        } else {
-          observed.delete(entry.target.id);
-        }
-      });
-
-      // La section active est la première visible (dans l'ordre du document)
-      let activeId = null;
-      for (const t of targets) {
-        if (observed.has(t.id)) {
-          activeId = t.id;
-          break;
-        }
-      }
-
-      // Si aucune n'est visible, garder la dernière passée au-dessus du viewport
-      if (!activeId) {
-        for (const t of targets) {
-          const rect = t.el.getBoundingClientRect();
-          if (rect.top < 100) activeId = t.id;
-        }
-      }
-
-      // Appliquer la classe active
-      tocLinks.forEach((link) => {
-        const id = decodeURIComponent(link.getAttribute("href").slice(1));
-        link.parentElement?.classList.toggle("scrollspy-active", id === activeId);
-      });
-    },
-    {
-      rootMargin: "-15% 0px -70% 0px",
-      threshold: 0,
-    }
-  );
-
-  targets.forEach((t) => observer.observe(t.el));
+  // Les images arrivées en différé décalent les titres sous elles.
+  window.addEventListener("load", () => {
+    mesurer();
+    actif = null;
+    appliquer();
+  });
 })();

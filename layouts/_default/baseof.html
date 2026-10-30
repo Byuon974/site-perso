@@ -80,11 +80,15 @@
 
     <script defer src="{{ "vendor/littlefoot/littlefoot.js" | relURL }}"></script>
     <script>window.addEventListener("DOMContentLoaded", () => { if (window.littlefoot) { window.littlefoot.littlefoot(); } });</script>
-    <script defer src="{{ "js/image-viewer.js" | relURL }}"></script>
-    <script defer src="{{ "js/theme-toggle.js" | relURL }}"></script>
-    <script defer src="{{ "js/sidebar.js" | relURL }}"></script>
-    <script defer src="{{ "js/scrollspy.js" | relURL }}"></script>
+    {{/* Les 4 scripts de toutes les pages partent en un seul fichier, dont le
+         nom porte l'empreinte SHA-256 du contenu. Un changement dans n'importe
+         lequel change l'adresse : le navigateur ne peut pas resservir une
+         version périmée depuis son cache, et le fichier inchangé reste en
+         cache indéfiniment. Chacun est déjà enfermé dans sa propre fonction,
+         la concaténation ne crée donc aucune collision de nom. */}}
+    {{ $scripts := slice (resources.Get "js/image-viewer.js") (resources.Get "js/theme-toggle.js") (resources.Get "js/sidebar.js") (resources.Get "js/scrollspy.js") | resources.Concat "js/site.js" | minify | fingerprint "sha256" }}
+    <script defer src="{{ $scripts.RelPermalink }}" integrity="{{ $scripts.Data.Integrity }}"></script>
     {{/* Chargé uniquement là où un lecteur différé existe. */}}
-    {{ if .HasShortcode "video-lite" }}<script defer src="{{ "js/video-lite.js" | relURL }}"></script>{{ end }}
+    {{ if .HasShortcode "video-lite" }}{{ $vl := resources.Get "js/video-lite.js" | minify | fingerprint "sha256" }}<script defer src="{{ $vl.RelPermalink }}" integrity="{{ $vl.Data.Integrity }}"></script>{{ end }}
   </body>
 </html>
