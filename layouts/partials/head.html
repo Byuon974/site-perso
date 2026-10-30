@@ -70,18 +70,6 @@
 <meta property="og:url" content="{{ .Permalink }}" />
 {{ with .Params.description }}<meta property="og:description" content="{{ . }}" />{{ end }}
 
-{{/* Image de partage : la capture du projet si la page en déclare une,
-     sinon la carte de la section. 4 PNG fixes dans static/og, aucun
-     service externe : ni génération à l'exécution ni dépendance tierce,
-     ce que le choix « zéro build, tout auto-hébergé » exclut. */}}
-{{ $og := "" }}
-{{ with .Params.image }}{{ $og = . | absURL }}
-{{ else }}{{ $og = printf "/og/%s.png" (cond .IsHome "accueil" (or .Section "accueil")) | absURL }}{{ end }}
-<meta property="og:image" content="{{ $og }}" />
-<meta property="og:image:alt" content="{{ .Title | default .Site.Title }} — {{ .Site.Title }}" />
-<meta property="og:site_name" content="{{ .Site.Title }}" />
-<meta property="og:locale" content="fr_FR" />
-<meta name="twitter:card" content="summary_large_image" />
 
 {{/* Article meta pour mode lecture */}}
 {{ if .IsPage }}
