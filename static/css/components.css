@@ -2219,9 +2219,13 @@ html[data-theme="dark"] .sun-avatar {
    Remplace un diagramme ASCII dans un <pre>, qui débordait la colonne
    et se coupait à droite sur la moitié des écrans. */
 
+/* L'échelle d'espacement va de --e-1 à --e-4, puis 6, 8, 12, 16 : --e-5
+   n'existe pas. Une valeur absente rend la déclaration invalide, que le
+   navigateur jette en silence, et le cadre se retrouvait collé à son
+   contenu. Mesuré : padding 0 px sur les 2 schémas de cette page. */
 .schema {
   margin-block: var(--e-6);
-  padding: var(--e-5);
+  padding: var(--e-6);
   border: var(--trait);
   border-radius: var(--r-md);
   background: var(--surface);
@@ -2422,4 +2426,51 @@ html[data-theme="dark"] .sun-avatar {
   font-size: var(--t-xs);
   line-height: 1.4;
   color: var(--ink-muted);
+}
+
+/* =========================================================================
+   OUTILS TÉLÉCHARGEABLES
+   =========================================================================
+   Les 2 pages projets qui livrent un fichier autonome proposent la même
+   paire : ouvrir dans un onglet, ou enregistrer. Les boutons existaient
+   déjà pour la page 404 et ne servaient qu'à elle.
+   ========================================================================= */
+
+/* Scopé sous .prose : « .prose p » pèse plus lourd qu'une classe seule et
+   ramenait la marge basse à celle d'un paragraphe ordinaire. Mesuré : 0 px
+   sous les boutons, le texte suivant venait les toucher. */
+.prose p.actions-outil,
+.actions-outil {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--e-3);
+  margin-block: var(--e-6);
+}
+
+/* Les boutons vivent dans la prose, où « .prose a » l'emporte sur
+   « .btn-primary » : un sélecteur de classe plus un type pèse plus lourd
+   qu'une classe seule. Mesuré au navigateur : le texte du bouton plein
+   ressortait vert sur vert, donc illisible, et les 2 gardaient le
+   soulignement des liens d'article. On rend la main aux boutons. */
+.prose .actions-outil a {
+  text-decoration: none;
+}
+
+.prose .actions-outil a.btn-primary {
+  color: var(--surface);
+}
+
+.prose .actions-outil a.btn-secondary {
+  color: var(--accent);
+}
+
+.prose .actions-outil a.btn-primary:hover {
+  color: var(--surface);
+}
+
+/* Sur un téléphone, 2 boutons côte à côte se réduisent à des cibles trop
+   étroites : ils passent l'un sous l'autre et prennent toute la largeur. */
+@media (max-width: 26rem) {
+  .actions-outil { flex-direction: column; }
+  .actions-outil > * { justify-content: center; }
 }

@@ -12,7 +12,10 @@ draft: false
 
 > Une page web autonome qui teste 21 affirmations sur la difficulté d'apprentissage de Deadlock. Chacune reçoit un verdict, le chiffre qui le décide, la source du chiffre et la limite de ce qu'il prouve. Tout se calcule dans le navigateur, rien ne part ailleurs.
 
-[Ouvrir le tableau de bord](/deadlock/)
+<p class="actions-outil">
+  <a class="btn-primary" href="/deadlock/" target="_blank" rel="noopener">Ouvrir le tableau de bord</a>
+  <a class="btn-secondary" href="/deadlock/index.html" download="deadlock-learning-load.html">Télécharger le fichier</a>
+</p>
 
 Le sujet est un jeu, la matière est de la donnée publique. Ce qui suit décrit comment une question de game design est devenue vérifiable, puis ce que l'exercice a refusé de conclure.
 
