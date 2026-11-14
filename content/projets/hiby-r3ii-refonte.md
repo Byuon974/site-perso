@@ -1,6 +1,6 @@
 ---
 title: "HiBy R3 II Refonte"
-description: "Refonte du firmware d'un baladeur audio par rétro-ingénierie, en 4 jours : une bibliothèque de 34 294 morceaux rendue fluide, un système allégé de 18,4 Mo, une interface redessinée avec bascule sombre et clair."
+description: "Refonte du firmware d'un baladeur audio par rétro-ingénierie, en 4 jours : une bibliothèque de plus de 30 000 morceaux rendue fluide, un système allégé de 18,4 Mo, une interface redessinée avec bascule sombre et clair."
 date: 2026-11-14
 image: "/images/uploads/hiby-r3ii-overview.png"
 tags: ["Rétro-ingénierie", "Linux embarqué", "SQLite", "MIPS", "Ghidra", "Interface"]
@@ -10,13 +10,13 @@ period: "2026"
 draft: false
 ---
 
-> Le HiBy R3 II est un baladeur audio sous Linux, livré sans code source ni outil de développement : tout son logiciel tient dans un seul programme. Cette refonte le reprend par rétro-ingénierie, en 4 jours et 7 versions. Une bibliothèque de 34 294 morceaux rendue fluide, une barre de lettres qui tombe juste, un système allégé de 18,4 Mo, une interface redessinée avec bascule sombre et clair. Un kit refait le tout depuis le firmware officiel en 5 secondes.
+> Le HiBy R3 II est un baladeur audio sous Linux, livré sans code source ni outil de développement : tout son logiciel tient dans un seul programme. Cette refonte le reprend par rétro-ingénierie, en 4 jours et 7 versions. Une bibliothèque de plus de 30 000 morceaux rendue fluide, une barre de lettres qui tombe juste, un système allégé de 18,4 Mo, une interface redessinée avec bascule sombre et clair. Un kit refait le tout depuis le firmware officiel en 5 secondes.
 
 ## Ce que j'aime et ce qui gêne
 
 Mon baladeur tient dans une poche et fait presque tout ce que je lui demande. La musique tient sur une carte microSD que je remplis moi-même, sans compte ni synchronisation : l'appareil n'a aucune mémoire interne et accepte des cartes jusqu'à 2 To. En bas, 2 prises, une 3,5 mm et une 4,4 mm symétrique, me laissent brancher le casque ou l'ampli que je veux. Le son, lui, est net et sans souffle. Le HiBy R3 II réussit la partie difficile.
 
-Reste le logiciel. Je touche la lettre X sur la barre de défilement : la liste s'ouvre sur des titres en W. La liste de tous les morceaux ralentit à mesure qu'on descend. Une mise à jour de la bibliothèque prend près de 50 minutes. Ma bibliothèque compte 34 294 morceaux : c'est cette taille qui met l'appareil en difficulté.
+Reste le logiciel. Je touche la lettre X sur la barre de défilement : la liste s'ouvre sur des titres en W. La liste de tous les morceaux ralentit à mesure qu'on descend. Une mise à jour de la bibliothèque prend près de 50 minutes. Ma bibliothèque dépasse les 30 000 morceaux : c'est cette taille qui met l'appareil en difficulté.
 
 D'autres possesseurs du R3 II rencontrent les mêmes gênes. Sur un site spécialisé, l'un en fait le principal défaut du baladeur, un autre lui retire une demi-étoile pour son interface ; une synthèse de 129 avis d'acheteurs conclut que presque toutes les critiques visent le logiciel plutôt que le matériel. Aucune de ces gênes n'a de correction simple côté utilisateur : ni réglage, ni mise à jour. Les bases SQLite du lecteur portent de surcroît des noms de tables et de colonnes en pinyin. J'ai donc pris le problème par le bout qui se corrige.
 
@@ -170,9 +170,12 @@ Le lecteur n'y figure pas en binaire : il tient en 723 octets de correctifs, r
 
 Cette vérification a d'ailleurs corrigé une erreur de ma part. Pendant l'assemblage, j'avais pris pour un fichier abîmé la police Ubuntu de la maquette, près de 80 fois plus légère que celle d'origine. Je l'avais remplacée par l'originale. Elle avait pourtant passé l'essai la veille. Faute de contenir les caractères chinois et japonais, elle devient une option du kit, à essayer avant de l'adopter.
 
-Une refonte se juge aussi à ce qu'elle refuse. En cours de route, 4 pistes ont été ouvertes puis refermées, toujours selon le même critère : un gain sûr, pour un risque et un effort raisonnables. Le Bluetooth à la demande promettait de libérer de la mémoire. J'ai eu le tort de tenter l'essai avant de lire le code, qui donnait déjà la réponse : la fonction n'existait pas sous une forme activable ; il aurait fallu l'écrire de zéro. L'accélération de l'analyse de la bibliothèque, à l'inverse, a été mesurée avant d'être touchée. Or le baladeur lisait déjà la carte mémoire à pleine vitesse, alors que chaque essai coûtait près d'une heure.
+Une refonte se juge aussi à ce qu'elle refuse. En cours de route, 4 pistes ont été ouvertes puis refermées, toujours selon le même critère : un gain sûr, pour un risque et un effort raisonnables.
 
-Le cache de pochettes sur la carte demandait du code neuf, pour un gain que la bibliothèque obtient autrement, avec des images de taille raisonnable. Agrandir le cache en mémoire, déjà présent, a suffi. Les briques internes du système, pour finir, datent de plusieurs années. Les moderniser risquerait tout pour ne rien rapporter d'utile : elles restent en l'état.
+- **le Bluetooth à la demande**, qui promettait de libérer de la mémoire : la fonction n'existait pas sous une forme activable, il aurait fallu l'écrire de zéro. J'ai eu le tort de tenter l'essai avant de lire le code, qui donnait déjà la réponse ;
+- **l'accélération de l'analyse de la bibliothèque**, mesurée avant d'être touchée : le baladeur lisait déjà la carte mémoire à pleine vitesse, alors que chaque essai coûtait près d'une heure ;
+- **le cache de pochettes sur la carte**, qui demandait du code neuf pour un gain que la bibliothèque obtient autrement, avec des images de taille raisonnable : agrandir le cache en mémoire, déjà présent, a suffi ;
+- **les briques internes du système**, qui datent de plusieurs années : les moderniser risquerait tout pour ne rien rapporter d'utile, elles restent en l'état.
 
 Restait une dernière tentation : remplacer tout le logiciel par Rockbox, un lecteur libre qui tourne déjà sur des modèles voisins. Le port était faisable, le lecteur HiBy restant disponible au démarrage ; il aurait toutefois fallu partir d'un portage encore instable, conçu pour d'autres appareils. Chacune de ces décisions est notée avec sa raison, de sorte qu'aucune piste ne sera rouverte par oubli.
 
@@ -182,6 +185,10 @@ Le projet s'arrête à la version 7, au petit matin du jour 4. D'autres idées r
 
 Un essai ne vaut que son état de départ. Repartir d'une base propre rendait mes résultats comparables, mais masquait le cas que l'appareil rencontre tous les jours : une base qui a vécu. Désormais, je teste aussi sur l'état réel, pas seulement sur l'état idéal.
 
-Au-delà de cette leçon, je garde 3 réflexes. Le premier consiste à lire avant d'essayer. Le Bluetooth m'a coûté une manipulation pour un résultat que le code annonçait. Le halo du mode clair m'a coûté plusieurs allers-retours pour une règle que la fonction de couleur énonçait en quelques lignes. Le deuxième demande de prévoir l'échec avant de flasher : le filet qui a sauvé la version complète est arrivé après la boucle, alors qu'il aurait dû la précéder. Le troisième impose de remonter d'un cran quand une recherche s'enlise : 8 fonctions instrumentées pour rien ; une seule ensuite, celle par laquelle tout passe, qui a répondu du premier coup.
+Au-delà de cette leçon, je garde 3 réflexes :
+
+- **lire avant d'essayer** : le Bluetooth m'a coûté une manipulation, le halo du mode clair plusieurs allers-retours, pour des règles que le code énonçait déjà ;
+- **prévoir l'échec avant de flasher** : le filet qui a sauvé la version complète est arrivé après la boucle de démarrage, alors qu'il aurait dû la précéder ;
+- **remonter d'un cran quand une recherche s'enlise** : 8 fonctions instrumentées pour rien avant la seule qui comptait, celle par laquelle tout passe, qui a répondu du premier coup.
 
 Entre la lettre X qui ouvrait sur des W et l'écran de lecture qui suit la couleur de mon choix, il s'est écoulé 4 jours. À chaque étape, le plus long a été de comprendre ce qu'il fallait corriger ; la correction, elle, suivait vite.
