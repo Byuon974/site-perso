@@ -39,8 +39,16 @@
       bouton.type = "button";
       bouton.className = "image-zoom";
       bouton.setAttribute("aria-label", `Agrandir l’image : ${alt}`);
-      img.replaceWith(bouton);
-      bouton.appendChild(img);
+
+      // On enveloppe le <picture> et non l'<img> qu'il contient. Un <picture>
+      // n'applique ses <source> qu'à un <img> qui est son enfant DIRECT :
+      // glisser le bouton entre les 2 débranchait la négociation de format,
+      // et le navigateur retombait sur l'adresse du <img src>. Mesuré sur une
+      // page de projet : 700 Ko de PNG téléchargés là où 59 Ko de WebP
+      // suffisaient, sur chacune des pages qui emploient ce motif.
+      const cible = img.parentElement?.tagName === "PICTURE" ? img.parentElement : img;
+      cible.replaceWith(bouton);
+      bouton.appendChild(cible);
 
       bouton.addEventListener("click", () => {
         const clone = document.createElement("img");

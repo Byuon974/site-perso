@@ -2474,3 +2474,25 @@ html[data-theme="dark"] .sun-avatar {
   .actions-outil { flex-direction: column; }
   .actions-outil > * { justify-content: center; }
 }
+
+/* =========================================================================
+   FIGURE À DEUX IMAGES
+   =========================================================================
+   Sert aux avant/après et aux paires sombre/clair, où les 2 images ne se
+   lisent que côte à côte. Sous 34 rem elles s'empilent : réduites de moitié
+   sur un téléphone, 2 captures d'écran de 640 px ne se lisent plus.
+   ========================================================================= */
+
+.figure-paire {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--e-4);
+}
+
+.figure-paire figcaption {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 34rem) {
+  .figure-paire { grid-template-columns: minmax(0, 1fr); }
+}
